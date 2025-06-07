@@ -105,7 +105,7 @@ const AccountForm = () => {
 
   return (
     <div
-      className={`border border-gray-400 w-full h-max my-auto flex flex-col gap-5 max-w-2xl drop-shadow-md rounded-2xl py-10 px-3 md:px-10`}
+      className={`border bg-secondary border-gray-400 w-full h-max my-auto flex flex-col gap-5 max-w-2xl drop-shadow-md rounded-2xl py-10 px-3 md:px-10`}
     >
       <Image
         src={`/logofull.svg`}

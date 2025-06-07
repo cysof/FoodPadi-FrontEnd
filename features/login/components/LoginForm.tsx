@@ -67,7 +67,7 @@ const LoginForm = () => {
 
   return (
     <div
-      className={`border border-gray-400 h-max my-auto w-full flex flex-col gap-5 max-w-lg drop-shadow-md rounded-2xl py-10 px-3 md:px-10`}
+      className={`border bg-secondary border-gray-400 h-max my-auto w-full flex flex-col gap-5 max-w-lg drop-shadow-md rounded-2xl py-10 px-3 md:px-10`}
     >
       <Image
         src={`/logofull.svg`}
