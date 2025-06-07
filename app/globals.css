@@ -51,5 +51,5 @@ html,
   @apply bg-primary;
 }
 .p-inputtext{
-  @apply focus:ring-0
+  @apply focus:ring-0 drop-shadow-none
 }

@@ -50,14 +50,14 @@ const AuthSideBar = () => {
   };
   return (
     <div
-      className={`w-full max-w-lg gap-4 py-40 hidden md:flex bg-primary flex-col items-center justify-center`}
+      className={`w-full max-w-lg gap-4 py-5 hidden lg:flex bg-primary flex-col items-center justify-center`}
     >
       <Image
         src={`/logofullWhite.svg`}
         width={400}
         height={300}
         alt="Food Bank Logo"
-        className={`w-80`}
+        className={`w-50`}
       />
       <div>
         <Timeline

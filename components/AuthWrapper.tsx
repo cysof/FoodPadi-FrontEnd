@@ -3,9 +3,12 @@ import AuthSideBar from "./AuthSideBar";
 
 const AuthWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <div className={`bg-secondary flex w-full h-screen overflow-hidden`}>
+    <div className={`bg-secondary flex w-full h-dvh overflow-hidden`}>
       <AuthSideBar />
-      <div className={`h-dvh px-3 w-full flex justify-center items-center`}>
+
+      <div
+        className={`overflow-y-auto noScroll w-full border border-red-800 px-3 py-10 flex justify-center `}
+      >
         {children}
       </div>
     </div>

@@ -4,3 +4,9 @@ declare type timelineData = {
   color: string;
   decription: string;
 };
+
+declare type AppSettingInitialState = {
+  expandSidebar: boolean;
+  hideSideBar: boolean;
+  logoutLoading: boolean;
+};
