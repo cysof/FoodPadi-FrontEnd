@@ -7,7 +7,7 @@ const AuthWrapper = ({ children }: { children: ReactNode }) => {
       <AuthSideBar />
 
       <div
-        className={`overflow-y-auto noScroll w-full border border-red-800 px-3 py-10 flex justify-center `}
+        className={`overflow-y-auto noScroll w-full px-3 py-10 flex justify-center `}
       >
         {children}
       </div>
