@@ -4,7 +4,7 @@ import React from "react";
 
 const HowItWorks = () => {
   return (
-    <div className={`py-20 flex flex-col gap-20 px-3 md:px-10 bg-white`}>
+    <div id="how-it-works" className={`py-20 flex flex-col gap-20 px-3 md:px-10 bg-white`}>
       <h3
         className={`font-square text-4xl text-center text-primary font-semibold uppercase underline`}
       >
