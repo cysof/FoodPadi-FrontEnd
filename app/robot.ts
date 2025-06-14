@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: ["/"],
       disallow: [],
     },
-    sitemap: `https://iucglobalchambers.com/sitemap.xml`,
+    sitemap: `https://foodbank-theta.vercel.app/sitemap.xml`,
   };
 }
