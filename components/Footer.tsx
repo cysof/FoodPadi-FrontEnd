@@ -12,7 +12,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-10 px-5 md:px-20">
+    <footer className="bg-gray-900 w-full text-white py-10 px-5 md:px-10 lg:px-20">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {/* About Section */}
         <div>
@@ -67,9 +67,9 @@ const Footer = () => {
           <p className={`text-sm flex items-center gap-2`}>
             <MapPin width={16} /> House 17 Road 251 FHA Guzape
           </p>
-          <p className={`text-sm flex items-center gap-2`}>
+          <p className={`text-sm flex gap-2`}>
             <PhoneCall className="shrink-0" width={16} />{" "}
-            <p className={`flex items-center gap-2`}>
+            <p className={`flex items-center flex-wrap gap-2`}>
               <Link
                 className={`hover:text-primary`}
                 href={`tel:+2349074366942`}
