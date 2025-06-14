@@ -15,7 +15,7 @@ const Header = () => {
           <h1
           data-aos="fade-up" 
           data-aos-delay="200"
-            className={`font-square text-white font-bold text-center uppercase text-2xl sm:text-3xl md:text-5xl flex flex-col`}
+            className={`font-inter text-white font-bold text-center uppercase text-2xl sm:text-3xl md:text-5xl flex flex-col`}
           >
             <span>Connecting Farmers, Buyers</span>
             <span>and Transporters Seamlessly.</span>
