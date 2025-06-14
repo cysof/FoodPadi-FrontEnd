@@ -87,20 +87,20 @@ const HowItWorks = () => {
             </p>
             <div className={`flex flex-col gap-2`}>
               <div className={`flex items-center gap-2`}>
-                <Checkbox checked disabled></Checkbox>
-                <label className={`text-black text-xl font-inter`} htmlFor="">
+                <Checkbox checked ></Checkbox>
+                <label className={`text-black text-lg font-inter`} htmlFor="">
                   Directly to the buyer&apos;s location
                 </label>
               </div>
               <div className={`flex items-center gap-2`}>
-                <Checkbox checked disabled></Checkbox>
-                <label className={`text-black text-xl font-inter`} htmlFor="">
+                <Checkbox checked></Checkbox>
+                <label className={`text-black text-lg font-inter`} htmlFor="">
                   To a designated market or warehouse
                 </label>
               </div>
               <div className={`flex items-center gap-2`}>
-                <Checkbox checked disabled></Checkbox>
-                <label className={`text-black text-xl font-inter`} htmlFor="">
+                <Checkbox checked></Checkbox>
+                <label className={`text-black text-lg font-inter`} htmlFor="">
                   From the market to the buyer&apos;s home or business
                 </label>
               </div>

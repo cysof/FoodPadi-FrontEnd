@@ -66,7 +66,7 @@ const Footer = () => {
           <h3 className="text-xl font-semibold mb-4">Join Waitlist</h3>
 
           <Link
-            href={``}
+            href={`https://chat.whatsapp.com/CuueYeE9cQnJkgYgSLUDHC`}
             className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md"
           >
             Join Now

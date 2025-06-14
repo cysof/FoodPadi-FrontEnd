@@ -21,7 +21,8 @@ const Navbar = () => {
         </Link>
         <Link
           className={`.sm:py-3 py-2 px-4 sm:px-7 text-xl bg-primary text-white rounded-full font-square`}
-          href={`#`}
+          target='_blank'
+          href={`https://chat.whatsapp.com/CuueYeE9cQnJkgYgSLUDHC`}
         >
           Join Waitlist
         </Link>

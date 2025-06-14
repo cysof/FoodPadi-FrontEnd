@@ -26,7 +26,8 @@ const Header = () => {
           </p>
           <Link
             className={`bg-primary mt-5 hover:bg-primary/90 text-white text-2xl px-7 py-3 rounded-2xl font-square`}
-            href={`#`}
+            target='_blank'
+            href={`https://chat.whatsapp.com/CuueYeE9cQnJkgYgSLUDHC`}
           >
             Join the Waitlist
           </Link>
