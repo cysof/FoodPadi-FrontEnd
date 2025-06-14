@@ -5,7 +5,7 @@ import { Carousel } from "primereact/carousel";
 import React from "react";
 
 const Header = () => {
-  const imgArray = ["/HeaderBg.png", "/HeaderBg2.jpg"];
+  const imgArray = ["/HeaderBg.png", "/HeaderBg2.png"];
 
   const HeaderTemplate = (val: string) => {
     console.log(val);
