@@ -72,7 +72,7 @@ const UserSideBar = () => {
       )}
       {expandSidebar || !hideSideBar ? (
         <Image
-          src={`/logofull.svg`}
+          src={`/mainLogo.svg`}
           className={`shrink-0 px-2 pt-5 md:pt-0`}
           width={150}
           height={150}
@@ -80,7 +80,7 @@ const UserSideBar = () => {
         />
       ) : (
         <Image
-          src={`/logo.svg`}
+          src={`/mainLogo.svg`}
           className={`shrink-0 px-3 pt-5 md:pt-0`}
           width={50}
           height={50}

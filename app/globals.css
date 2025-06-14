@@ -8,8 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-square: var(--square);
+  --font-inter: var(--inter);
   --color-primary: #4caf50;
   --color-secondary: white;
   --color-primary-neutral: #99a1af;
@@ -50,6 +50,11 @@ html,
 .p-button.primary {
   @apply bg-primary;
 }
-.p-inputtext{
-  @apply focus:ring-0 drop-shadow-none
+.p-inputtext {
+  @apply focus:ring-0 drop-shadow-none;
+}
+
+/* set the check to be green */
+.p-checkbox.p-highlight .p-checkbox-box{
+  @apply bg-primary border-primary
 }

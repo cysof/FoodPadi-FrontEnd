@@ -52,13 +52,16 @@ const AuthSideBar = () => {
     <div
       className={`w-full max-w-lg gap-4 py-5 hidden lg:flex bg-primary flex-col items-center justify-center`}
     >
+      <div className={`rounded-2xl bg-white flex items-center justify-center h-max w-max`}>
+
       <Image
-        src={`/logofullWhite.svg`}
+        src={`/mainLogo.svg`}
         width={400}
         height={300}
         alt="Food Bank Logo"
         className={`w-50`}
       />
+      </div>
       <div>
         <Timeline
           value={events}

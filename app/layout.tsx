@@ -1,19 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { PrimeReactProvider } from "primereact/api";
 import "./globals.css";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primeicons/primeicons.css";
+import localFont from "next/font/local";
 import StoreProvider from "./StoreProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
+  variable: "--inter",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const square = localFont({
+  src: [
+    {
+      path: "./fonts/SQR721B.woff",
+      weight: "700",
+    },
+    {
+      path: "./fonts/Square721N.otf",
+      weight: "400",
+    },
+  ],
+  display: "swap",
+  variable: "--square",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`font-inter ${inter.variable} ${square.variable}`}
       >
         <StoreProvider>
           <PrimeReactProvider>{children}</PrimeReactProvider>

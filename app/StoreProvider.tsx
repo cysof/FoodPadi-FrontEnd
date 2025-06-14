@@ -19,6 +19,7 @@ const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       easing: "ease-in-out",
       anchorPlacement: "top-bottom",
     });
+    console.log("hello")
   }, []);
 
   return (
