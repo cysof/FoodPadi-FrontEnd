@@ -22,9 +22,9 @@ const UserDashboardWrapper = ({ children }: { children: ReactNode }) => {
   }, [token.access, token.refresh]);
 
   return (
-    <div className={`w-full h-dvh flex`}>
+    <div className={`w-full h-dvh flex overflow-hidden`}>
       <UserSideBar />
-      <div className={`w-full flex flex-col `}>
+      <div className={`w-full flex flex-col flex-1 min-w-0 overflow-hidden `}>
         <UserNavbar />
         {children}
       </div>

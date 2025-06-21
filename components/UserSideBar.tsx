@@ -60,7 +60,7 @@ const UserSideBar = () => {
     <div
       className={` ${
         hideSideBar
-          ? `-translate-x-full absolute md:relative z-50 md:translate-x-0`
+          ? `-translate-x-full absolute md:relative z-50 md:translate-x-0 md:shrink-0`
           : `translate-0 drop-shadow-lg md:drop-shadow-none md:relative absolute z-50`
       } delay-200  overflow-hidden  h-dvh w-max .max-w-[150px] bg-secondary py-4 transition-all ease-in-out duration-300 text-black  .w-full .max-w-40 `}
     >
@@ -70,23 +70,13 @@ const UserSideBar = () => {
           className={`cursor-pointer absolute top-2 right-2 text-black md:hidden flex`}
         />
       )}
-      {expandSidebar || !hideSideBar ? (
         <Image
           src={`/mainLogo.svg`}
-          className={`shrink-0 px-2 pt-5 md:pt-0`}
+          className={`shrink-0 px-2 pt-5 md:pt-0 ${expandSidebar || !hideSideBar ? `w-[150px]`:`w-[50]`} duration-300`}
           width={150}
           height={150}
           alt="logo"
         />
-      ) : (
-        <Image
-          src={`/mainLogo.svg`}
-          className={`shrink-0 px-3 pt-5 md:pt-0`}
-          width={50}
-          height={50}
-          alt="logo"
-        />
-      )}
       <ul className={`w-full pt-5`}>
         {links.map((link) => (
           <li key={link.name} className={`w-full`}>

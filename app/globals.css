@@ -47,11 +47,28 @@ html,
 .p-button {
   @apply focus:ring-0;
 }
-.p-button.primary {
-  @apply bg-primary;
+.p-button.primary, .p-button.buy {
+  @apply bg-primary border-primary;
+}
+ .p-button.buy {
+  @apply hover:bg-primary/90;
+}
+.p-button.out {
+  @apply bg-red-500/30 text-red-500 border-red-500/30;
 }
 .p-inputtext {
-  @apply focus:ring-0 drop-shadow-none;
+  @apply focus:ring-0 ring-0 drop-shadow-none;
+}
+.p-button.action {
+  @apply bg-transparent focus:ring-0 border-transparent text-black border-0;
+}
+
+.p-button.p-button-icon-only{
+  @apply bg-transparent text-primary border-primary
+}
+
+.p-button.p-component[aria-label="Upload"]{
+  @apply hidden
 }
 
 /* set the check to be green */

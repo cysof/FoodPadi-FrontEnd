@@ -17,8 +17,8 @@ import { FetchAPI } from "./FetchAPI";
 import RegisterSlice from "@/features/register/data/RegisterSlice";
 import LoginSlice from "@/features/login/data/LoginSlice";
 import AppSettingSlice from "@/components/data/AppSettingSlice";
-// // import AccountSlice from "@/features/account/data/AccountSlice";
-// // import NewsSlice from "@/features/news/data/NewsSlice";
+import MarketPlaceSlice from "@/features/marketplace/data/MarketPlaceSlice";
+import CropSlice from "@/features/crops/data/CropSlice";
 // // import HomeNewsSlice from "@/features/home/data/HomeNewsSlice";
 // // import DashboardVacancySlice from "@/features/dashboardVacancy/data/DashboardVacancySlice";
 // // import VacancySlice from "@/features/vacancy/data/VacancySlice";
@@ -35,8 +35,8 @@ const persistConfig = {
     FetchAPI.reducerPath,
     "register",
     "appSetting",
-    // "vacancyById",
-    // "account",
+    "market",
+    "crops",
     // "news",
     // "dashboardVacancy",
     // "vacancies",
@@ -52,8 +52,8 @@ const rootReducer = combineReducers({
   register: RegisterSlice,
   login: LoginSlice,
   appSetting: AppSettingSlice,
-  // postById: PostIdSlice,
-  // vacancyById: VacancyIdSlice,
+  market: MarketPlaceSlice,
+  crops: CropSlice,
   // account: AccountSlice,
   // news: NewsSlice,
   // homeNews: HomeNewsSlice,

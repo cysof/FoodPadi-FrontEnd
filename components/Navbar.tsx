@@ -5,7 +5,7 @@ import React from "react";
 const Navbar = () => {
   return (
     <div
-      className={`  w-full px-2  fixed right-1/2 translate-x-1/2 top-5 z-[999] `}
+      className={`  w-full px-2 sticky .fixed .right-1/2 .translate-x-1/2 top-5 z-[999] `}
     >
       <div className={`bg-white drop-shadow-sm border border-gray-300 rounded-full max-w-7xl px-5 sm:px-7 py-3 .sm:py-5   sm:mx-auto text-black`}>
 

@@ -1,50 +1,70 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createCrop, editACrop, getAllCrops } from "./CropApi";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { returnError } from "@/store/ErrorHandler";
 // import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 // import { returnError } from "@/store/ErrorHandler";
 // import { createCrop } from "./CropApi";
 
-const initialState: LoginInitialState = {
-  loginLoading: false,
-  loginError: "",
-  user: {
-    account_type: "",
-    address: "",
-    city: "",
-    country: "",
-    email: "",
-    first_name: "",
-    gender: "",
+const initialState: ICropInitialState = {
+  crops: [],
+  selectedCrop: {
+    availability: "",
+    created_at: "",
+    crop_description: "",
+    crop_name: "",
+    farmer: 0,
+    farmer_name: "",
+    harvested_date: "",
     id: 0,
-    is_active: false,
-    is_staff: false,
-    is_superuser: false,
-    last_name: "",
-    other_name: "",
-    phone_number: "",
-    state: "",
-    username: "",
+    img: "",
+    is_Organic: false,
+    location: "",
+    price_per_unit: 0,
+    quantity: 0,
+    unit: "",
   },
-  token: {
-    access: "",
-    refresh: "",
-  },
+  getAllCropsError: "",
+  createCropsLoading: false,
+  createCropsError: "",
+  updateCropsLoading: false,
+  updateCropsError: "",
+  deleteCropsLoading: false,
+  deleteCropsError: "",
+  getAllCropsLoading: false,
+  showCreateCropModal: false,
+  showUpdateCropModal: false,
+  search: "",
 };
 
-const LoginSlice = createSlice({
-  name: "login",
+const CropSlice = createSlice({
+  name: "crops",
   initialState,
   reducers: {
-    clearLoginError: (state) => {
-      state.loginError = initialState.loginError;
+    clearCropsError: (state) => {
+      state.getAllCropsError = initialState.getAllCropsError;
+      state.createCropsError = initialState.createCropsError;
+      state.deleteCropsError = initialState.deleteCropsError;
+      state.updateCropsError = initialState.updateCropsError;
     },
 
-    setToken: (state, action: PayloadAction<IToken>) => {
-      state.token.refresh = action.payload.refresh;
-      state.token.access = action.payload.access;
+    setShowCreateCropModal: (state, action: PayloadAction<boolean>) => {
+      state.showCreateCropModal = action.payload;
     },
 
-    clearToken: (state) => {
-      state.token = initialState.token;
+    setSearchTerm: (state, action: PayloadAction<string>) => {
+      state.search = action.payload;
+    },
+
+    setShowUpdateCropModal: (
+      state,
+      action: PayloadAction<{ id?: number; show: boolean }>
+    ) => {
+      state.showUpdateCropModal = action.payload.show;
+      const foundCrop = state.crops.find(
+        (crop) => crop.id === action.payload.id
+      );
+      if (foundCrop) state.selectedCrop = foundCrop;
     },
   },
   extraReducers: (builder) => {
@@ -52,36 +72,106 @@ const LoginSlice = createSlice({
     builder.addCase("logout", () => {
       return initialState;
     });
-    
-    // builder.addMatcher(loginUser.matchPending, (state) => {
-    //   state.loginLoading = true;
-    // });
 
-    // builder.addMatcher(
-    //   loginUser.matchFulfilled,
-    //   (state, action: PayloadAction<ILoginResponse>) => {
-    //     state.loginLoading = false;
-    //     state.token.access = action.payload.access;
-    //     state.token.refresh = action.payload.refresh;
-    //     state.user = action.payload.user;
-    //   }
-    // );
+    // Create a crop
+    builder.addMatcher(createCrop.matchPending, (state) => {
+      state.createCropsLoading = true;
+    });
 
-    // builder.addMatcher(
-    //   loginUser.matchRejected,
-    //   (
-    //     state,
-    //     action: PayloadAction<
-    //       (FetchBaseQueryError & { data?: unknown }) | undefined
-    //     >
-    //   ) => {
-    //     state.loginLoading = false;
-    //     state.loginError = returnError(action);
-    //   }
-    // );
+    builder.addMatcher(createCrop.matchFulfilled, (state) => {
+      state.createCropsLoading = false;
+    });
+
+    builder.addMatcher(
+      createCrop.matchRejected,
+      (
+        state,
+        action: PayloadAction<
+          (FetchBaseQueryError & { data?: unknown }) | undefined
+        >
+      ) => {
+        state.createCropsLoading = false;
+        state.createCropsError = returnError(action);
+      }
+    );
+
+    // update a crop
+    builder.addMatcher(editACrop.matchPending, (state) => {
+      state.updateCropsLoading = true;
+    });
+
+    builder.addMatcher(editACrop.matchFulfilled, (state) => {
+      state.updateCropsLoading = false;
+    });
+
+    builder.addMatcher(
+      editACrop.matchRejected,
+      (
+        state,
+        action: PayloadAction<
+          (FetchBaseQueryError & { data?: unknown }) | undefined
+        >
+      ) => {
+        state.updateCropsLoading = false;
+        state.updateCropsError = returnError(action);
+      }
+    );
+
+    // Get all the Crops
+    builder.addMatcher(getAllCrops.matchPending, (state) => {
+      state.getAllCropsLoading = true;
+    });
+
+    builder.addMatcher(
+      getAllCrops.matchFulfilled,
+      (state, action: PayloadAction<IGetMarketProduceResponse>) => {
+        state.getAllCropsLoading = false;
+        state.crops = action.payload.results;
+      }
+    );
+
+    builder.addMatcher(
+      getAllCrops.matchRejected,
+      (
+        state,
+        action: PayloadAction<
+          (FetchBaseQueryError & { data?: unknown }) | undefined
+        >
+      ) => {
+        state.getAllCropsLoading = false;
+        state.getAllCropsError = returnError(action);
+      }
+    );
+
+    // Delete a Crop
+    builder.addMatcher(getAllCrops.matchPending, (state) => {
+      state.deleteCropsLoading = true;
+    });
+
+    builder.addMatcher(getAllCrops.matchFulfilled, (state) => {
+      state.deleteCropsLoading = false;
+    });
+
+    builder.addMatcher(
+      getAllCrops.matchRejected,
+      (
+        state,
+        action: PayloadAction<
+          (FetchBaseQueryError & { data?: unknown }) | undefined
+        >
+      ) => {
+        state.deleteCropsLoading = false;
+        state.deleteCropsError = returnError(action);
+      }
+    );
   },
 });
 
-export const { clearLoginError, clearToken, setToken } = LoginSlice.actions;
+export const {
+  clearCropsError,
+  setShowCreateCropModal,
+  setShowUpdateCropModal,
+  setSearchTerm,
+} = CropSlice.actions;
 
-export default LoginSlice.reducer;
+export default CropSlice.reducer;

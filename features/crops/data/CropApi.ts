@@ -10,9 +10,9 @@ const CropApi = FetchAPI.injectEndpoints({
     }),
 
     // create a crop
-    createCrop: build.mutation<void, ICropForm>({
+    createCrop: build.mutation<void, FormData>({
       query: (crop) => ({
-        url: `croplistingcrop-listings/`,
+        url: `croplisting/api/crops/`,
         method: "Post",
         body: crop,
       }),
@@ -20,29 +20,39 @@ const CropApi = FetchAPI.injectEndpoints({
     }),
 
     // get all crops
-    getAllCrops: build.query<ILoginResponse, ILoginForm>({
-      query: ({ ...user }) => ({
-        url: `croplistingcrop-listings/`,
+    getAllCrops: build.query<IGetMarketProduceResponse, searchTerm>({
+      query: ({ ...terms }) => ({
+        url: `croplisting/api/crops/my-listings/`,
         method: "Get",
-        body: user,
+        params: terms,
       }),
       providesTags: ["crops"],
     }),
 
     // edit a crop
-    editACrop: build.mutation<ILoginResponse, ILoginForm>({
-      query: ({ ...user }) => ({
-        url: `croplistingcrop-listings/`,
-        method: "Post",
-        body: user,
+    editACrop: build.mutation<void, ICropFormUpdate>({
+      query: ({ ...crop }) => ({
+        url: `croplisting/api/crops/${crop.id}/`,
+        method: "PATCH",
+        body: crop.form,
+      }),
+      invalidatesTags: ["crops"],
+    }),
+
+    // Change the availability of a product
+    flagAvailability: build.mutation<void, IChangeAvailability>({
+      query: ({ ...crop }) => ({
+        url: `croplisting/api/crops/${crop.id}/`,
+        method: "PATCH",
+        body: { availability: crop.availability },
       }),
       invalidatesTags: ["crops"],
     }),
 
     // delete a crop
-    deleteACrop: build.mutation<ILoginResponse, ILoginForm>({
+    deleteACrop: build.mutation<void, ICropInputID>({
       query: ({ ...crop }) => ({
-        url: `croplistingcrop-listings/${crop}`, // add an id here
+        url: `croplisting/api/crops/${crop.id}/`, // add an id here
         method: "Delete",
       }),
       invalidatesTags: ["crops"],
@@ -55,7 +65,8 @@ export const {
   useDeleteACropMutation,
   useGetAllCropsQuery,
   useEditACropMutation,
-  useLogoutMutation
+  useLogoutMutation,
+  useFlagAvailabilityMutation
 } = CropApi;
-export const { createCrop, deleteACrop, editACrop, getAllCrops, logout } =
+export const { createCrop, deleteACrop, editACrop, getAllCrops, logout, flagAvailability } =
   CropApi.endpoints;
