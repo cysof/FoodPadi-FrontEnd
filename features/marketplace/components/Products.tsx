@@ -3,12 +3,10 @@
 import React from "react";
 import { useGetAllProductsQuery } from "../data/MarketApi";
 import { useAppSelector } from "@/store/hooks";
-import { useRouter } from "next/navigation";
 import ProductCard from "./ProductCard";
 import ProductsLoader from "./ProductsLoader";
 
 const Products = () => {
-  const router = useRouter();
 
   const getAllProductsLoading = useAppSelector(
     (state) => state.market.getAllProductsLoading
@@ -36,7 +34,7 @@ const Products = () => {
       </p>
       <span
         className={`rounded-md border border-gray-300 py-2 px-5 text-black hover:bg-primary hover:text-white duration-300 transition-all cursor-pointer`}
-        onClick={() => router.refresh()}
+        onClick={() => window.location.reload()}
       >
         Click to reload your browser
       </span>
@@ -50,7 +48,7 @@ const Products = () => {
   ) : (
     <div className={`min-h-svh py-10 px-3 md:px-10 max-w-7xl w-full mx-auto`}>
       <div
-        className={`grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full`}
+        className={`grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full`}
       >
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />

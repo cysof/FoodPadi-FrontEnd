@@ -43,9 +43,9 @@ const LoginSlice = createSlice({
       state.token.access = action.payload.access;
     },
 
-    clearToken: (state) => {
-      state.token = initialState.token;
-    },
+    // clearToken: (state) => {
+    //   state.token = initialState.token;
+    // },
   },
   extraReducers: (builder) => {
     /* clear everything on logout */
@@ -82,6 +82,6 @@ const LoginSlice = createSlice({
   },
 });
 
-export const { clearLoginError, clearToken, setToken } = LoginSlice.actions;
+export const { clearLoginError, setToken } = LoginSlice.actions;
 
 export default LoginSlice.reducer;

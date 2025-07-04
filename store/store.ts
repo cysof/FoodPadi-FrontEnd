@@ -19,7 +19,7 @@ import LoginSlice from "@/features/login/data/LoginSlice";
 import AppSettingSlice from "@/components/data/AppSettingSlice";
 import MarketPlaceSlice from "@/features/marketplace/data/MarketPlaceSlice";
 import CropSlice from "@/features/crops/data/CropSlice";
-// // import HomeNewsSlice from "@/features/home/data/HomeNewsSlice";
+import MarketCropIDSlice from "@/features/marketplaceCropId/data/MarketCropIDSlice";
 // // import DashboardVacancySlice from "@/features/dashboardVacancy/data/DashboardVacancySlice";
 // // import VacancySlice from "@/features/vacancy/data/VacancySlice";
 // // import VacancyIdSlice from "@/features/vacancyId/data/VacancyIdSlice";
@@ -37,6 +37,7 @@ const persistConfig = {
     "appSetting",
     "market",
     "crops",
+    "marketPlaceCrop",
     // "news",
     // "dashboardVacancy",
     // "vacancies",
@@ -54,7 +55,7 @@ const rootReducer = combineReducers({
   appSetting: AppSettingSlice,
   market: MarketPlaceSlice,
   crops: CropSlice,
-  // account: AccountSlice,
+  marketPlaceCrop: MarketCropIDSlice,
   // news: NewsSlice,
   // homeNews: HomeNewsSlice,
   // dashboardVacancy: DashboardVacancySlice,

@@ -1,13 +1,14 @@
-import { Navbar } from "@/components";
+import { Footer, Navbar } from "@/components";
 import { FilterSection, Products } from "@/features/marketplace";
 import React from "react";
 
 const page = () => {
   return (
-    <div className={`relative bg-white`}>
+    <div className={`bg-white`}>
       <Navbar />
       <FilterSection />
       <Products />
+      <Footer />
     </div>
   );
 };

@@ -13,11 +13,12 @@ import * as yup from "yup";
 import { useLoginUserMutation } from "../data/LoginApi";
 import { clearLoginError } from "../data/LoginSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const query = useSearchParams();
 
   const loginError = useAppSelector((state) => state.login.loginError);
 
@@ -62,7 +63,7 @@ const LoginForm = () => {
       .then(() => {
         enqueueSnackbar("Login successful", { variant: "success" });
         reset();
-        router.push("/dashboard");
+        router.push(query.get("url") ? `${query.get("url")}` : "/dashboard");
       });
 
   return (
@@ -111,7 +112,14 @@ const LoginForm = () => {
           {errors.password && (
             <small className="p-error">{errors.password.message}</small>
           )}
-          <Link className={`text-primary self-end`} href={`/auth/register`}>
+          <Link
+            className={`text-primary self-end`}
+            href={
+              query.get("url")
+                ? `/auth/register?url=${query.get("url")}`
+                : `/auth/register`
+            }
+          >
             Forgot Password?
           </Link>
         </div>
@@ -124,7 +132,14 @@ const LoginForm = () => {
       </form>
       <p className={`flex gap-2 items-center text-primary-neutral`}>
         New to Food Bank?{" "}
-        <Link className={`text-primary`} href={`/auth/register`}>
+        <Link
+          className={`text-primary`}
+          href={
+            query.get("url")
+              ? `/auth/register?url=${query.get("url")}`
+              : `/auth/register`
+          }
+        >
           Sign Up
         </Link>
       </p>

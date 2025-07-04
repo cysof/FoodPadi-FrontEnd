@@ -6,7 +6,7 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import { RootState } from "./store";
-import { clearToken, setToken } from "@/features/login/data/LoginSlice";
+import { setToken } from "@/features/login/data/LoginSlice";
 // import { clearToken, setToken } from "@/features/login/data/LoginSlice";
 
 const baseQuery = fetchBaseQuery({
@@ -64,7 +64,7 @@ const refreshToken: BaseQueryFn<
     );
 
     if (refreshResult.error && refreshResult.error.status === 401) {
-      api.dispatch(clearToken());
+      api.dispatch({ type: "logout" });
       return refreshResult;
     }
 
@@ -76,7 +76,7 @@ const refreshToken: BaseQueryFn<
       // Retry the original query with the new token
       result = await baseQuery(args, api, extraOption);
     } else {
-      api.dispatch(clearToken());
+      api.dispatch({ type: "logout" });
     }
   }
 

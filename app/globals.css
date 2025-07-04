@@ -13,6 +13,7 @@
   --color-primary: #4caf50;
   --color-secondary: white;
   --color-primary-neutral: #99a1af;
+  --color-primary-black: #12170F;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,7 +26,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), sans-serif;
 }
 
 html,

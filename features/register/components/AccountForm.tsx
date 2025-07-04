@@ -14,11 +14,12 @@ import { useRegisterUserMutation } from "../data/RegisterApi";
 import { enqueueSnackbar } from "notistack";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearRegisterError } from "../data/RegisterSlice";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const AccountForm = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const query = useSearchParams();
 
   const registerError = useAppSelector((state) => state.register.registerError);
   const registerLoading = useAppSelector(
@@ -100,7 +101,11 @@ const AccountForm = () => {
       .then(() => {
         enqueueSnackbar("Account creation successful", { variant: "success" });
         reset();
-        router.push("/auth/login");
+        router.push(
+          query.get("url")
+            ? `/auth/login?url=${query.get("url")}`
+            : "/auth/login"
+        );
       });
 
   return (
@@ -326,7 +331,14 @@ const AccountForm = () => {
       </form>
       <p className={`flex gap-2 items-center text-primary-neutral`}>
         Already have an Account?{" "}
-        <Link className={`text-primary`} href={`/auth/login`}>
+        <Link
+          className={`text-primary`}
+          href={
+            query.get("url")
+              ? `/auth/login?url=${query.get("url")}`
+              : `/auth/login`
+          }
+        >
           Login
         </Link>
       </p>
