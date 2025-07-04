@@ -26,7 +26,11 @@ const OrderForm = () => {
 
   const OrderFormSchema = yup
     .object({
-      quantity: yup.number().min(1).max(product?.quantity).required("required"),
+      quantity: yup
+        .number()
+        .min(1)
+        .max(product?.quantity ? product?.quantity : 100)
+        .required("required"),
       delivery_address: yup.string().required("required"),
       notes: yup.string().default(""),
       crop: yup.number().required("required"),
