@@ -20,8 +20,8 @@ import AppSettingSlice from "@/components/data/AppSettingSlice";
 import MarketPlaceSlice from "@/features/marketplace/data/MarketPlaceSlice";
 import CropSlice from "@/features/crops/data/CropSlice";
 import MarketCropIDSlice from "@/features/marketplaceCropId/data/MarketCropIDSlice";
-// // import DashboardVacancySlice from "@/features/dashboardVacancy/data/DashboardVacancySlice";
-// // import VacancySlice from "@/features/vacancy/data/VacancySlice";
+import OrderSlice from "@/features/order/data/OrderSlice";
+import OrderIDSlice from "@/features/orderById/data/OrderIDSlice";
 // // import VacancyIdSlice from "@/features/vacancyId/data/VacancyIdSlice";
 // // import ForgotPasswordSlice from "@/features/forgotPassword/data/ForgotPasswordSlice";
 // // import ResetPasswordSlice from "@/features/resetPassword/data/ResetPasswordSlice";
@@ -38,8 +38,8 @@ const persistConfig = {
     "market",
     "crops",
     "marketPlaceCrop",
-    // "news",
-    // "dashboardVacancy",
+    "orders",
+    "orderById",
     // "vacancies",
     // "forgotPassword",
     // "resetPassword",
@@ -56,7 +56,8 @@ const rootReducer = combineReducers({
   market: MarketPlaceSlice,
   crops: CropSlice,
   marketPlaceCrop: MarketCropIDSlice,
-  // news: NewsSlice,
+  orders: OrderSlice,
+  orderById: OrderIDSlice,
   // homeNews: HomeNewsSlice,
   // dashboardVacancy: DashboardVacancySlice,
   // vacancies: VacancySlice,

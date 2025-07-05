@@ -3,13 +3,27 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Crop from "./Crop";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { clearMarketPlaceCropError } from "../data/MarketCropIDSlice";
 import { enqueueSnackbar } from "notistack";
+import {
+  useGetOneProductQuery,
+  // useLazyGetOneProductQuery,
+} from "../data/MarketCropIDApi";
 
 const CropId = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const cropId = useParams<{ cropId: string }>();
+
+  // const loaded = useAppSelector((state) => state.marketPlaceCrop.loaded);
+
+  // const [GetOneProductQuery] = useLazyGetOneProductQuery();
+
+  // if (loaded) {
+  // GetOneProductQuery({ id: +cropId.cropId });
+  useGetOneProductQuery({ id: +cropId.cropId });
+  // }
 
   const getOneProductLoading = useAppSelector(
     (state) => state.marketPlaceCrop.getOneProductLoading

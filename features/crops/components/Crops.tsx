@@ -121,7 +121,7 @@ const Crops = () => {
           tableStyle={{ minWidth: "50rem" }}
           emptyMessage={
             <p className={`text-center font-inter text-lg text-black`}>
-              You don&apos;t have any crops yet
+              You don&apos;t have any crop yet
             </p>
           }
           className={`bg-white`}

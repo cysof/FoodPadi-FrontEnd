@@ -52,7 +52,8 @@ const refreshToken: BaseQueryFn<
     // Try to get a new token
     const refreshResult = await accountBaseQuery(
       {
-        url: `/accounts/api/token/refresh/`,
+        url: `/token/refresh/`,
+        // url: `/accounts/api/token/refresh/`,
         method: "Post",
         body: {
           refresh: refreshToken,
@@ -88,6 +89,6 @@ export const FetchAPI = createApi({
   baseQuery: refreshToken,
   refetchOnMountOrArgChange: true,
   refetchOnReconnect: true,
-  tagTypes: ["crops"],
+  tagTypes: ["crops", "orders"],
   endpoints: () => ({}),
 });

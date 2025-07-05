@@ -77,7 +77,7 @@ const OrderForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       className={`w-full flex flex-col gap-7 .max-w-2xl`}
     >
-      <div className={`flex gap-5 w-full`}>
+      <div className={`flex flex-col sm:flex-row gap-5 w-full`}>
         <div className={`w-full`}>
           <label
             className={`font-square font-medium text-primary-black`}

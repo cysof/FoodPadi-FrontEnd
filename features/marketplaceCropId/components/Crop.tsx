@@ -3,25 +3,17 @@
 import { useAppSelector } from "@/store/hooks";
 import Image from "next/image";
 import React from "react";
-import { useLazyGetOneProductQuery } from "../data/MarketCropIDApi";
-import { useParams, usePathname } from "next/navigation";
+// import { useLazyGetOneProductQuery } from "../data/MarketCropIDApi";
+import { usePathname } from "next/navigation";
 import outofstock from "@/public/outofstock.png";
 import OrderForm from "./OrderForm";
 import Link from "next/link";
 
 const Crop = () => {
-  const cropId = useParams<{ cropId: string }>();
   const path = usePathname();
 
   const crop = useAppSelector((state) => state.marketPlaceCrop.product);
   const user = useAppSelector((state) => state.login);
-  const loaded = useAppSelector((state) => state.marketPlaceCrop.loaded);
-
-  const [GetOneProductQuery] = useLazyGetOneProductQuery();
-
-  if (loaded) {
-    GetOneProductQuery({ id: +cropId.cropId });
-  }
 
   return (
     <div
@@ -57,7 +49,9 @@ const Crop = () => {
           {crop?.crop_description}
         </p>
       </div>
-      <div className={`flex item-center justify-between max-w-2xl w-full`}>
+      <div
+        className={`flex flex-col sm:flex-row item-centerv gap-3 justify-between max-w-2xl w-full`}
+      >
         <div>
           <h4 className={`font-square text-sm text-primary`}>Price per unit</h4>
           <p className={`font-inter text-sm text-primary-black`}>
@@ -89,7 +83,16 @@ const Crop = () => {
         </div>
       </div>
       <div className={`w-full`}>
-        {user.token && user?.user.id ? (
+        {crop?.availability.toLowerCase() === "out of stock" ? (
+          <div className={`flex flex-col gap-1`}>
+            <h5 className={`font-square font-medium text-lg text-red-700`}>
+              This crop is currently out of stock.
+            </h5>
+            <p className={`font-inter font-normal text-sm text-red-700`}>
+              Please check back later — we’re working on restocking it!
+            </p>
+          </div>
+        ) : user.token && user?.user.id ? (
           <OrderForm />
         ) : (
           <Link

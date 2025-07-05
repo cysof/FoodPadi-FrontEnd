@@ -19,5 +19,5 @@ const MarketCropIDApi = FetchAPI.injectEndpoints({
   }),
 });
 
-export const { useLazyGetOneProductQuery, useCreateOrderMutation } = MarketCropIDApi;
+export const { useLazyGetOneProductQuery, useGetOneProductQuery, useCreateOrderMutation } = MarketCropIDApi;
 export const { getOneProduct, createOrder } = MarketCropIDApi.endpoints;

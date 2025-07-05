@@ -76,3 +76,7 @@ html,
 .p-checkbox.p-highlight .p-checkbox-box{
   @apply bg-primary border-primary
 }
+
+.p-button.p-button-outlined.danger{
+  @apply text-red-700 border-red-700
+}

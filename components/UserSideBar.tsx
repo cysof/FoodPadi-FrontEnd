@@ -6,7 +6,7 @@ import {
   Leaf,
   LogOut,
   Package,
-  ShoppingCart,
+  // ShoppingCart,
   User,
   X,
 } from "lucide-react";
@@ -33,26 +33,30 @@ const UserSideBar = () => {
       name: "Dashboard",
       icon: LayoutDashboard,
       link: "/dashboard",
+      exact: true,
     },
     {
       name: "My Crops",
       icon: Leaf,
       link: "/dashboard/crops",
+      exact: false,
     },
-    {
-      name: "Market",
-      icon: ShoppingCart,
-      link: "/dashboard/market",
-    },
+    // {
+    //   name: "Market",
+    //   icon: ShoppingCart,
+    //   link: "/dashboard/market",
+    // },
     {
       name: "Orders",
       icon: Package,
       link: "/dashboard/orders",
+      exact: false,
     },
     {
       name: "Account",
       icon: User,
       link: "/dashboard/account",
+      exact: false,
     },
   ];
 
@@ -60,7 +64,7 @@ const UserSideBar = () => {
     <div
       className={` ${
         hideSideBar
-          ? `-translate-x-full absolute md:relative z-50 md:translate-x-0 md:shrink-0`
+          ? `-translate-x-full absolute md:relative z-50 md:translate-x-0 md:shrink-0 drop-shadow-lg`
           : `translate-0 drop-shadow-lg md:drop-shadow-none md:relative absolute z-50`
       } delay-200  overflow-hidden  h-dvh w-max .max-w-[150px] bg-secondary py-4 transition-all ease-in-out duration-300 text-black  .w-full .max-w-40 `}
     >
@@ -70,19 +74,25 @@ const UserSideBar = () => {
           className={`cursor-pointer absolute top-2 right-2 text-black md:hidden flex`}
         />
       )}
-        <Image
-          src={`/mainLogo.svg`}
-          className={`shrink-0 px-2 pt-5 md:pt-0 ${expandSidebar || !hideSideBar ? `w-[150px]`:`w-[50]`} duration-300`}
-          width={150}
-          height={150}
-          alt="logo"
-        />
-      <ul className={`w-full pt-5`}>
+      <Image
+        src={`/mainLogo.svg`}
+        className={`shrink-0 px-2 pt-5 md:pt-0 ${
+          expandSidebar || !hideSideBar ? `w-[150px]` : `w-[50]`
+        } duration-300`}
+        width={150}
+        height={150}
+        alt="logo"
+      />
+      <ul className={`w-full flex flex-col gap-px pt-5`}>
         {links.map((link) => (
           <li key={link.name} className={`w-full`}>
             <Link
               className={`w-full flex .shrink-0 items-center gap-3 px-3 py-2 ${
-                path === link.link && `bg-primary text-secondary`
+                link.exact && path === link.link
+                  ? `bg-primary text-secondary`
+                  : !link.exact &&
+                    path.startsWith(link.link) &&
+                    `bg-primary text-secondary`
               } hover:bg-primary hover:text-secondary`}
               href={link.link}
             >
