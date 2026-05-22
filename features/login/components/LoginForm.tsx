@@ -1,5 +1,7 @@
+// features/login/components/LoginForm.tsx
 "use client";
 
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,12 +9,11 @@ import { enqueueSnackbar } from "notistack";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useLoginUserMutation } from "../data/LoginApi";
 import { clearLoginError } from "../data/LoginSlice";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
@@ -50,10 +51,13 @@ const LoginForm = () => {
     },
   });
 
-  if (loginError) {
-    enqueueSnackbar(loginError, { variant: "error" });
-    dispatch(clearLoginError());
-  }
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    if (loginError) {
+      enqueueSnackbar(loginError, { variant: "error" });
+      dispatch(clearLoginError());
+    }
+  }, [loginError]);
 
   const [LoginUserMutation, LoginUser] = useLoginUserMutation();
 
@@ -116,8 +120,8 @@ const LoginForm = () => {
             className={`text-primary self-end`}
             href={
               query.get("url")
-                ? `/auth/register?url=${query.get("url")}`
-                : `/auth/register`
+                ? `/auth/forgot-password?url=${query.get("url")}`
+                : `/auth/forgot-password`
             }
           >
             Forgot Password?
