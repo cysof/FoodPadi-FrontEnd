@@ -1,7 +1,8 @@
+// features/marketplace/components/FilterSection.tsx
 "use client";
 
 import { InputText } from "primereact/inputtext";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDebounce } from "primereact/hooks";
 import { useAppDispatch } from "@/store/hooks";
 import { setSearchTerm } from "../data/MarketPlaceSlice";
@@ -9,8 +10,11 @@ import { setSearchTerm } from "../data/MarketPlaceSlice";
 const FilterSection = () => {
   const dispatch = useAppDispatch();
   const [inputValue, debouncedValue, setInputValue] = useDebounce("", 400);
-  
-  dispatch(setSearchTerm(debouncedValue));
+
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    dispatch(setSearchTerm(debouncedValue));
+  }, [debouncedValue]);
 
   return (
     <div className={`max-w-7xl px-3 md:px-10 py-10 w-full mx-auto`}>
