@@ -1,9 +1,10 @@
+// features/crops/components/Crops.tsx
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   clearCropsError,
   setSearchTerm,
@@ -26,7 +27,10 @@ const Crops = () => {
 
   const [inputValue, debouncedValue, setInputValue] = useDebounce("", 400);
 
-  dispatch(setSearchTerm(debouncedValue));
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    dispatch(setSearchTerm(debouncedValue));
+  }, [debouncedValue]);
 
   const crops = useAppSelector((state) => state.crops.crops);
   const getAllCropsError = useAppSelector(
@@ -43,10 +47,13 @@ const Crops = () => {
 
   useGetAllCropsQuery(query);
 
-  if (getAllCropsError) {
-    enqueueSnackbar(getAllCropsError, { variant: "error" });
-    dispatch(clearCropsError());
-  }
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    if (getAllCropsError) {
+      enqueueSnackbar(getAllCropsError, { variant: "error" });
+      dispatch(clearCropsError());
+    }
+  }, [getAllCropsError]);
 
   const ImgTemplate = (value: ICrop) => (
     <Image
