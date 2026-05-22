@@ -1,3 +1,4 @@
+// features/register/components/AccountForm.tsx
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -7,7 +8,7 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useRegisterUserMutation } from "../data/RegisterApi";
@@ -88,12 +89,13 @@ const AccountForm = () => {
     },
   });
 
-  if (registerError) {
-    enqueueSnackbar(registerError, { variant: "error" });
-    dispatch(clearRegisterError());
-  }
-
-  // const [RequestSupportMutation] = useRequestSupportMutation();
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    if (registerError) {
+      enqueueSnackbar(registerError, { variant: "error" });
+      dispatch(clearRegisterError());
+    }
+  }, [registerError]);
 
   const onSubmit: SubmitHandler<IRegisterForm> = (data: IRegisterForm) =>
     RegisterUserMutation(data)
@@ -179,15 +181,12 @@ const AccountForm = () => {
               render={({ field }) => (
                 <Dropdown
                   {...field}
-                  // value={selectedCity}
-                  // onChange={(e) => setSelectedCity(e.value)}
                   options={["MALE", "FEMALE"]}
                   placeholder="Select your gender"
                   className={`w-full p-inputtext-sm`}
                 />
               )}
             />
-
             {errors.gender && (
               <small className="p-error">{errors.gender.message}</small>
             )}
@@ -212,21 +211,18 @@ const AccountForm = () => {
               render={({ field }) => (
                 <Dropdown
                   {...field}
-                  // value={selectedCity}
-                  // onChange={(e) => setSelectedCity(e.value)}
                   options={["FARMER", "BUYER", "TRANSPORTER"]}
-                  placeholder="Select your gender"
+                  placeholder="Select account type"
                   className={`w-full p-inputtext-sm`}
                 />
               )}
             />
-
             {errors.account_type && (
               <small className="p-error">{errors.account_type.message}</small>
             )}
           </div>
           <div className={`flex flex-col gap-1 w-full`}>
-            <label className={`text-primary-neutral`}>email</label>
+            <label className={`text-primary-neutral`}>Email</label>
             <InputText
               {...register("email")}
               className={`w-full p-inputtext-sm`}
@@ -280,7 +276,6 @@ const AccountForm = () => {
             )}
           </div>
         </div>
-
         <div className={`w-full flex lg:flex-row flex-col gap-3`}>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>Password</label>
