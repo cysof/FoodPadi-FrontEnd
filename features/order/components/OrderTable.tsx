@@ -1,3 +1,4 @@
+// features/order/components/OrderTable.tsx
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -5,7 +6,7 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useDebounce } from "primereact/hooks";
 import { InputText } from "primereact/inputtext";
-import React from "react";
+import React, { useEffect } from "react";
 import { clearOrdersError, setSearchTerm } from "../data/OrderSlice";
 import { enqueueSnackbar } from "notistack";
 import { useGetAllOrdersQuery } from "../data/OrderApi";
@@ -17,7 +18,10 @@ const OrderTable = () => {
 
   const [inputValue, debouncedValue, setInputValue] = useDebounce("", 400);
 
-  dispatch(setSearchTerm(debouncedValue));
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    dispatch(setSearchTerm(debouncedValue));
+  }, [debouncedValue]);
 
   const orders = useAppSelector((state) => state.orders.orders);
   const getAllOrdersError = useAppSelector(
@@ -34,10 +38,13 @@ const OrderTable = () => {
 
   useGetAllOrdersQuery(query);
 
-  if (getAllOrdersError) {
-    enqueueSnackbar(getAllOrdersError, { variant: "error" });
-    dispatch(clearOrdersError());
-  }
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    if (getAllOrdersError) {
+      enqueueSnackbar(getAllOrdersError, { variant: "error" });
+      dispatch(clearOrdersError());
+    }
+  }, [getAllOrdersError]);
 
   const NoteTemplate = (value: IOrderData) => (
     <div
@@ -106,7 +113,6 @@ const OrderTable = () => {
         >
           <Column
             header={`Buyer`}
-            // body={ImgTemplate}
             field="buyer_name"
             style={{ width: "25%" }}
           ></Column>
@@ -118,7 +124,6 @@ const OrderTable = () => {
           ></Column>
           <Column
             style={{ width: "5%" }}
-            // body={DescriptionTemplate}
             field="quantity"
             header="Quantity"
           ></Column>
@@ -140,12 +145,6 @@ const OrderTable = () => {
             body={NoteTemplate}
             header="Special Note"
           ></Column>
-          {/* <Column
-            style={{ width: "10%" }}
-            body={DateTemplate}
-            field="harvested_date"
-            header="Date Harvested"
-          ></Column> */}
           <Column
             style={{ width: "10%" }}
             header="Action"
