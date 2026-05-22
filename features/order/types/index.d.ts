@@ -1,3 +1,19 @@
+// features/order/types/index.d.ts
+
+declare interface IDeliveryInfo {
+  id: number;
+  delivery_status: string;
+  delivery_address: string;
+  delivery_date: string;
+  accepted_at: string | null;
+  on_the_way_at: string | null;
+  delivered_at: string | null;
+  cancel_reason: string | null;
+  proof_of_delivery_image: string | null;
+  transporter_name: string;
+  transporter_phone: string;
+}
+
 declare interface IOrderData {
   id: string;
   buyer_name: string;
@@ -11,6 +27,8 @@ declare interface IOrderData {
   notes: string;
   buyer: number;
   crop: number;
+  cancel_reason: string | null;
+  delivery: IDeliveryInfo | null;
 }
 
 declare interface IOrderResponse {
@@ -24,14 +42,6 @@ declare interface IOrderInput {
   search?: string;
   ordering?: string;
   page?: number;
-}
-
-declare enum Status {
-  PENDING = "PENDING",
-  CONFIRMED = "CONFIRMED",
-  SHIPPED = "SHIPPED",
-  DELIVERED = "DELIVERED",
-  CANCELLED = "CANCELLED",
 }
 
 declare interface getAllOrdersInitialState {

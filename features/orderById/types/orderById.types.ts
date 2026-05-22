@@ -22,19 +22,3 @@ declare interface IOrderByIdInitialState {
   cancelOrderError: string;
   order: IOrderData | null;
 }
-
-declare interface IOrderData {
-  id: string;
-  buyer_name: string;
-  crop_name: string;
-  quantity: number;
-  price_per_unit: string;
-  total_price: string;
-  status: Status;
-  ordered_at: string;
-  delivery_address: string;
-  notes: string;
-  buyer: number;
-  crop: number;
-  cancel_reason: string | null;  // Add this
-}
