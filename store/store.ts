@@ -25,6 +25,7 @@ import OrderIDSlice from "@/features/orderById/data/OrderIDSlice";
 import DashboardSlice from "@/features/dashboard/data/DashboardSlice";
 import AccountSlice from "@/features/account/data/AccountSlice";
 import BuyerOrderSlice from "@/features/order/data/BuyerOrderSlice";
+import TransporterSlice from "@/features/transporter/data/TransporterSlice";
 // // import VacancyIdSlice from "@/features/vacancyId/data/VacancyIdSlice";
 // // import ForgotPasswordSlice from "@/features/forgotPassword/data/ForgotPasswordSlice";
 // // import ResetPasswordSlice from "@/features/resetPassword/data/ResetPasswordSlice";
@@ -46,6 +47,7 @@ const persistConfig = {
     "dashboard",
     "account",
     "buyerOrders",
+    "transporter",
     // "vacancies",
     // "forgotPassword",
     // "resetPassword",
@@ -67,6 +69,7 @@ const rootReducer = combineReducers({
   dashboard: DashboardSlice,
   account: AccountSlice,
   buyerOrders: BuyerOrderSlice,
+  transporter: TransporterSlice,
   // homeNews: HomeNewsSlice,
   // dashboardVacancy: DashboardVacancySlice,
   // vacancies: VacancySlice,
