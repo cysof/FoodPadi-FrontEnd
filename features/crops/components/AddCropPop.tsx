@@ -1,10 +1,12 @@
+// features/crops/components/AddCropPop.tsx
 "use client";
+
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { enqueueSnackbar } from "notistack";
@@ -29,10 +31,13 @@ const AddCropPop = () => {
 
   const [CreateCropMutation] = useCreateCropMutation();
 
-  if (createCropsError) {
-    enqueueSnackbar(createCropsError, { variant: "error" });
-    dispatch(clearCropsError());
-  }
+  // ✅ Fixed: moved to useEffect
+  useEffect(() => {
+    if (createCropsError) {
+      enqueueSnackbar(createCropsError, { variant: "error" });
+      dispatch(clearCropsError());
+    }
+  }, [createCropsError]);
 
   const CropSchema = yup
     .object({
@@ -70,16 +75,16 @@ const AddCropPop = () => {
 
   const onSubmit: SubmitHandler<ICropForm> = (data: ICropForm) => {
     const { harvested_date, img, ...restData } = data;
-  
-  const formData = new FormData();
-  
-  formData.append("img", img);
-  
-  Object.entries(restData).forEach(([key, value]) => {
-    formData.append(key, value.toString());
-  });
-  
-  formData.append("harvested_date", new Date(harvested_date).toISOString().split("T")[0]);
+
+    const formData = new FormData();
+    formData.append("img", img);
+    Object.entries(restData).forEach(([key, value]) => {
+      formData.append(key, value.toString());
+    });
+    formData.append(
+      "harvested_date",
+      new Date(harvested_date).toISOString().split("T")[0]
+    );
 
     CreateCropMutation(formData)
       .unwrap()
@@ -96,7 +101,7 @@ const AddCropPop = () => {
       className={`mx-2 bg-white overflow-auto noScroll rounded-lg py-7 px-3 md:px-5 w-full max-w-[700px]`}
       onHide={() => dispatch(setShowCreateCropModal(false))}
       content={({ hide }) => (
-        <div className={`w-full bg-white `}>
+        <div className={`w-full bg-white`}>
           <h3
             className={`text-center capitalize font-Square font-semibold text-2xl text-black mb-4`}
           >
@@ -106,30 +111,31 @@ const AddCropPop = () => {
             onSubmit={handleSubmit(onSubmit)}
             className={`flex flex-col gap-3`}
           >
+            {/* ✅ Fixed: correct htmlFor on all labels */}
             <div className={`flex flex-col gap-2`}>
               <label
-                htmlFor="title"
+                htmlFor="crop_name"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
                 Title
               </label>
-              <InputText {...register("crop_name")} />
+              <InputText id="crop_name" {...register("crop_name")} />
               {errors.crop_name && (
                 <small className="p-error">{errors.crop_name.message}</small>
               )}
             </div>
             <div className={`flex flex-col gap-2`}>
               <label
-                htmlFor="description"
+                htmlFor="crop_description"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
                 Description
               </label>
               <InputTextarea
+                id="crop_description"
                 className={`resize-none`}
                 {...register("crop_description")}
               />
-
               {errors.crop_description && (
                 <small className="p-error">
                   {errors.crop_description.message}
@@ -138,16 +144,17 @@ const AddCropPop = () => {
             </div>
             <div className={`flex flex-col gap-2 w-full`}>
               <label
-                htmlFor=""
+                htmlFor="harvested_date"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
-                Date of harvest
+                Date of Harvest
               </label>
               <Controller
                 name="harvested_date"
                 control={control}
                 render={({ field }) => (
                   <Calendar
+                    inputId="harvested_date"
                     dateFormat={`yy-mm-dd`}
                     minDate={new Date()}
                     value={
@@ -168,48 +175,56 @@ const AddCropPop = () => {
             </div>
             <div className={`flex flex-col gap-2`}>
               <label
-                htmlFor="title"
+                htmlFor="quantity"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
                 Quantity
               </label>
-              <InputText keyfilter={`num`} {...register("quantity")} />
+              <InputText
+                id="quantity"
+                keyfilter={`num`}
+                {...register("quantity")}
+              />
               {errors.quantity && (
                 <small className="p-error">{errors.quantity.message}</small>
               )}
             </div>
             <div className={`flex flex-col gap-2`}>
               <label
-                htmlFor="title"
+                htmlFor="unit"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
                 Unit
               </label>
-              <InputText {...register("unit")} />
+              <InputText id="unit" {...register("unit")} />
               {errors.unit && (
                 <small className="p-error">{errors.unit.message}</small>
               )}
             </div>
             <div className={`flex flex-col gap-2`}>
               <label
-                htmlFor="title"
+                htmlFor="location"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
                 Location
               </label>
-              <InputText {...register("location")} />
+              <InputText id="location" {...register("location")} />
               {errors.location && (
                 <small className="p-error">{errors.location.message}</small>
               )}
             </div>
             <div className={`flex flex-col gap-2`}>
               <label
-                htmlFor="title"
+                htmlFor="price_per_unit"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
                 Price per Unit
               </label>
-              <InputText keyfilter={`money`} {...register("price_per_unit")} />
+              <InputText
+                id="price_per_unit"
+                keyfilter={`money`}
+                {...register("price_per_unit")}
+              />
               {errors.price_per_unit && (
                 <small className="p-error">
                   {errors.price_per_unit.message}
@@ -218,7 +233,7 @@ const AddCropPop = () => {
             </div>
             <div className={`flex flex-col gap-2`}>
               <label
-                htmlFor="title"
+                htmlFor="img"
                 className={`font-inter font-medium text-sm text-gray-500`}
               >
                 Upload Crop Image
@@ -241,17 +256,6 @@ const AddCropPop = () => {
                   />
                 )}
               />
-              {/* <FileUpload
-                {...register("img")}
-                name="demo[]"
-                url={"/api/upload"}
-                multiple
-                accept="image/*"
-                maxFileSize={1000000}
-                emptyTemplate={
-                  <p className="m-0">Drag and drop files to here to upload.</p>
-                }
-              /> */}
               {errors.img && (
                 <small className="p-error">{errors.img.message}</small>
               )}
@@ -281,7 +285,7 @@ const AddCropPop = () => {
           </form>
         </div>
       )}
-    ></Dialog>
+    />
   );
 };
 
