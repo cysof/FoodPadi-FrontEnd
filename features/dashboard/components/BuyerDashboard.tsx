@@ -5,8 +5,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useGetBuyerDashboardQuery } from "../data/DashboardApi";
 import { clearDashboardErrors } from "../data/DashboardSlice";
 import { enqueueSnackbar } from "notistack";
-import { Loader2 } from "lucide-react";
+import { StatCardSkeletonGrid, TableSkeleton } from "@/components";
 import { Status } from "@/features/order/types/order.types";
+import { useEffect } from "react";
 
 const StatCard = ({
   title,
@@ -40,15 +41,30 @@ const BuyerDashboard = () => {
 
   useGetBuyerDashboardQuery();
 
-  if (buyerDashboardError) {
-    enqueueSnackbar(buyerDashboardError, { variant: "error" });
-    dispatch(clearDashboardErrors());
-  }
+  useEffect(() => {
+    if (buyerDashboardError) {
+      enqueueSnackbar(buyerDashboardError, { variant: "error" });
+      dispatch(clearDashboardErrors());
+    }
+  }, [buyerDashboardError]);
 
   if (buyerDashboardLoading) {
     return (
-      <div className={`w-full h-full flex items-center justify-center`}>
-        <Loader2 className={`animate-spin text-primary`} />
+      <div className={`flex flex-col gap-8`}>
+        {/* Stats Skeleton */}
+        <StatCardSkeletonGrid count={3} />
+
+        {/* Status Breakdown Skeleton */}
+        <div className={`flex flex-col gap-3`}>
+          <div className={`h-6 w-48 bg-gray-200 rounded animate-pulse`} />
+          <StatCardSkeletonGrid count={5} />
+        </div>
+
+        {/* Recent Orders Skeleton */}
+        <div className={`flex flex-col gap-3`}>
+          <div className={`h-6 w-48 bg-gray-200 rounded animate-pulse`} />
+          <TableSkeleton rows={5} />
+        </div>
       </div>
     );
   }
@@ -82,7 +98,9 @@ const BuyerDashboard = () => {
         <h3 className={`font-square font-bold text-xl text-primary-black`}>
           Order Status Breakdown
         </h3>
-        <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3`}>
+        <div
+          className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3`}
+        >
           {[
             { label: "Pending", key: "PENDING", color: "bg-yellow-400" },
             { label: "Confirmed", key: "CONFIRMED", color: "bg-blue-500" },
@@ -99,7 +117,9 @@ const BuyerDashboard = () => {
               >
                 {item.label}
               </span>
-              <h3 className={`font-square font-bold text-2xl text-primary-black`}>
+              <h3
+                className={`font-square font-bold text-2xl text-primary-black`}
+              >
                 {buyerDashboard?.status_breakdown[
                   item.key as keyof typeof buyerDashboard.status_breakdown
                 ] ?? 0}
@@ -126,7 +146,9 @@ const BuyerDashboard = () => {
                 className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-200 bg-white shadow-sm`}
               >
                 <div className={`flex flex-col gap-1`}>
-                  <h5 className={`font-square font-medium text-primary-black`}>
+                  <h5
+                    className={`font-square font-medium text-primary-black`}
+                  >
                     {order.crop_name}
                   </h5>
                   <p className={`font-inter text-sm text-gray-500`}>

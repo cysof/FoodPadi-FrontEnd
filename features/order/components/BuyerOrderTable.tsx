@@ -7,18 +7,22 @@ import { DataTable } from "primereact/datatable";
 import { useDebounce } from "primereact/hooks";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   clearBuyerOrderErrors,
   setBuyerOrderStatusFilter,
 } from "../data/BuyerOrderSlice";
 import { enqueueSnackbar } from "notistack";
-import { useGetAllBuyerOrdersQuery, useCancelBuyerOrderMutation } from "../data/BuyerOrderApi";
+import {
+  useGetAllBuyerOrdersQuery,
+  useCancelBuyerOrderMutation,
+} from "../data/BuyerOrderApi";
 import { Status } from "../types/order.types";
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import Link from "next/link";
 import { Eye } from "lucide-react";
+import { Pagination } from "@/components";
 
 const statusOptions = [
   { label: "All", value: "" },
@@ -32,11 +36,13 @@ const statusOptions = [
 const BuyerOrderTable = () => {
   const dispatch = useAppDispatch();
   const cancelReasonRef = useRef<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [inputValue, debouncedValue, setInputValue] = useDebounce("", 400);
 
   useEffect(() => {
     dispatch(setBuyerOrderStatusFilter(debouncedValue));
+    setCurrentPage(1);
   }, [debouncedValue]);
 
   const buyerOrders = useAppSelector((state) => state.buyerOrders.buyerOrders);
@@ -52,9 +58,13 @@ const BuyerOrderTable = () => {
   const statusFilter = useAppSelector(
     (state) => state.buyerOrders.statusFilter
   );
+  const count = useAppSelector((state) => state.buyerOrders.count);
+  const next = useAppSelector((state) => state.buyerOrders.next);
+  const previous = useAppSelector((state) => state.buyerOrders.previous);
 
   const query = {
     ...(statusFilter ? { status: statusFilter } : {}),
+    page: currentPage,
   };
 
   useGetAllBuyerOrdersQuery(query);
@@ -74,6 +84,10 @@ const BuyerOrderTable = () => {
       dispatch(clearBuyerOrderErrors());
     }
   }, [cancelBuyerOrderError]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleCancelOrder = (order: IOrderData) => {
     cancelReasonRef.current = "";
@@ -199,7 +213,10 @@ const BuyerOrderTable = () => {
         <Dropdown
           value={statusFilter}
           options={statusOptions}
-          onChange={(e) => dispatch(setBuyerOrderStatusFilter(e.value))}
+          onChange={(e) => {
+            dispatch(setBuyerOrderStatusFilter(e.value));
+            setCurrentPage(1);
+          }}
           placeholder="Filter by status"
           className={`w-full sm:max-w-[200px]`}
         />
@@ -253,6 +270,13 @@ const BuyerOrderTable = () => {
           />
         </DataTable>
       </div>
+      <Pagination
+        count={count}
+        next={next}
+        previous={previous}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

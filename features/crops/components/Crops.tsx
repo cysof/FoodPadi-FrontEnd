@@ -23,6 +23,9 @@ import outofstock from "@/public/outofstock.png";
 import EditCropPop from "./EditCropPop";
 import { Pagination } from "@/components";
 
+// Cloudinary configuration - add your cloud name here
+const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'your-cloud-name-here';
+
 const Crops = () => {
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,21 +67,47 @@ const Crops = () => {
     setCurrentPage(page);
   };
 
-  // Fixed: Safely handle image with availability check
-  const ImgTemplate = (value: ICrop) => (
-    <Image
-      src={
-        value.availability?.toLowerCase() === "available" && value.img
-          ? value.img
-          : outofstock.src
-      }
-      preview
-      width="150px"
-      height="100px"
-      alt={`${value.crop_name || 'Crop'} image`}
-      className={`shrink-0`}
-    />
-  );
+  // Helper function to get full Cloudinary URL
+  const getFullImageUrl = (imgPath: string | undefined) => {
+    if (!imgPath) return outofstock.src;
+    
+    // If it's already a full URL, return as is
+    if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+      return imgPath;
+    }
+    
+    // If it's a Cloudinary path (starts with image/upload/ or v...)
+    if (imgPath.includes('image/upload/') || imgPath.match(/^v\d+\//)) {
+      return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${imgPath}`;
+    }
+    
+    // Fallback to out of stock image
+    return outofstock.src;
+  };
+
+  // Fixed: Safely handle image with Cloudinary URL
+  const ImgTemplate = (value: ICrop) => {
+    const imageUrl = getFullImageUrl(value.img);
+    const isAvailable = value.availability?.toLowerCase() === "available";
+    
+    // If crop is not available, show out of stock image
+    const finalImageUrl = isAvailable ? imageUrl : outofstock.src;
+    
+    return (
+      <Image
+        src={finalImageUrl}
+        preview
+        width="150px"
+        height="100px"
+        alt={`${value.crop_name || 'Crop'} image`}
+        className={`shrink-0`}
+        onError={(e) => {
+          // If image fails to load, show out of stock image
+          (e.target as HTMLImageElement).src = outofstock.src;
+        }}
+      />
+    );
+  };
 
   // Fixed: Safely handle description with fallback
   const DescriptionTemplate = (value: ICrop) => (

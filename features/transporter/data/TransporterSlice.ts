@@ -16,6 +16,10 @@ const initialState: ITransporterInitialState = {
   getAllDeliveriesLoading: false,
   getAllDeliveriesError: "",
   deliveries: [],
+  // ✅ Added pagination fields
+  count: 0,
+  next: null,
+  previous: null,
 
   // Get one delivery
   getOneDeliveryLoading: false,
@@ -70,6 +74,10 @@ const TransporterSlice = createSlice({
       (state, action: PayloadAction<ITransporterDashboardResponse>) => {
         state.getAllDeliveriesLoading = false;
         state.deliveries = action.payload.results;
+        // ✅ Added pagination fields
+        state.count = action.payload.count;
+        state.next = action.payload.next;
+        state.previous = action.payload.previous;
       }
     );
     builder.addMatcher(getAllDeliveries.matchRejected, (state, action) => {

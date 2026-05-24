@@ -1,13 +1,13 @@
 // features/dashboard/components/FarmerDashboard.tsx
 "use client";
 
-import { useEffect } from "react"; // ✅ Add this import
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useGetFarmerDashboardQuery } from "../data/DashboardApi";
 import { clearDashboardErrors } from "../data/DashboardSlice";
 import { enqueueSnackbar } from "notistack";
-import { Loader2 } from "lucide-react";
+import { StatCardSkeletonGrid, TableSkeleton } from "@/components";
 import { Status } from "@/features/order/types/order.types";
+import { useEffect } from "react";
 
 const StatCard = ({
   title,
@@ -41,19 +41,30 @@ const FarmerDashboard = () => {
 
   useGetFarmerDashboardQuery();
 
-  // ✅ Handle errors in useEffect instead of during render
   useEffect(() => {
     if (farmerDashboardError) {
       enqueueSnackbar(farmerDashboardError, { variant: "error" });
       dispatch(clearDashboardErrors());
     }
-  }, [farmerDashboardError, dispatch]); // Re-run when error changes
+  }, [farmerDashboardError]);
 
-  // Loading state
   if (farmerDashboardLoading) {
     return (
-      <div className={`w-full h-full flex items-center justify-center`}>
-        <Loader2 className={`animate-spin text-primary`} />
+      <div className={`flex flex-col gap-8`}>
+        {/* Stats Skeleton */}
+        <StatCardSkeletonGrid count={4} />
+
+        {/* Status Breakdown Skeleton */}
+        <div className={`flex flex-col gap-3`}>
+          <div className={`h-6 w-48 bg-gray-200 rounded animate-pulse`} />
+          <StatCardSkeletonGrid count={5} />
+        </div>
+
+        {/* Recent Orders Skeleton */}
+        <div className={`flex flex-col gap-3`}>
+          <div className={`h-6 w-48 bg-gray-200 rounded animate-pulse`} />
+          <TableSkeleton rows={5} />
+        </div>
       </div>
     );
   }
@@ -95,7 +106,9 @@ const FarmerDashboard = () => {
         <h3 className={`font-square font-bold text-xl text-primary-black`}>
           Order Status Breakdown
         </h3>
-        <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3`}>
+        <div
+          className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3`}
+        >
           {[
             { label: "Pending", key: "PENDING", color: "bg-yellow-400" },
             { label: "Confirmed", key: "CONFIRMED", color: "bg-blue-500" },
@@ -112,7 +125,9 @@ const FarmerDashboard = () => {
               >
                 {item.label}
               </span>
-              <h3 className={`font-square font-bold text-2xl text-primary-black`}>
+              <h3
+                className={`font-square font-bold text-2xl text-primary-black`}
+              >
                 {farmerDashboard?.status_breakdown[
                   item.key as keyof typeof farmerDashboard.status_breakdown
                 ] ?? 0}
@@ -139,7 +154,9 @@ const FarmerDashboard = () => {
                 className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-200 bg-white shadow-sm`}
               >
                 <div className={`flex flex-col gap-1`}>
-                  <h5 className={`font-square font-medium text-primary-black`}>
+                  <h5
+                    className={`font-square font-medium text-primary-black`}
+                  >
                     {order.crop_name}
                   </h5>
                   <p className={`font-inter text-sm text-gray-500`}>
@@ -157,7 +174,9 @@ const FarmerDashboard = () => {
                     }).format(Number(order.total_price))}
                   </p>
                 </div>
-                <div className={`flex flex-col gap-1 items-start sm:items-end`}>
+                <div
+                  className={`flex flex-col gap-1 items-start sm:items-end`}
+                >
                   <span
                     className={`text-xs text-white px-3 py-1 rounded-full ${
                       order.status === Status.PENDING

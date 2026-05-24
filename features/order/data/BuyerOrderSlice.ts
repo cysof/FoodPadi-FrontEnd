@@ -11,6 +11,9 @@ const initialState: IBuyerOrderInitialState = {
   buyerOrders: [],
   search: "",
   statusFilter: "",
+  count: 0,
+  next: null,
+  previous: null,
 };
 
 const BuyerOrderSlice = createSlice({
@@ -41,6 +44,10 @@ const BuyerOrderSlice = createSlice({
       (state, action: PayloadAction<IBuyerOrderResponse>) => {
         state.getAllBuyerOrdersLoading = false;
         state.buyerOrders = action.payload.results;
+        // ✅ Added pagination fields
+        state.count = action.payload.count;
+        state.next = action.payload.next;
+        state.previous = action.payload.previous;
       }
     );
     builder.addMatcher(getAllBuyerOrders.matchRejected, (state, action) => {

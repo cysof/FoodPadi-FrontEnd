@@ -44,6 +44,9 @@ declare interface ITransporterInitialState {
   getAllDeliveriesLoading: boolean;
   getAllDeliveriesError: string;
   deliveries: ITransporterDelivery[];
+  count: number;
+  next: string | null;
+  previous: string | null;
 
   // Get one delivery
   getOneDeliveryLoading: boolean;

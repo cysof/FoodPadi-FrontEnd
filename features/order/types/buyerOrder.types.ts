@@ -19,4 +19,7 @@ declare interface IBuyerOrderInitialState {
   buyerOrders: IOrderData[];
   search: string;
   statusFilter: string;
+  count: number;
+  next: string | null;
+  previous: string | null;
 }
