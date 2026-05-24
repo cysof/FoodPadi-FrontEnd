@@ -1,5 +1,5 @@
+// features/marketplace/data/MarketPlaceSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { returnError } from "@/store/ErrorHandler";
 import { getAllProducts } from "./MarketApi";
 
@@ -8,7 +8,11 @@ const initialState: IMarketplaceInitialState = {
   getAllProductsError: "",
   products: [],
   search: "",
+  count: 0,
+  next: null,
+  previous: null,
 };
+
 const MarketPlaceSlice = createSlice({
   name: "marketPlace",
   initialState,
@@ -22,22 +26,21 @@ const MarketPlaceSlice = createSlice({
       state.getAllProductsLoading = true;
     });
 
+    // ✅ Fixed: single matchFulfilled with all fields
     builder.addMatcher(
       getAllProducts.matchFulfilled,
       (state, action: PayloadAction<IGetMarketProduceResponse>) => {
         state.getAllProductsLoading = false;
         state.products = action.payload.results;
+        state.count = action.payload.count;
+        state.next = action.payload.next;
+        state.previous = action.payload.previous;
       }
     );
 
     builder.addMatcher(
       getAllProducts.matchRejected,
-      (
-        state,
-        action: PayloadAction<
-          (FetchBaseQueryError & { data?: unknown }) | undefined
-        >
-      ) => {
+      (state, action) => {
         state.getAllProductsLoading = false;
         state.getAllProductsError = returnError(action);
       }
@@ -46,5 +49,4 @@ const MarketPlaceSlice = createSlice({
 });
 
 export const { setSearchTerm } = MarketPlaceSlice.actions;
-
 export default MarketPlaceSlice.reducer;

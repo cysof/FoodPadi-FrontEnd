@@ -1,3 +1,5 @@
+// features/crops/types/index.d.ts
+
 declare interface ICropForm {
   crop_name: string;
   crop_description: string;
@@ -8,16 +10,7 @@ declare interface ICropForm {
   price_per_unit: number;
   harvested_date: string;
 }
-declare interface ICropForm {
-  crop_name: string;
-  crop_description: string;
-  quantity: number;
-  img: File;
-  unit: string;
-  location: string;
-  price_per_unit: number;
-  harvested_date: string;
-}
+
 declare interface ICropFormUpdate {
   id: number;
   form: FormData;
@@ -33,6 +26,7 @@ declare interface ICropSubmission {
   price_per_unit: number;
   harvested_date: string;
 }
+
 declare interface ICropInputID {
   id: number;
 }
@@ -51,13 +45,15 @@ declare interface ICropInitialState {
   updateCropsLoading: boolean;
   updateCropsError: string;
   search: string;
+  count: number;
+  next: string | null;
+  previous: string | null;
 }
 
 declare interface IChangeAvailability {
-  id:number
+  id: number;
   availability: string;
 }
-
 
 declare interface ICropInput {
   id: number;

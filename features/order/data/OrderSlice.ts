@@ -1,37 +1,33 @@
+// features/order/data/OrderSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getAllOrders } from "./OrderApi";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { returnError } from "@/store/ErrorHandler";
+
+interface IOrderResponse {
+  results: IOrder[];
+  count: number;
+  next: string | null;
+  previous: string | null;
+}
+
+interface getAllOrdersInitialState {
+  orders: IOrder[];
+  getAllOrdersError: string;
+  getAllOrdersLoading: boolean;
+  search: string;
+  count: number;
+  next: string | null;
+  previous: string | null;
+}
 
 const initialState: getAllOrdersInitialState = {
   orders: [],
-  // selectedCrop: {
-  //   availability: "",
-  //   created_at: "",
-  //   crop_description: "",
-  //   crop_name: "",
-  //   farmer: 0,
-  //   farmer_name: "",
-  //   harvested_date: "",
-  //   id: 0,
-  //   img: "",
-  //   is_Organic: false,
-  //   location: "",
-  //   price_per_unit: 0,
-  //   quantity: 0,
-  //   unit: "",
-  // },
   getAllOrdersError: "",
   getAllOrdersLoading: false,
-  // createCropsError: "",
-  // updateCropsLoading: false,
-  // updateCropsError: "",
-  // deleteCropsLoading: false,
-  // deleteCropsError: "",
-  // getAllCropsLoading: false,
-  // showCreateCropModal: false,
-  // showUpdateCropModal: false,
   search: "",
+  count: 0,
+  next: null,
+  previous: null,
 };
 
 const OrderSlice = createSlice({
@@ -41,115 +37,40 @@ const OrderSlice = createSlice({
     clearOrdersError: (state) => {
       state.getAllOrdersError = initialState.getAllOrdersError;
     },
-
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
     },
   },
   extraReducers: (builder) => {
-    /* clear everything on logout */
-    builder.addCase("logout", () => {
-      return initialState;
-    });
+    // Clear everything on logout - import actual logout action
+    builder.addCase("logout", () => initialState);
 
-    // Create a crop
+    // Get all orders
     builder.addMatcher(getAllOrders.matchPending, (state) => {
       state.getAllOrdersLoading = true;
+      state.getAllOrdersError = ""; // Clear error on new request
     });
-
+    
     builder.addMatcher(
       getAllOrders.matchFulfilled,
       (state, action: PayloadAction<IOrderResponse>) => {
         state.getAllOrdersLoading = false;
         state.orders = action.payload.results;
+        state.count = action.payload.count;
+        state.next = action.payload.next;
+        state.previous = action.payload.previous;
       }
     );
-
+    
     builder.addMatcher(
       getAllOrders.matchRejected,
-      (
-        state,
-        action: PayloadAction<
-          (FetchBaseQueryError & { data?: unknown }) | undefined
-        >
-      ) => {
+      (state, action) => {
         state.getAllOrdersLoading = false;
         state.getAllOrdersError = returnError(action);
       }
     );
-
-    // // update a crop
-    // builder.addMatcher(editACrop.matchPending, (state) => {
-    //   state.updateCropsLoading = true;
-    // });
-
-    // builder.addMatcher(editACrop.matchFulfilled, (state) => {
-    //   state.updateCropsLoading = false;
-    // });
-
-    // builder.addMatcher(
-    //   editACrop.matchRejected,
-    //   (
-    //     state,
-    //     action: PayloadAction<
-    //       (FetchBaseQueryError & { data?: unknown }) | undefined
-    //     >
-    //   ) => {
-    //     state.updateCropsLoading = false;
-    //     state.updateCropsError = returnError(action);
-    //   }
-    // );
-
-    // // Get all the Crops
-    // builder.addMatcher(getAllCrops.matchPending, (state) => {
-    //   state.getAllCropsLoading = true;
-    // });
-
-    // builder.addMatcher(
-    //   getAllCrops.matchFulfilled,
-    //   (state, action: PayloadAction<IGetMarketProduceResponse>) => {
-    //     state.getAllCropsLoading = false;
-    //     state.crops = action.payload.results;
-    //   }
-    // );
-
-    // builder.addMatcher(
-    //   getAllCrops.matchRejected,
-    //   (
-    //     state,
-    //     action: PayloadAction<
-    //       (FetchBaseQueryError & { data?: unknown }) | undefined
-    //     >
-    //   ) => {
-    //     state.getAllCropsLoading = false;
-    //     state.getAllCropsError = returnError(action);
-    //   }
-    // );
-
-    // // Delete a Crop
-    // builder.addMatcher(getAllCrops.matchPending, (state) => {
-    //   state.deleteCropsLoading = true;
-    // });
-
-    // builder.addMatcher(getAllCrops.matchFulfilled, (state) => {
-    //   state.deleteCropsLoading = false;
-    // });
-
-    // builder.addMatcher(
-    //   getAllCrops.matchRejected,
-    //   (
-    //     state,
-    //     action: PayloadAction<
-    //       (FetchBaseQueryError & { data?: unknown }) | undefined
-    //     >
-    //   ) => {
-    //     state.deleteCropsLoading = false;
-    //     state.deleteCropsError = returnError(action);
-    //   }
-    // );
   },
 });
 
 export const { clearOrdersError, setSearchTerm } = OrderSlice.actions;
-
 export default OrderSlice.reducer;

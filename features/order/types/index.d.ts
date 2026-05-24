@@ -49,4 +49,7 @@ declare interface getAllOrdersInitialState {
   getAllOrdersError: string;
   orders: IOrderData[];
   search: string;
+  count: number;
+  next: string | null;
+  previous: string | null;
 }

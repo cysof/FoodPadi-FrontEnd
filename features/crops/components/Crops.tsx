@@ -4,7 +4,7 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   clearCropsError,
   setSearchTerm,
@@ -21,15 +21,17 @@ import { useDebounce } from "primereact/hooks";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import outofstock from "@/public/outofstock.png";
 import EditCropPop from "./EditCropPop";
+import { Pagination } from "@/components";
 
 const Crops = () => {
   const dispatch = useAppDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [inputValue, debouncedValue, setInputValue] = useDebounce("", 400);
 
-  // ✅ Fixed: moved to useEffect
   useEffect(() => {
     dispatch(setSearchTerm(debouncedValue));
+    setCurrentPage(1);
   }, [debouncedValue]);
 
   const crops = useAppSelector((state) => state.crops.crops);
@@ -40,20 +42,27 @@ const Crops = () => {
     (state) => state.crops.getAllCropsLoading
   );
   const search = useAppSelector((state) => state.crops.search);
+  const count = useAppSelector((state) => state.crops.count);
+  const next = useAppSelector((state) => state.crops.next);
+  const previous = useAppSelector((state) => state.crops.previous);
 
   const query = {
     ...(search ? { search } : {}),
+    page: currentPage,
   };
 
   useGetAllCropsQuery(query);
 
-  // ✅ Fixed: moved to useEffect
   useEffect(() => {
     if (getAllCropsError) {
       enqueueSnackbar(getAllCropsError, { variant: "error" });
       dispatch(clearCropsError());
     }
   }, [getAllCropsError]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const ImgTemplate = (value: ICrop) => (
     <Image
@@ -138,43 +147,50 @@ const Crops = () => {
             body={ImgTemplate}
             field="img"
             style={{ width: "25%" }}
-          ></Column>
+          />
           <Column
             className={`capitalize`}
             field="crop_name"
             header="Crop Name"
             style={{ width: "20%" }}
-          ></Column>
+          />
           <Column
             style={{ width: "25%" }}
             body={DescriptionTemplate}
             field="crop_description"
             header="Description"
-          ></Column>
+          />
           <Column
             style={{ width: "10%" }}
             body={PriceTemplate}
             field="price_per_unit"
             header="Price per unit"
-          ></Column>
+          />
           <Column
             style={{ width: "10%" }}
             field="quantity"
             header="Quantity"
-          ></Column>
+          />
           <Column
             style={{ width: "10%" }}
             body={DateTemplate}
             field="harvested_date"
             header="Date Harvested"
-          ></Column>
+          />
           <Column
             style={{ width: "10%" }}
             header="Action"
             body={(e: ICrop) => <CropOverlayButton value={e} />}
-          ></Column>
+          />
         </DataTable>
       </div>
+      <Pagination
+        count={count}
+        next={next}
+        previous={previous}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
       <AddCropPop />
       <EditCropPop />
     </div>

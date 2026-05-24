@@ -2,6 +2,7 @@
 "use client";
 
 import { UserDashboardWrapper } from "@/components";
+import { NotFoundState } from "@/components";
 import { DeliveryDetail } from "@/features/transporter";
 import { clearTransporterErrors } from "@/features/transporter/data/TransporterSlice";
 import { useGetOneDeliveryQuery } from "@/features/transporter/data/TransporterApi";
@@ -26,7 +27,11 @@ const Page = () => {
   );
 
   useEffect(() => {
-    if (getOneDeliveryError) {
+    if (
+      getOneDeliveryError &&
+      !getOneDeliveryError.includes("404") &&
+      !getOneDeliveryError.includes("Not found")
+    ) {
       enqueueSnackbar(getOneDeliveryError, { variant: "error" });
       dispatch(clearTransporterErrors());
     }
@@ -43,7 +48,18 @@ const Page = () => {
         >
           <ArrowLeft color="white" width={18} />
         </span>
-        {getOneDeliveryLoading ? (
+
+        {/* 404 State */}
+        {getOneDeliveryError &&
+        (getOneDeliveryError.includes("404") ||
+          getOneDeliveryError.includes("Not found")) ? (
+          <NotFoundState
+            title="Delivery Not Found"
+            message="The delivery you are looking for does not exist or you do not have permission to view it."
+            backPath="/dashboard/deliveries"
+            backLabel="Back to Deliveries"
+          />
+        ) : getOneDeliveryLoading ? (
           <div className={`w-full h-svh flex items-center justify-center`}>
             <Loader2 className={`animate-spin text-primary duration-300`} />
           </div>
