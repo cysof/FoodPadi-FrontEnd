@@ -4,7 +4,7 @@ const CropApi = FetchAPI.injectEndpoints({
   endpoints: (build) => ({
     logout: build.mutation<void, void>({
       query: () => ({
-        url: `accounts/api/logout/`,
+        url: `accounts/logout/`,  // ✅ Removed /api/
         method: "Post",
       }),
     }),
@@ -12,7 +12,7 @@ const CropApi = FetchAPI.injectEndpoints({
     // create a crop
     createCrop: build.mutation<void, FormData>({
       query: (crop) => ({
-        url: `croplisting/api/crops/`,
+        url: `croplisting/crops/`,  // ✅ Removed /api/ from the middle
         method: "Post",
         body: crop,
       }),
@@ -22,7 +22,7 @@ const CropApi = FetchAPI.injectEndpoints({
     // get all crops
     getAllCrops: build.query<IGetMarketProduceResponse, searchTerm>({
       query: ({ ...terms }) => ({
-        url: `croplisting/api/crops/my-listings/`,
+        url: `croplisting/crops/my-listings/`,  // ✅ Removed /api/ from the middle
         method: "Get",
         params: terms,
       }),
@@ -32,7 +32,7 @@ const CropApi = FetchAPI.injectEndpoints({
     // edit a crop
     editACrop: build.mutation<void, ICropFormUpdate>({
       query: ({ ...crop }) => ({
-        url: `croplisting/api/crops/${crop.id}/`,
+        url: `croplisting/crops/${crop.id}/`,  // ✅ Removed /api/ from the middle
         method: "PATCH",
         body: crop.form,
       }),
@@ -42,7 +42,7 @@ const CropApi = FetchAPI.injectEndpoints({
     // Change the availability of a product
     flagAvailability: build.mutation<void, IChangeAvailability>({
       query: ({ ...crop }) => ({
-        url: `croplisting/api/crops/${crop.id}/`,
+        url: `croplisting/crops/${crop.id}/`,  // ✅ Removed /api/ from the middle
         method: "PATCH",
         body: { availability: crop.availability },
       }),
@@ -52,7 +52,7 @@ const CropApi = FetchAPI.injectEndpoints({
     // delete a crop
     deleteACrop: build.mutation<void, ICropInputID>({
       query: ({ ...crop }) => ({
-        url: `croplisting/api/crops/${crop.id}/`, // add an id here
+        url: `croplisting/crops/${crop.id}/`,  // ✅ Removed /api/ from the middle
         method: "Delete",
       }),
       invalidatesTags: ["crops"],

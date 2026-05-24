@@ -32,7 +32,7 @@ const Crops = () => {
   useEffect(() => {
     dispatch(setSearchTerm(debouncedValue));
     setCurrentPage(1);
-  }, [debouncedValue]);
+  }, [debouncedValue, dispatch]);
 
   const crops = useAppSelector((state) => state.crops.crops);
   const getAllCropsError = useAppSelector(
@@ -58,52 +58,84 @@ const Crops = () => {
       enqueueSnackbar(getAllCropsError, { variant: "error" });
       dispatch(clearCropsError());
     }
-  }, [getAllCropsError]);
+  }, [getAllCropsError, dispatch]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
+  // Fixed: Safely handle image with availability check
   const ImgTemplate = (value: ICrop) => (
     <Image
       src={
-        value.availability.toLowerCase() === "available"
+        value.availability?.toLowerCase() === "available" && value.img
           ? value.img
           : outofstock.src
       }
       preview
       width="150px"
       height="100px"
-      alt={`${value.crop_name} image`}
+      alt={`${value.crop_name || 'Crop'} image`}
       className={`shrink-0`}
     />
   );
 
+  // Fixed: Safely handle description with fallback
   const DescriptionTemplate = (value: ICrop) => (
     <div
       className={`text-black font-inter text-sm truncate max-w-[300px] w-full line-clamp-1`}
     >
-      {value.crop_description}
+      {value.crop_description || 'No description available'}
     </div>
   );
 
-  const PriceTemplate = (value: ICrop) => (
-    <div className={`text-black font-inter text-sm truncate w-full`}>
-      {new Intl.NumberFormat("en-NG", {
-        style: "currency",
-        currency: "NGN",
-      }).format(Number(value.price_per_unit))}
-      /{value.unit}
-    </div>
-  );
+  // Fixed: Safely handle price formatting to prevent NaN
+  const PriceTemplate = (value: ICrop) => {
+    const price = Number(value.price_per_unit);
+    const validPrice = !isNaN(price) && price > 0 ? price : 0;
+    
+    return (
+      <div className={`text-black font-inter text-sm truncate w-full`}>
+        {new Intl.NumberFormat("en-NG", {
+          style: "currency",
+          currency: "NGN",
+        }).format(validPrice)}
+        /{value.unit || 'unit'}
+      </div>
+    );
+  };
 
-  const DateTemplate = (value: ICrop) => (
+  // Fixed: Safely handle date formatting
+  const DateTemplate = (value: ICrop) => {
+    if (!value.harvested_date) {
+      return <div className={`text-black font-inter text-sm truncate w-full`}>Date not available</div>;
+    }
+    
+    try {
+      const date = new Date(value.harvested_date);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return <div className={`text-black font-inter text-sm truncate w-full`}>Invalid date</div>;
+      }
+      
+      return (
+        <div className={`text-black font-inter text-sm truncate w-full`}>
+          {new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }).format(date)}
+        </div>
+      );
+    } catch (error) {
+      return <div className={`text-black font-inter text-sm truncate w-full`}>Date error</div>;
+    }
+  };
+
+  // Fixed: Safely handle quantity display
+  const QuantityTemplate = (value: ICrop) => (
     <div className={`text-black font-inter text-sm truncate w-full`}>
-      {new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }).format(new Date(value.harvested_date))}
+      {value.quantity !== undefined && value.quantity !== null ? value.quantity : 0}
     </div>
   );
 
@@ -168,6 +200,7 @@ const Crops = () => {
           />
           <Column
             style={{ width: "10%" }}
+            body={QuantityTemplate}
             field="quantity"
             header="Quantity"
           />

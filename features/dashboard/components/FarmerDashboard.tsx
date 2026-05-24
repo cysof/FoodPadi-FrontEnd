@@ -1,6 +1,7 @@
 // features/dashboard/components/FarmerDashboard.tsx
 "use client";
 
+import { useEffect } from "react"; // ✅ Add this import
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useGetFarmerDashboardQuery } from "../data/DashboardApi";
 import { clearDashboardErrors } from "../data/DashboardSlice";
@@ -40,11 +41,15 @@ const FarmerDashboard = () => {
 
   useGetFarmerDashboardQuery();
 
-  if (farmerDashboardError) {
-    enqueueSnackbar(farmerDashboardError, { variant: "error" });
-    dispatch(clearDashboardErrors());
-  }
+  // ✅ Handle errors in useEffect instead of during render
+  useEffect(() => {
+    if (farmerDashboardError) {
+      enqueueSnackbar(farmerDashboardError, { variant: "error" });
+      dispatch(clearDashboardErrors());
+    }
+  }, [farmerDashboardError, dispatch]); // Re-run when error changes
 
+  // Loading state
   if (farmerDashboardLoading) {
     return (
       <div className={`w-full h-full flex items-center justify-center`}>

@@ -75,7 +75,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth"> {/* ✅ Added the attribute here */}
       <body className={`font-inter ${inter.variable} ${square.variable}`}>
         <StoreProvider>
           <PrimeReactProvider>{children}</PrimeReactProvider>
