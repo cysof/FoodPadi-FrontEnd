@@ -12,7 +12,8 @@ import { enqueueSnackbar } from "notistack";
 import { useGetAllOrdersQuery } from "../data/OrderApi";
 import { Status } from "../types/order.types";
 import OrderOverlayButton from "./OrderOverlayButton";
-import { Pagination } from "@/components";
+import { Pagination, EmptyState } from "@/components";
+import { Package } from "lucide-react";
 
 const OrderTable = () => {
   const dispatch = useAppDispatch();
@@ -107,67 +108,70 @@ const OrderTable = () => {
         className={`sm:max-w-md w-full`}
         type="search"
       />
-      <div className={`w-full shrink`}>
-        <DataTable
-          loading={getAllOrdersLoading}
-          value={orders}
-          breakpoint="1300px"
-          tableStyle={{ minWidth: "50rem" }}
-          emptyMessage={
-            <p className={`text-center font-inter text-lg text-black`}>
-              You don&apos;t have any order yet
-            </p>
-          }
-          className={`bg-white`}
-        >
-          <Column
-            header={`Buyer`}
-            field="buyer_name"
-            style={{ width: "25%" }}
+      {!getAllOrdersLoading && orders.length === 0 ? (
+        <EmptyState
+          icon={Package}
+          title="No Orders Yet"
+          message="You have not received any orders yet. Share your crop listings to start receiving orders from buyers."
+        />
+      ) : (
+        <div className={`w-full shrink`}>
+          <DataTable
+            loading={getAllOrdersLoading}
+            value={orders}
+            breakpoint="1300px"
+            tableStyle={{ minWidth: "50rem" }}
+            className={`bg-white`}
+          >
+            <Column
+              header={`Buyer`}
+              field="buyer_name"
+              style={{ width: "25%" }}
+            />
+            <Column
+              className={`capitalize`}
+              field="crop_name"
+              header="Crop Name"
+              style={{ width: "20%" }}
+            />
+            <Column
+              style={{ width: "5%" }}
+              field="quantity"
+              header="Quantity"
+            />
+            <Column
+              style={{ width: "10%" }}
+              body={StatusTemplate}
+              field="status"
+              header="Status"
+            />
+            <Column
+              style={{ width: "15%" }}
+              body={DateTemplate}
+              field="ordered_at"
+              header="Order Date"
+            />
+            <Column
+              style={{ width: "25%" }}
+              field="notes"
+              body={NoteTemplate}
+              header="Special Note"
+            />
+            <Column
+              style={{ width: "10%" }}
+              header="Action"
+              body={(e: IOrderData) => <OrderOverlayButton value={e} />}
+            />
+          </DataTable>
+          <Pagination
+            count={count}
+            next={next}
+            previous={previous}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
           />
-          <Column
-            className={`capitalize`}
-            field="crop_name"
-            header="Crop Name"
-            style={{ width: "20%" }}
-          />
-          <Column
-            style={{ width: "5%" }}
-            field="quantity"
-            header="Quantity"
-          />
-          <Column
-            style={{ width: "10%" }}
-            body={StatusTemplate}
-            field="status"
-            header="Status"
-          />
-          <Column
-            style={{ width: "15%" }}
-            body={DateTemplate}
-            field="ordered_at"
-            header="Order Date"
-          />
-          <Column
-            style={{ width: "25%" }}
-            field="notes"
-            body={NoteTemplate}
-            header="Special Note"
-          />
-          <Column
-            style={{ width: "10%" }}
-            header="Action"
-            body={(e: IOrderData) => <OrderOverlayButton value={e} />}
-          />
-        </DataTable>
-      </div>
-      <Pagination
-        count={count}
-        next={next}
-        previous={previous}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
+        </div>
+      )}
     </div>
   );
 };

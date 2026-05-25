@@ -5,11 +5,11 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useGetAllDeliveriesQuery } from "../data/TransporterApi";
 import { clearTransporterErrors } from "../data/TransporterSlice";
 import { enqueueSnackbar } from "notistack";
-import { Loader2 } from "lucide-react";
 import { Dropdown } from "primereact/dropdown";
 import React, { useEffect, useState } from "react";
 import DeliveryCard from "./DeliveryCard";
-import { Pagination } from "@/components";
+import { Pagination, DeliveryCardSkeletonGrid, EmptyState } from "@/components";
+import { Truck } from "lucide-react";
 
 const statusOptions = [
   { label: "All", value: "" },
@@ -34,15 +34,9 @@ const DeliveryList = () => {
   const getAllDeliveriesError = useAppSelector(
     (state) => state.transporter.getAllDeliveriesError
   );
-  const count = useAppSelector(
-    (state) => state.transporter.count
-  );
-  const next = useAppSelector(
-    (state) => state.transporter.next
-  );
-  const previous = useAppSelector(
-    (state) => state.transporter.previous
-  );
+  const count = useAppSelector((state) => state.transporter.count);
+  const next = useAppSelector((state) => state.transporter.next);
+  const previous = useAppSelector((state) => state.transporter.previous);
 
   const query = {
     ...(statusFilter ? { status: statusFilter } : {}),
@@ -82,15 +76,13 @@ const DeliveryList = () => {
 
       {/* Content */}
       {getAllDeliveriesLoading ? (
-        <div className={`w-full h-40 flex items-center justify-center`}>
-          <Loader2 className={`animate-spin text-primary`} />
-        </div>
-      ) : deliveries.length === 0 ? (
-        <div className={`w-full h-40 flex items-center justify-center`}>
-          <p className={`font-inter text-sm text-gray-500 text-center`}>
-            No deliveries assigned yet
-          </p>
-        </div>
+        <DeliveryCardSkeletonGrid count={6} />
+      ) : !getAllDeliveriesLoading && deliveries.length === 0 ? (
+        <EmptyState
+          icon={Truck}
+          title="No Deliveries Yet"
+          message="You have not been assigned any deliveries yet. Make sure your account is active and available to receive delivery assignments."
+        />
       ) : (
         <div className={`flex flex-col gap-4`}>
           <div

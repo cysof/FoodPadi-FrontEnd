@@ -21,8 +21,8 @@ import { Status } from "../types/order.types";
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import Link from "next/link";
-import { Eye } from "lucide-react";
-import { Pagination } from "@/components";
+import { Eye, ShoppingBag } from "lucide-react";
+import { Pagination, EmptyState } from "@/components";
 
 const statusOptions = [
   { label: "All", value: "" },
@@ -221,62 +221,67 @@ const BuyerOrderTable = () => {
           className={`w-full sm:max-w-[200px]`}
         />
       </div>
-      <div className={`w-full shrink`}>
-        <DataTable
-          loading={getAllBuyerOrdersLoading}
-          value={buyerOrders}
-          breakpoint="1300px"
-          tableStyle={{ minWidth: "50rem" }}
-          emptyMessage={
-            <p className={`text-center font-inter text-lg text-black`}>
-              You don&apos;t have any order yet
-            </p>
-          }
-          className={`bg-white`}
-        >
-          <Column
-            header="Crop Name"
-            field="crop_name"
-            style={{ width: "20%" }}
-            className={`capitalize`}
+      {!getAllBuyerOrdersLoading && buyerOrders.length === 0 ? (
+        <EmptyState
+          icon={ShoppingBag}
+          title="No Orders Yet"
+          message="You have not placed any orders yet. Browse the marketplace to find fresh farm produce."
+          actionLabel="Browse Marketplace"
+          actionHref="/marketplace"
+        />
+      ) : (
+        <div className={`w-full shrink`}>
+          <DataTable
+            loading={getAllBuyerOrdersLoading}
+            value={buyerOrders}
+            breakpoint="1300px"
+            tableStyle={{ minWidth: "50rem" }}
+            className={`bg-white`}
+          >
+            <Column
+              header="Crop Name"
+              field="crop_name"
+              style={{ width: "20%" }}
+              className={`capitalize`}
+            />
+            <Column
+              header="Quantity"
+              field="quantity"
+              style={{ width: "10%" }}
+            />
+            <Column
+              header="Total Price"
+              body={PriceTemplate}
+              field="total_price"
+              style={{ width: "15%" }}
+            />
+            <Column
+              header="Status"
+              body={StatusTemplate}
+              field="status"
+              style={{ width: "15%" }}
+            />
+            <Column
+              header="Order Date"
+              body={DateTemplate}
+              field="ordered_at"
+              style={{ width: "20%" }}
+            />
+            <Column
+              header="Action"
+              body={ActionTemplate}
+              style={{ width: "20%" }}
+            />
+          </DataTable>
+          <Pagination
+            count={count}
+            next={next}
+            previous={previous}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
           />
-          <Column
-            header="Quantity"
-            field="quantity"
-            style={{ width: "10%" }}
-          />
-          <Column
-            header="Total Price"
-            body={PriceTemplate}
-            field="total_price"
-            style={{ width: "15%" }}
-          />
-          <Column
-            header="Status"
-            body={StatusTemplate}
-            field="status"
-            style={{ width: "15%" }}
-          />
-          <Column
-            header="Order Date"
-            body={DateTemplate}
-            field="ordered_at"
-            style={{ width: "20%" }}
-          />
-          <Column
-            header="Action"
-            body={ActionTemplate}
-            style={{ width: "20%" }}
-          />
-        </DataTable>
-      </div>
-      <Pagination
-        count={count}
-        next={next}
-        previous={previous}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
+        </div>
+      )}
     </div>
   );
 };

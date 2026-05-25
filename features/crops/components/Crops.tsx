@@ -21,9 +21,10 @@ import { useDebounce } from "primereact/hooks";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import outofstock from "@/public/outofstock.png";
 import EditCropPop from "./EditCropPop";
-import { Pagination } from "@/components";
+import { Pagination, EmptyState } from "@/components";
+import { Leaf } from "lucide-react";
 
-// Cloudinary configuration - add your cloud name here
+// Cloudinary cloud name - replace with your actual cloud name
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'your-cloud-name-here';
 
 const Crops = () => {
@@ -100,7 +101,7 @@ const Crops = () => {
         width="150px"
         height="100px"
         alt={`${value.crop_name || 'Crop'} image`}
-        className={`shrink-0`}
+        className="shrink-0"
         onError={(e) => {
           // If image fails to load, show out of stock image
           (e.target as HTMLImageElement).src = outofstock.src;
@@ -109,7 +110,6 @@ const Crops = () => {
     );
   };
 
-  // Fixed: Safely handle description with fallback
   const DescriptionTemplate = (value: ICrop) => (
     <div
       className={`text-black font-inter text-sm truncate max-w-[300px] w-full line-clamp-1`}
@@ -118,7 +118,6 @@ const Crops = () => {
     </div>
   );
 
-  // Fixed: Safely handle price formatting to prevent NaN
   const PriceTemplate = (value: ICrop) => {
     const price = Number(value.price_per_unit);
     const validPrice = !isNaN(price) && price > 0 ? price : 0;
@@ -134,7 +133,6 @@ const Crops = () => {
     );
   };
 
-  // Fixed: Safely handle date formatting
   const DateTemplate = (value: ICrop) => {
     if (!value.harvested_date) {
       return <div className={`text-black font-inter text-sm truncate w-full`}>Date not available</div>;
@@ -142,7 +140,6 @@ const Crops = () => {
     
     try {
       const date = new Date(value.harvested_date);
-      // Check if date is valid
       if (isNaN(date.getTime())) {
         return <div className={`text-black font-inter text-sm truncate w-full`}>Invalid date</div>;
       }
@@ -161,7 +158,6 @@ const Crops = () => {
     }
   };
 
-  // Fixed: Safely handle quantity display
   const QuantityTemplate = (value: ICrop) => (
     <div className={`text-black font-inter text-sm truncate w-full`}>
       {value.quantity !== undefined && value.quantity !== null ? value.quantity : 0}
@@ -190,69 +186,74 @@ const Crops = () => {
           Create a crop
         </Button>
       </div>
-      <div className={`w-full shrink`}>
-        <DataTable
-          loading={getAllCropsLoading}
-          value={crops}
-          breakpoint="1300px"
-          tableStyle={{ minWidth: "50rem" }}
-          emptyMessage={
-            <p className={`text-center font-inter text-lg text-black`}>
-              You don&apos;t have any crop yet
-            </p>
-          }
-          className={`bg-white`}
-        >
-          <Column
-            header={`Crop Image`}
-            body={ImgTemplate}
-            field="img"
-            style={{ width: "25%" }}
+      {!getAllCropsLoading && crops.length === 0 ? (
+        <EmptyState
+          icon={Leaf}
+          title="No Crops Yet"
+          message="You have not listed any crops yet. Start by creating your first crop listing."
+          actionLabel="Create a Crop"
+          onAction={() => dispatch(setShowCreateCropModal(true))}
+        />
+      ) : (
+        <div className={`w-full shrink`}>
+          <DataTable
+            loading={getAllCropsLoading}
+            value={crops}
+            breakpoint="1300px"
+            tableStyle={{ minWidth: "50rem" }}
+            className={`bg-white`}
+          >
+            <Column
+              header={`Crop Image`}
+              body={ImgTemplate}
+              field="img"
+              style={{ width: "25%" }}
+            />
+            <Column
+              className={`capitalize`}
+              field="crop_name"
+              header="Crop Name"
+              style={{ width: "20%" }}
+            />
+            <Column
+              style={{ width: "25%" }}
+              body={DescriptionTemplate}
+              field="crop_description"
+              header="Description"
+            />
+            <Column
+              style={{ width: "10%" }}
+              body={PriceTemplate}
+              field="price_per_unit"
+              header="Price per unit"
+            />
+            <Column
+              style={{ width: "10%" }}
+              body={QuantityTemplate}
+              field="quantity"
+              header="Quantity"
+            />
+            <Column
+              style={{ width: "10%" }}
+              body={DateTemplate}
+              field="harvested_date"
+              header="Date Harvested"
+            />
+            <Column
+              style={{ width: "10%" }}
+              header="Action"
+              body={(e: ICrop) => <CropOverlayButton value={e} />}
+            />
+          </DataTable>
+          <Pagination
+            count={count}
+            next={next}
+            previous={previous}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
           />
-          <Column
-            className={`capitalize`}
-            field="crop_name"
-            header="Crop Name"
-            style={{ width: "20%" }}
-          />
-          <Column
-            style={{ width: "25%" }}
-            body={DescriptionTemplate}
-            field="crop_description"
-            header="Description"
-          />
-          <Column
-            style={{ width: "10%" }}
-            body={PriceTemplate}
-            field="price_per_unit"
-            header="Price per unit"
-          />
-          <Column
-            style={{ width: "10%" }}
-            body={QuantityTemplate}
-            field="quantity"
-            header="Quantity"
-          />
-          <Column
-            style={{ width: "10%" }}
-            body={DateTemplate}
-            field="harvested_date"
-            header="Date Harvested"
-          />
-          <Column
-            style={{ width: "10%" }}
-            header="Action"
-            body={(e: ICrop) => <CropOverlayButton value={e} />}
-          />
-        </DataTable>
-      </div>
-      <Pagination
-        count={count}
-        next={next}
-        previous={previous}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
+        </div>
+      )}
       <AddCropPop />
       <EditCropPop />
     </div>

@@ -5,7 +5,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useGetTransporterDashboardQuery } from "../data/DashboardApi";
 import { clearDashboardErrors } from "../data/DashboardSlice";
 import { enqueueSnackbar } from "notistack";
-import { Loader2 } from "lucide-react";
+import { StatCardSkeletonGrid, DeliveryCardSkeletonGrid } from "@/components";
+import { useEffect } from "react";
 
 const StatCard = ({
   title,
@@ -28,8 +29,10 @@ const DeliveryStatusBadge = ({ status }: { status: string }) => {
   const color =
     status === "PENDING"
       ? "bg-yellow-400"
+      : status === "ACCEPTED"
+      ? "bg-blue-400"
       : status === "ON_THE_WAY"
-      ? "bg-blue-500"
+      ? "bg-sky-500"
       : status === "DELIVERED"
       ? "bg-green-500"
       : "bg-red-500";
@@ -56,15 +59,24 @@ const TransporterDashboard = () => {
 
   useGetTransporterDashboardQuery();
 
-  if (transporterDashboardError) {
-    enqueueSnackbar(transporterDashboardError, { variant: "error" });
-    dispatch(clearDashboardErrors());
-  }
+  useEffect(() => {
+    if (transporterDashboardError) {
+      enqueueSnackbar(transporterDashboardError, { variant: "error" });
+      dispatch(clearDashboardErrors());
+    }
+  }, [transporterDashboardError]);
 
   if (transporterDashboardLoading) {
     return (
-      <div className={`w-full h-full flex items-center justify-center`}>
-        <Loader2 className={`animate-spin text-primary`} />
+      <div className={`flex flex-col gap-8`}>
+        {/* Stats Skeleton */}
+        <StatCardSkeletonGrid count={4} />
+
+        {/* Recent Deliveries Skeleton */}
+        <div className={`flex flex-col gap-3`}>
+          <div className={`h-6 w-48 bg-gray-200 rounded animate-pulse`} />
+          <DeliveryCardSkeletonGrid count={3} />
+        </div>
       </div>
     );
   }
@@ -124,7 +136,9 @@ const TransporterDashboard = () => {
                 className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-200 bg-white shadow-sm`}
               >
                 <div className={`flex flex-col gap-1`}>
-                  <h5 className={`font-square font-medium text-primary-black`}>
+                  <h5
+                    className={`font-square font-medium text-primary-black`}
+                  >
                     {delivery.crop_name}
                   </h5>
                   <p className={`font-inter text-sm text-gray-500`}>
