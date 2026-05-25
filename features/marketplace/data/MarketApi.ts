@@ -1,12 +1,13 @@
+// features/marketplace/data/MarketApi.ts
 import { FetchAPI } from "@/store/FetchAPI";
 
 const MarketApi = FetchAPI.injectEndpoints({
   endpoints: (build) => ({
     getAllProducts: build.query<IGetMarketProduceResponse, searchTerm>({
-      query: ({ ...terms }) => ({
-        url: `croplisting/api/crops/`,
+      query: (params) => ({
+        url: `croplisting/crops/`,
         method: "Get",
-        params: terms,
+        params,
       }),
     }),
   }),

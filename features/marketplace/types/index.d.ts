@@ -1,3 +1,5 @@
+// features/marketplace/types/index.d.ts
+
 declare type searchTerm = {
   search?: string;
   ordering?: string;
@@ -26,6 +28,9 @@ declare interface IMarketplaceInitialState {
   getAllProductsError: string;
   products: ICrop[];
   search: string;
+  count: number;
+  next: string | null;
+  previous: string | null;
 }
 
 declare interface IGetMarketProduceResponse {

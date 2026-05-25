@@ -3,26 +3,21 @@ import { FetchAPI } from "@/store/FetchAPI";
 
 const DashboardApi = FetchAPI.injectEndpoints({
   endpoints: (build) => ({
-    // Farmer dashboard
     getFarmerDashboard: build.query<IFarmerDashboard, void>({
       query: () => ({
-        url: `farmer/api/farmer/dashboard/`,
+        url: `farmer/farmer/dashboard/`,
         method: "Get",
       }),
     }),
-
-    // Buyer dashboard
     getBuyerDashboard: build.query<IBuyerDashboard, void>({
       query: () => ({
-        url: `buyer/api/buyer/dashboard/`,
+        url: `buyer/buyer/dashboard/`,
         method: "Get",
       }),
     }),
-
-    // Transporter dashboard
     getTransporterDashboard: build.query<ITransporterDashboard, void>({
       query: () => ({
-        url: `transporter/api/transporter-dashboard/`,
+        url: `transporter/transporter-dashboard/`,
         method: "Get",
       }),
     }),

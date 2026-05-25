@@ -2,12 +2,12 @@ import { FetchAPI } from "@/store/FetchAPI";
 
 const CropApi = FetchAPI.injectEndpoints({
   endpoints: (build) => ({
-    logout: build.mutation<void, void>({
-      query: () => ({
-        url: `accounts/logout/`,  // ✅ Removed /api/
-        method: "Post",
-      }),
-    }),
+   logout: build.mutation<void, void>({
+  query: () => ({
+    url: `accounts/api/logout/`,
+    method: "Post",
+  }),
+}),
 
     // create a crop
     createCrop: build.mutation<void, FormData>({
