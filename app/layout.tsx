@@ -39,7 +39,6 @@ export const metadata: Metadata = {
     "farmers app in Nigeria",
     "agritech platform Nigeria",
     "agriculture trading app",
-
     "connect farmers and buyers",
     "transport farm goods Nigeria",
     "agro e-commerce platform",
@@ -48,7 +47,6 @@ export const metadata: Metadata = {
     "food supply chain app",
     "fresh produce near me Nigeria",
     "local farm produce delivery",
-
     "how to sell farm products directly to buyers in Nigeria",
     "best app for farmers to sell crops",
     "affordable food delivery from farms",
@@ -63,7 +61,6 @@ export const metadata: Metadata = {
     description:
       "Discover a smart agriculture marketplace that connects Nigerian farmers, buyers, and transporters. List, buy, and deliver fresh farm produce easily across Nigeria. Empowering food supply with technology, trust, and speed.",
   },
-
   icons: {
     icon: "/favicon.ico",
   },
@@ -75,10 +72,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth"> {/* ✅ Added the attribute here */}
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`font-inter ${inter.variable} ${square.variable}`}>
         <StoreProvider>
-          <PrimeReactProvider>{children}</PrimeReactProvider>
+          <PrimeReactProvider>
+            {children}
+          </PrimeReactProvider>
         </StoreProvider>
       </body>
     </html>

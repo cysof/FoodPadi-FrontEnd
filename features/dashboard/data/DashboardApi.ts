@@ -5,20 +5,20 @@ const DashboardApi = FetchAPI.injectEndpoints({
   endpoints: (build) => ({
     getFarmerDashboard: build.query<IFarmerDashboard, void>({
       query: () => ({
-        url: `farmer/farmer/dashboard/`,
-        method: "Get",
+        url: `farmer/dashboard/`,
+        method: "GET",
       }),
     }),
     getBuyerDashboard: build.query<IBuyerDashboard, void>({
       query: () => ({
-        url: `buyer/buyer/dashboard/`,
-        method: "Get",
+        url: `buyer/dashboard/`,
+        method: "GET",
       }),
     }),
     getTransporterDashboard: build.query<ITransporterDashboard, void>({
       query: () => ({
-        url: `transporter/transporter-dashboard/`,
-        method: "Get",
+        url: `transporter/dashboard/`,
+        method: "GET",
       }),
     }),
   }),
