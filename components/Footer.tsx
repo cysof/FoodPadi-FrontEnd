@@ -43,21 +43,6 @@ const Footer = () => {
                 Join Waitlist
               </Link>
             </li>
-            {/* <li>
-              <a href="#" className="hover:underline">
-                Contact Us
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                Privacy Policy
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                Terms & Conditions
-              </a>
-            </li> */}
           </ul>
         </div>
 
@@ -67,9 +52,9 @@ const Footer = () => {
           <p className={`text-sm flex items-center gap-2`}>
             <MapPin width={16} /> House 17 Road 251 FHA Guzape
           </p>
-          <p className={`text-sm flex gap-2`}>
+          <div className={`text-sm flex gap-2`}>  {/* Changed from <p> to <div> */}
             <PhoneCall className="shrink-0" width={16} />{" "}
-            <p className={`flex items-center flex-wrap gap-2`}>
+            <div className={`flex items-center flex-wrap gap-2`}>  {/* Changed from <p> to <div> */}
               <Link
                 className={`hover:text-primary`}
                 href={`tel:+2349074366942`}
@@ -88,8 +73,8 @@ const Footer = () => {
               >
                 07080109521
               </Link>
-            </p>
-          </p>
+            </div>
+          </div>
           <p className={`text-sm flex items-center gap-2`}>
             <Mail width={16} />{" "}
             <Link

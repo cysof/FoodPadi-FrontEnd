@@ -10,6 +10,7 @@ import {
   Truck,
   User,
   X,
+  ShoppingBag,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,6 +37,12 @@ const UserSideBar = () => {
       icon: LayoutDashboard,
       link: "/dashboard",
       exact: true,
+    },
+    {
+      name: "Marketplace",
+      icon: ShoppingBag,
+      link: "/marketplace",
+      exact: false,
     },
     {
       name: "My Crops",
@@ -65,6 +72,12 @@ const UserSideBar = () => {
       exact: true,
     },
     {
+      name: "Marketplace",
+      icon: ShoppingBag,
+      link: "/marketplace",
+      exact: false,
+    },
+    {
       name: "My Orders",
       icon: Package,
       link: "/dashboard/orders",
@@ -84,6 +97,12 @@ const UserSideBar = () => {
       icon: LayoutDashboard,
       link: "/dashboard",
       exact: true,
+    },
+    {
+      name: "Marketplace",
+      icon: ShoppingBag,
+      link: "/marketplace",
+      exact: false,
     },
     {
       name: "Deliveries",
@@ -122,15 +141,17 @@ const UserSideBar = () => {
           className={`cursor-pointer absolute top-2 right-2 text-black md:hidden flex`}
         />
       )}
-      <Image
-        src={`/mainLogo.svg`}
-        className={`shrink-0 px-2 pt-5 md:pt-0 ${
-          expandSidebar || !hideSideBar ? `w-[150px]` : `w-[50px]`
-        } duration-300`}
-        width={150}
-        height={150}
-        alt="logo"
-      />
+      <Link href="/">
+        <Image
+          src={`/mainLogo.svg`}
+          className={`shrink-0 px-2 pt-5 md:pt-0 ${
+            expandSidebar || !hideSideBar ? `w-[150px]` : `w-[50px]`
+          } duration-300 cursor-pointer`}
+          width={150}
+          height={150}
+          alt="logo"
+        />
+      </Link>
       <ul className={`w-full flex flex-col gap-px pt-5`}>
         {links.map((link) => (
           <li key={link.name} className={`w-full`}>
