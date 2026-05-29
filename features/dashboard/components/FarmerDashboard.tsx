@@ -7,7 +7,11 @@ import { clearDashboardErrors } from "../data/DashboardSlice";
 import { enqueueSnackbar } from "notistack";
 import { StatCardSkeletonGrid, TableSkeleton } from "@/components";
 import { Status } from "@/features/order/types/order.types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAcceptOrderMutation, useCancelOrderMutation } from "@/features/orderById/data/OrderIDApi";
+import { Button } from "primereact/button";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { InputTextarea } from "primereact/inputtextarea";
 
 const StatCard = ({
   title,
@@ -28,6 +32,9 @@ const StatCard = ({
 
 const FarmerDashboard = () => {
   const dispatch = useAppDispatch();
+  const [cancelReason, setCancelReason] = useState<string>("");
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const farmerDashboard = useAppSelector(
     (state) => state.dashboard.farmerDashboard
@@ -39,7 +46,10 @@ const FarmerDashboard = () => {
     (state) => state.dashboard.farmerDashboardError
   );
 
-  useGetFarmerDashboardQuery();
+  const [acceptOrder, { isLoading: isAccepting }] = useAcceptOrderMutation();
+  const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation();
+
+  const { refetch } = useGetFarmerDashboardQuery();
 
   useEffect(() => {
     if (farmerDashboardError) {
@@ -48,19 +58,48 @@ const FarmerDashboard = () => {
     }
   }, [farmerDashboardError]);
 
+  const handleAcceptOrder = async (orderId: number) => {
+    try {
+      await acceptOrder({ id: orderId }).unwrap();
+      enqueueSnackbar("Order accepted successfully!", { variant: "success" });
+      refetch();
+    } catch (error: any) {
+      enqueueSnackbar(error?.data?.detail || "Failed to accept order", { variant: "error" });
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!selectedOrderId) return;
+    if (!cancelReason.trim()) {
+      enqueueSnackbar("Please provide a cancellation reason", { variant: "error" });
+      return;
+    }
+
+    try {
+      await cancelOrder({ id: selectedOrderId, reason: cancelReason }).unwrap();
+      enqueueSnackbar("Order cancelled successfully!", { variant: "success" });
+      setShowCancelDialog(false);
+      setCancelReason("");
+      setSelectedOrderId(null);
+      refetch();
+    } catch (error: any) {
+      enqueueSnackbar(error?.data?.detail || "Failed to cancel order", { variant: "error" });
+    }
+  };
+
+  const openCancelDialog = (orderId: number) => {
+    setSelectedOrderId(orderId);
+    setShowCancelDialog(true);
+  };
+
   if (farmerDashboardLoading) {
     return (
       <div className={`flex flex-col gap-8`}>
-        {/* Stats Skeleton */}
         <StatCardSkeletonGrid count={4} />
-
-        {/* Status Breakdown Skeleton */}
         <div className={`flex flex-col gap-3`}>
           <div className={`h-6 w-48 bg-gray-200 rounded animate-pulse`} />
           <StatCardSkeletonGrid count={5} />
         </div>
-
-        {/* Recent Orders Skeleton */}
         <div className={`flex flex-col gap-3`}>
           <div className={`h-6 w-48 bg-gray-200 rounded animate-pulse`} />
           <TableSkeleton rows={5} />
@@ -71,6 +110,34 @@ const FarmerDashboard = () => {
 
   return (
     <div className={`flex flex-col gap-8`}>
+      <ConfirmDialog
+        visible={showCancelDialog}
+        onHide={() => {
+          setShowCancelDialog(false);
+          setCancelReason("");
+          setSelectedOrderId(null);
+        }}
+        header="Cancel Order"
+        message={
+          <div className="flex flex-col gap-3">
+            <p>Please provide a reason for cancelling this order:</p>
+            <InputTextarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Enter cancellation reason..."
+              rows={3}
+              autoFocus
+            />
+          </div>
+        }
+        icon="pi pi-exclamation-triangle"
+        acceptLabel="Yes, Cancel Order"
+        rejectLabel="No, Go Back"
+        acceptClassName="p-button-danger"
+        onAccept={handleCancelOrder}
+        acceptDisabled={!cancelReason.trim() || isCancelling}
+      />
+
       {/* Stats */}
       <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4`}>
         <StatCard
@@ -106,9 +173,7 @@ const FarmerDashboard = () => {
         <h3 className={`font-square font-bold text-xl text-primary-black`}>
           Order Status Breakdown
         </h3>
-        <div
-          className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3`}
-        >
+        <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3`}>
           {[
             { label: "Pending", key: "PENDING", color: "bg-yellow-400" },
             { label: "Confirmed", key: "CONFIRMED", color: "bg-blue-500" },
@@ -125,9 +190,7 @@ const FarmerDashboard = () => {
               >
                 {item.label}
               </span>
-              <h3
-                className={`font-square font-bold text-2xl text-primary-black`}
-              >
+              <h3 className={`font-square font-bold text-2xl text-primary-black`}>
                 {farmerDashboard?.status_breakdown[
                   item.key as keyof typeof farmerDashboard.status_breakdown
                 ] ?? 0}
@@ -151,18 +214,20 @@ const FarmerDashboard = () => {
             {farmerDashboard?.recent_orders.map((order) => (
               <div
                 key={order.order_id}
-                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-200 bg-white shadow-sm`}
+                className={`flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-200 bg-white shadow-sm`}
               >
-                <div className={`flex flex-col gap-1`}>
-                  <h5
-                    className={`font-square font-medium text-primary-black`}
-                  >
+                <div className={`flex flex-col gap-1 flex-1`}>
+                  <h5 className={`font-square font-medium text-primary-black`}>
                     {order.crop_name}
                   </h5>
                   <p className={`font-inter text-sm text-gray-500`}>
                     Buyer: {order.buyer_name}
                   </p>
+                  <p className={`font-inter text-sm text-gray-500`}>
+                    Order ID: #{order.order_id}
+                  </p>
                 </div>
+                
                 <div className={`flex flex-col gap-1`}>
                   <p className={`font-inter text-sm text-primary-black`}>
                     Qty: {order.quantity}
@@ -174,9 +239,8 @@ const FarmerDashboard = () => {
                     }).format(Number(order.total_price))}
                   </p>
                 </div>
-                <div
-                  className={`flex flex-col gap-1 items-start sm:items-end`}
-                >
+                
+                <div className={`flex flex-col gap-1 items-start lg:items-end`}>
                   <span
                     className={`text-xs text-white px-3 py-1 rounded-full ${
                       order.status === Status.PENDING
@@ -200,6 +264,28 @@ const FarmerDashboard = () => {
                     }).format(new Date(order.ordered_at))}
                   </p>
                 </div>
+
+                {/* Action Buttons - Only show for PENDING orders */}
+                {order.status === Status.PENDING && (
+                  <div className={`flex gap-2 mt-3 lg:mt-0`}>
+                    <Button
+                      label="Accept"
+                      icon="pi pi-check"
+                      className="p-button-success p-button-sm"
+                      onClick={() => handleAcceptOrder(order.order_id)}
+                      loading={isAccepting}
+                      disabled={isAccepting || isCancelling}
+                    />
+                    <Button
+                      label="Cancel"
+                      icon="pi pi-times"
+                      className="p-button-danger p-button-sm"
+                      onClick={() => openCancelDialog(order.order_id)}
+                      loading={isCancelling && selectedOrderId === order.order_id}
+                      disabled={isAccepting || isCancelling}
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>

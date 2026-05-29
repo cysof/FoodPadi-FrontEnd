@@ -17,7 +17,7 @@ const DashboardApi = FetchAPI.injectEndpoints({
     }),
     getTransporterDashboard: build.query<ITransporterDashboard, void>({
       query: () => ({
-        url: `transporter/dashboard/`,
+        url: `transporter/dashboard/`,  // ✅ Fixed
         method: "GET",
       }),
     }),

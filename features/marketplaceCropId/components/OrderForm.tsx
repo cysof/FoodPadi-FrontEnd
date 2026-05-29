@@ -5,12 +5,20 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import React from "react";
+import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useCreateOrderMutation } from "../data/MarketCropIDApi";
 import { enqueueSnackbar } from "notistack";
 import { clearMarketPlaceCropError } from "../data/MarketCropIDSlice";
+
+// Local type for form data
+interface IOrderFormData {
+  crop: number;
+  quantity: number;
+  delivery_address: string;
+  notes: string;
+}
 
 const OrderForm = () => {
   const dispatch = useAppDispatch();
@@ -30,10 +38,10 @@ const OrderForm = () => {
         .number()
         .min(1)
         .max(product?.quantity ? product?.quantity : 100)
-        .required("required"),
-      delivery_address: yup.string().required("required"),
+        .required("Quantity is required"),
+      delivery_address: yup.string().required("Delivery address is required"),
       notes: yup.string().default(""),
-      crop: yup.number().required("required"),
+      crop: yup.number().required("Required"),
     })
     .required();
 
@@ -43,7 +51,7 @@ const OrderForm = () => {
     reset,
     watch,
     formState: { errors },
-  } = useForm<IOrder>({
+  } = useForm<IOrderFormData>({
     mode: "all",
     resolver: yupResolver(OrderFormSchema),
     defaultValues: {
@@ -54,23 +62,36 @@ const OrderForm = () => {
     },
   });
 
-  if (createOrderError) {
-    enqueueSnackbar(createOrderError, { variant: "error" });
-    dispatch(clearMarketPlaceCropError());
-  }
+  // Handle errors in useEffect
+  useEffect(() => {
+    if (createOrderError) {
+      enqueueSnackbar(createOrderError, { variant: "error" });
+      dispatch(clearMarketPlaceCropError());
+    }
+  }, [createOrderError, dispatch]);
 
   const [CreateOrderMutation] = useCreateOrderMutation();
 
-  const onSubmit: SubmitHandler<IOrder> = (data: IOrder) =>
-    CreateOrderMutation(data)
+  const onSubmit: SubmitHandler<IOrderFormData> = (data: IOrderFormData) => {
+    // Transform to match backend API expectations
+    const orderData = {
+      crop: data.crop,
+      quantity: data.quantity,
+      delivery_address: data.delivery_address,
+      notes: data.notes,
+    };
+    
+    return CreateOrderMutation(orderData)
       .unwrap()
       .then(() => {
         enqueueSnackbar("Order sent successfully", { variant: "success" });
         reset();
       })
-      .catch(() => {
-        enqueueSnackbar("Order not sent", { variant: "error" });
+      .catch((error) => {
+        console.error("Order creation error:", error);
+        enqueueSnackbar(error?.data?.detail || error?.data?.message || "Order not sent", { variant: "error" });
       });
+  };
 
   return (
     <form
@@ -83,7 +104,7 @@ const OrderForm = () => {
             className={`font-square font-medium text-primary-black`}
             htmlFor="quantity"
           >
-            Quantiity ({product?.unit})
+            Quantity ({product?.unit})
           </label>
           <InputText
             {...register("quantity")}
@@ -117,6 +138,7 @@ const OrderForm = () => {
         <InputTextarea
           {...register("notes")}
           className={`resize-none w-full`}
+          rows={3}
         />
         {errors.notes && (
           <small className="p-error">{errors.notes.message}</small>
