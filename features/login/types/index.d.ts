@@ -27,8 +27,12 @@ declare interface IUser {
   phone_number: string;
   email: string;
   address: string;
+  address_line: string;
   city: string;
-  state: string;
+  state: number | null;
+  state_name: string | null;
+  lga: number | null;
+  lga_name: string | null;
   country: string;
   is_active: boolean;
   is_staff: boolean;

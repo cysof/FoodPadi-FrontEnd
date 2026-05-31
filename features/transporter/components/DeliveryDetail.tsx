@@ -19,6 +19,20 @@ import { clearTransporterErrors } from "../data/TransporterSlice";
 import { MapPin, Calendar, Package, User2 } from "lucide-react";
 import Image from "next/image";
 
+// Helper function to get full Cloudinary URL
+const getFullImageUrl = (imgPath: string | null | undefined) => {
+  if (!imgPath) return null;
+  
+  // If it's already a full URL, return as is
+  if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+    return imgPath;
+  }
+  
+  // If it's a Cloudinary path, construct the full URL
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'your-cloud-name-here';
+  return `https://res.cloudinary.com/${cloudName}/${imgPath}`;
+};
+
 const DeliveryStatusBadge = ({ status }: { status: string }) => {
   const color =
     status === "PENDING"
@@ -306,6 +320,9 @@ const DeliveryDetail = () => {
     });
   };
 
+  // Get full Cloudinary URL for proof of delivery image
+  const proofImageUrl = getFullImageUrl(delivery?.proof_of_delivery_image);
+
   return (
     <div className={`flex flex-col gap-8`}>
       <ConfirmDialog />
@@ -410,13 +427,13 @@ const DeliveryDetail = () => {
       )}
 
       {/* Proof of Delivery Image - Show when delivered */}
-      {delivery?.proof_of_delivery_image && (
+      {proofImageUrl && (
         <div className={`flex flex-col gap-2`}>
           <h5 className={`font-square font-medium text-lg text-primary`}>
             Proof of Delivery
           </h5>
           <Image
-            src={delivery.proof_of_delivery_image}
+            src={proofImageUrl}
             alt="Proof of delivery"
             width={300}
             height={200}

@@ -5,7 +5,7 @@ const TransporterApi = FetchAPI.injectEndpoints({
   endpoints: (build) => ({
     getAllDeliveries: build.query<ITransporterDashboardResponse, ITransporterDeliveryInput>({
       query: (params) => ({
-        url: `transporter/transporter-dashboard/`,
+        url: `transporter/dashboard/`,  // ✅ Fixed URL
         method: "Get",
         params,
       }),

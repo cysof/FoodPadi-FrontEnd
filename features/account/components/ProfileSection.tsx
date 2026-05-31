@@ -2,19 +2,21 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
-import React, { useEffect } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import * as yup from "yup";
+import React, { useEffect, useState } from "react";
 import { useGetProfileQuery, useUpdateProfileMutation } from "../data/AccountApi";
 import { enqueueSnackbar } from "notistack";
 import { clearAccountErrors } from "../data/AccountSlice";
+import LocationPicker from "@/components/LocationPicker";
 
 const ProfileSection = () => {
   const dispatch = useAppDispatch();
+  const [selectedStateId, setSelectedStateId] = useState<number | null>(null);
+  const [selectedLGAId, setSelectedLGAId] = useState<number | null>(null);
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("Nigeria");
 
   const user = useAppSelector((state) => state.login.user);
   const updateProfileLoading = useAppSelector(
@@ -25,90 +27,67 @@ const ProfileSection = () => {
   );
 
   useGetProfileQuery();
-
   const [UpdateProfileMutation] = useUpdateProfileMutation();
 
-  const ProfileSchema = yup
-    .object({
-      first_name: yup.string().required("Required"),
-      last_name: yup.string().required("Required"),
-      other_name: yup.string().required("Required"),
-      username: yup.string().required("Required"),
-      email: yup
-        .string()
-        .email("Invalid email")
-        .required("Required"),
-      phone_number: yup
-        .string()
-        .matches(/^(?:\+234|0)[789][01]\d{8}$/, "Invalid phone number")
-        .required("Required"),
-      gender: yup.string().required("Required"),
-      address: yup.string().required("Required"),
-      city: yup.string().required("Required"),
-      state: yup.string().required("Required"),
-      country: yup.string().required("Required"),
-    })
-    .required();
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors },
-  } = useForm<IUpdateProfileForm>({
-    mode: "all",
-    resolver: yupResolver(ProfileSchema),
-    defaultValues: {
-      first_name: "",
-      last_name: "",
-      other_name: "",
-      username: "",
-      email: "",
-      phone_number: "",
-      gender: "",
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-    },
-  });
-
-  // Pre-fill form with user data from Redux
+  // Initialize form values from user data
   useEffect(() => {
     if (user) {
-      reset({
-        first_name: user.first_name,
-        last_name: user.last_name,
-        other_name: user.other_name,
-        username: user.username,
-        email: user.email,
-        phone_number: user.phone_number,
-        gender: user.gender,
-        address: user.address,
-        city: user.city,
-        state: user.state,
-        country: user.country,
-      });
+      setSelectedStateId(user.state || null);
+      setSelectedLGAId(user.lga || null);
+      setAddress(user.address_line || user.address || "");
+      setCity(user.city || "");
+      setCountry(user.country || "Nigeria");
     }
   }, [user]);
 
-  // ✅ Error handling in useEffect
+  // Handle state change from LocationPicker
+  const handleStateChange = (stateId: number | null, stateName: string | null) => {
+    setSelectedStateId(stateId);
+    setSelectedLGAId(null);
+  };
+
+  // Handle LGA change from LocationPicker
+  const handleLGAChange = (lgaId: number | null, lgaName: string | null) => {
+    setSelectedLGAId(lgaId);
+  };
+
   useEffect(() => {
     if (updateProfileError) {
       enqueueSnackbar(updateProfileError, { variant: "error" });
       dispatch(clearAccountErrors());
     }
-  }, [updateProfileError]);
+  }, [updateProfileError, dispatch]);
 
-  const onSubmit: SubmitHandler<IUpdateProfileForm> = (data) =>
-    UpdateProfileMutation(data)
+  const handleSave = () => {
+    const updateData: any = {};
+    
+    if (selectedStateId !== user?.state) {
+      updateData.state = selectedStateId;
+    }
+    if (selectedLGAId !== user?.lga) {
+      updateData.lga = selectedLGAId;
+    }
+    if (address !== (user?.address_line || user?.address)) {
+      updateData.address_line = address;
+    }
+    if (city !== user?.city) {
+      updateData.city = city;
+    }
+    if (country !== user?.country) {
+      updateData.country = country;
+    }
+    
+    if (Object.keys(updateData).length === 0) {
+      enqueueSnackbar("No changes to update", { variant: "info" });
+      return;
+    }
+    
+    UpdateProfileMutation(updateData)
       .unwrap()
       .then(() => {
-        enqueueSnackbar("Profile updated successfully!", {
-          variant: "success",
-        });
+        enqueueSnackbar("Profile updated successfully!", { variant: "success" });
       });
+  };
 
   return (
     <div className={`flex flex-col gap-5`}>
@@ -117,142 +96,119 @@ const ProfileSection = () => {
           Profile Information
         </h3>
         <p className={`font-inter text-sm text-gray-500`}>
-          Update your personal information here.
+          Your personal information is read-only. Only location can be updated.
         </p>
       </div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className={`flex flex-col gap-4`}
-      >
+      
+      {/* Read-only Information Section */}
+      <div className={`bg-gray-50 p-4 rounded-lg border border-gray-200`}>
+        <h4 className={`font-square font-semibold text-lg text-primary-black mb-4`}>
+          Personal Information (Read-only)
+        </h4>
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4`}>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              First Name
-            </label>
-            <InputText {...register("first_name")} />
-            {errors.first_name && (
-              <small className="p-error">{errors.first_name.message}</small>
-            )}
+          <div>
+            <label className={`font-inter text-sm text-gray-500`}>First Name</label>
+            <p className={`font-inter text-base text-primary-black mt-1`}>
+              {user?.first_name || "-"}
+            </p>
           </div>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              Last Name
-            </label>
-            <InputText {...register("last_name")} />
-            {errors.last_name && (
-              <small className="p-error">{errors.last_name.message}</small>
-            )}
+          <div>
+            <label className={`font-inter text-sm text-gray-500`}>Last Name</label>
+            <p className={`font-inter text-base text-primary-black mt-1`}>
+              {user?.last_name || "-"}
+            </p>
+          </div>
+          <div>
+            <label className={`font-inter text-sm text-gray-500`}>Username</label>
+            <p className={`font-inter text-base text-primary-black mt-1`}>
+              {user?.username || "-"}
+            </p>
+          </div>
+          <div>
+            <label className={`font-inter text-sm text-gray-500`}>Email</label>
+            <p className={`font-inter text-base text-primary-black mt-1`}>
+              {user?.email || "-"}
+            </p>
+          </div>
+          <div>
+            <label className={`font-inter text-sm text-gray-500`}>Phone Number</label>
+            <p className={`font-inter text-base text-primary-black mt-1`}>
+              {user?.phone_number || "-"}
+            </p>
+          </div>
+          <div>
+            <label className={`font-inter text-sm text-gray-500`}>Gender</label>
+            <p className={`font-inter text-base text-primary-black mt-1`}>
+              {user?.gender || "-"}
+            </p>
           </div>
         </div>
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4`}>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              Other Name
-            </label>
-            <InputText {...register("other_name")} />
-            {errors.other_name && (
-              <small className="p-error">{errors.other_name.message}</small>
-            )}
-          </div>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              Username
-            </label>
-            <InputText {...register("username")} />
-            {errors.username && (
-              <small className="p-error">{errors.username.message}</small>
-            )}
-          </div>
+      </div>
+
+      {/* Editable Location Section */}
+      <div className={`bg-white p-4 rounded-lg border border-gray-200`}>
+        <h4 className={`font-square font-semibold text-lg text-primary-black mb-4`}>
+          Location Information (Editable)
+        </h4>
+        
+        {/* State and LGA using LocationPicker */}
+        <div className={`mb-4`}>
+          <LocationPicker
+            onStateChange={handleStateChange}
+            onLGAChange={handleLGAChange}
+            selectedStateId={selectedStateId}
+            selectedLGAId={selectedLGAId}
+          />
         </div>
+
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4`}>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              Email
-            </label>
-            <InputText {...register("email")} />
-            {errors.email && (
-              <small className="p-error">{errors.email.message}</small>
-            )}
-          </div>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              Phone Number
-            </label>
-            <InputText {...register("phone_number")} />
-            {errors.phone_number && (
-              <small className="p-error">{errors.phone_number.message}</small>
-            )}
-          </div>
-        </div>
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4`}>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              Gender
-            </label>
-            <Controller
-              name="gender"
-              control={control}
-              render={({ field }) => (
-                <Dropdown
-                  {...field}
-                  options={["MALE", "FEMALE"]}
-                  placeholder="Select gender"
-                />
-              )}
-            />
-            {errors.gender && (
-              <small className="p-error">{errors.gender.message}</small>
-            )}
-          </div>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              Country
-            </label>
-            <InputText {...register("country")} />
-            {errors.country && (
-              <small className="p-error">{errors.country.message}</small>
-            )}
-          </div>
-        </div>
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4`}>
-          <div className={`flex flex-col gap-1`}>
-            <label className={`font-inter text-sm text-gray-500`}>
-              State
-            </label>
-            <InputText {...register("state")} />
-            {errors.state && (
-              <small className="p-error">{errors.state.message}</small>
-            )}
-          </div>
           <div className={`flex flex-col gap-1`}>
             <label className={`font-inter text-sm text-gray-500`}>
               City
             </label>
-            <InputText {...register("city")} />
-            {errors.city && (
-              <small className="p-error">{errors.city.message}</small>
-            )}
+            <InputText 
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Enter your city"
+              className="w-full"
+            />
+          </div>
+          <div className={`flex flex-col gap-1`}>
+            <label className={`font-inter text-sm text-gray-500`}>
+              Address
+            </label>
+            <InputText 
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter your address"
+              className="w-full"
+            />
           </div>
         </div>
-        <div className={`flex flex-col gap-1`}>
-          <label className={`font-inter text-sm text-gray-500`}>
-            Address
-          </label>
-          <InputText {...register("address")} />
-          {errors.address && (
-            <small className="p-error">{errors.address.message}</small>
-          )}
+
+        <div className={`mt-4`}>
+          <div className={`flex flex-col gap-1`}>
+            <label className={`font-inter text-sm text-gray-500`}>
+              Country
+            </label>
+            <InputText 
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div className={`flex justify-end`}>
-          <Button
-            type="submit"
-            loading={updateProfileLoading}
-            className={`primary px-7`}
-          >
-            Save Changes
-          </Button>
-        </div>
-      </form>
+      </div>
+
+      <div className={`flex justify-end`}>
+        <Button
+          loading={updateProfileLoading}
+          className={`primary px-7`}
+          onClick={handleSave}
+        >
+          Save Location Changes
+        </Button>
+      </div>
     </div>
   );
 };

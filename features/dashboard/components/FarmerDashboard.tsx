@@ -134,8 +134,7 @@ const FarmerDashboard = () => {
         acceptLabel="Yes, Cancel Order"
         rejectLabel="No, Go Back"
         acceptClassName="p-button-danger"
-        onAccept={handleCancelOrder}
-        acceptDisabled={!cancelReason.trim() || isCancelling}
+        accept={handleCancelOrder}
       />
 
       {/* Stats */}

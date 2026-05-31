@@ -3,14 +3,15 @@
 declare interface IUpdateProfileForm {
   first_name: string;
   last_name: string;
-  other_name: string;
+  other_name: string | null;
   username: string;
   email: string;
   phone_number: string;
   gender: string;
-  address: string;
+  address_line: string;
   city: string;
-  state: string;
+  state: number | null;
+  lga: number | null;
   country: string;
 }
 

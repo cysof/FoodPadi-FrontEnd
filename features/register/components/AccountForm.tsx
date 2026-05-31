@@ -8,19 +8,25 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import React, { useEffect } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useRegisterUserMutation } from "../data/RegisterApi";
 import { enqueueSnackbar } from "notistack";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearRegisterError } from "../data/RegisterSlice";
 import { useRouter, useSearchParams } from "next/navigation";
+import LocationPicker from "@/components/LocationPicker";
+
+// Use the existing IRegisterForm type
+type FormData = IRegisterForm;
 
 const AccountForm = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const query = useSearchParams();
+  const [selectedStateId, setSelectedStateId] = useState<number | null>(null);
+  const [selectedLGAId, setSelectedLGAId] = useState<number | null>(null);
 
   const registerError = useAppSelector((state) => state.register.registerError);
   const registerLoading = useAppSelector(
@@ -29,36 +35,36 @@ const AccountForm = () => {
 
   const [RegisterUserMutation] = useRegisterUserMutation();
 
-  const AccountFormSchema = yup
+  const AccountFormSchema: yup.ObjectSchema<FormData> = yup
     .object({
-      account_type: yup.string().required("required"),
-      username: yup.string().required("required"),
-      first_name: yup.string().required("required"),
-      last_name: yup.string().required("required"),
-      other_name: yup.string().required("required"),
-      gender: yup.string().required("required"),
+      account_type: yup.string().required("Required"),
+      username: yup.string().required("Required"),
+      first_name: yup.string().required("Required"),
+      last_name: yup.string().required("Required"),
+      other_name: yup.string().default(""),
+      gender: yup.string().required("Required"),
       phone_number: yup
         .string()
         .matches(/^(?:\+234|0)[789][01]\d{8}$/, "Invalid phone number")
-        .required("required"),
+        .required("Required"),
       email: yup
         .string()
         .email("Invalid email")
-        .matches(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i, "Invalid email")
-        .required("required"),
-      address: yup.string().required("required"),
-      city: yup.string().required("required"),
-      state: yup.string().required("required"),
-      country: yup.string().required("required"),
+        .required("Required"),
+      address_line: yup.string().required("Required"),
+      city: yup.string().required("Required"),
+      state: yup.number().nullable().required("Please select your state"),
+      lga: yup.number().nullable().required("Please select your LGA"),
+      country: yup.string().required("Required"),
       password: yup
         .string()
-        .required("required")
-        .min(8, "password must be minimum of 8 character"),
+        .required("Required")
+        .min(8, "Password must be minimum of 8 characters"),
       password_confirm: yup
         .string()
-        .required("required")
-        .min(8, "password must be minimum of 8 character")
-        .oneOf([yup.ref("password")], "Password Mismatch"),
+        .required("Required")
+        .min(8, "Password must be minimum of 8 characters")
+        .oneOf([yup.ref("password")], "Password mismatch"),
     })
     .required();
 
@@ -67,13 +73,13 @@ const AccountForm = () => {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
-  } = useForm<IRegisterForm>({
-    mode: "all",
+  } = useForm<FormData>({
     resolver: yupResolver(AccountFormSchema),
     defaultValues: {
       account_type: "",
-      address: "",
+      address_line: "",
       city: "",
       country: "",
       email: "",
@@ -84,31 +90,50 @@ const AccountForm = () => {
       password: "",
       password_confirm: "",
       phone_number: "",
-      state: "",
+      state: null,
+      lga: null,
       username: "",
     },
   });
 
-  // ✅ Fixed: moved to useEffect
+  // Handle state change from LocationPicker
+  const handleStateChange = (stateId: number | null, stateName: string | null) => {
+    setSelectedStateId(stateId);
+    setValue("state", stateId);
+    // Reset LGA when state changes
+    setSelectedLGAId(null);
+    setValue("lga", null);
+  };
+
+  // Handle LGA change from LocationPicker
+  const handleLGAChange = (lgaId: number | null, lgaName: string | null) => {
+    setSelectedLGAId(lgaId);
+    setValue("lga", lgaId);
+  };
+
   useEffect(() => {
     if (registerError) {
       enqueueSnackbar(registerError, { variant: "error" });
       dispatch(clearRegisterError());
     }
-  }, [registerError]);
+  }, [registerError, dispatch]);
 
-  const onSubmit: SubmitHandler<IRegisterForm> = (data: IRegisterForm) =>
+  const onSubmit = (data: FormData) => {
     RegisterUserMutation(data)
       .unwrap()
       .then(() => {
-        enqueueSnackbar("Account creation successful", { variant: "success" });
+        enqueueSnackbar("Account created successfully!", { variant: "success" });
         reset();
         router.push(
           query.get("url")
             ? `/auth/login?url=${query.get("url")}`
             : "/auth/login"
         );
+      })
+      .catch((error) => {
+        enqueueSnackbar(error?.data?.detail || "Registration failed", { variant: "error" });
       });
+  };
 
   return (
     <div
@@ -124,27 +149,18 @@ const AccountForm = () => {
       <h4 className={`text-primary-neutral text-center text-md`}>
         Join Food Bank Today. Connect. Trade. Deliver.
       </h4>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className={`w-full flex flex-col gap-5 mb-5`}
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className={`w-full flex flex-col gap-5 mb-5`}>
         <div className={`w-full flex lg:flex-row flex-col gap-3`}>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>First Name</label>
-            <InputText
-              {...register("first_name")}
-              className={`w-full p-inputtext-sm`}
-            />
+            <InputText {...register("first_name")} className={`w-full p-inputtext-sm`} />
             {errors.first_name && (
               <small className="p-error">{errors.first_name.message}</small>
             )}
           </div>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>Last Name</label>
-            <InputText
-              {...register("last_name")}
-              className={`w-full p-inputtext-sm`}
-            />
+            <InputText {...register("last_name")} className={`w-full p-inputtext-sm`} />
             {errors.last_name && (
               <small className="p-error">{errors.last_name.message}</small>
             )}
@@ -152,21 +168,15 @@ const AccountForm = () => {
         </div>
         <div className={`w-full flex lg:flex-row flex-col gap-3`}>
           <div className={`flex flex-col gap-1 w-full`}>
-            <label className={`text-primary-neutral`}>Other Name</label>
-            <InputText
-              {...register("other_name")}
-              className={`w-full p-inputtext-sm`}
-            />
+            <label className={`text-primary-neutral`}>Other Name (Optional)</label>
+            <InputText {...register("other_name")} className={`w-full p-inputtext-sm`} />
             {errors.other_name && (
               <small className="p-error">{errors.other_name.message}</small>
             )}
           </div>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>Username</label>
-            <InputText
-              {...register("username")}
-              className={`w-full p-inputtext-sm`}
-            />
+            <InputText {...register("username")} className={`w-full p-inputtext-sm`} />
             {errors.username && (
               <small className="p-error">{errors.username.message}</small>
             )}
@@ -193,10 +203,7 @@ const AccountForm = () => {
           </div>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>Phone Number</label>
-            <InputText
-              {...register("phone_number")}
-              className={`w-full p-inputtext-sm`}
-            />
+            <InputText {...register("phone_number")} className={`w-full p-inputtext-sm`} />
             {errors.phone_number && (
               <small className="p-error">{errors.phone_number.message}</small>
             )}
@@ -223,59 +230,59 @@ const AccountForm = () => {
           </div>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>Email</label>
-            <InputText
-              {...register("email")}
-              className={`w-full p-inputtext-sm`}
-            />
+            <InputText {...register("email")} className={`w-full p-inputtext-sm`} />
             {errors.email && (
               <small className="p-error">{errors.email.message}</small>
             )}
           </div>
         </div>
+
+        {/* Location Picker - State and LGA */}
         <div className={`w-full flex lg:flex-row flex-col gap-3`}>
-          <div className={`flex flex-col gap-1 w-full`}>
-            <label className={`text-primary-neutral`}>Country</label>
-            <InputText
-              {...register("country")}
-              className={`w-full p-inputtext-sm`}
-            />
-            {errors.country && (
-              <small className="p-error">{errors.country.message}</small>
-            )}
-          </div>
-          <div className={`flex flex-col gap-1 w-full`}>
-            <label className={`text-primary-neutral`}>State</label>
-            <InputText
-              {...register("state")}
-              className={`w-full p-inputtext-sm`}
+          <div className={`w-full`}>
+            <LocationPicker
+              onStateChange={handleStateChange}
+              onLGAChange={handleLGAChange}
+              selectedStateId={selectedStateId}
+              selectedLGAId={selectedLGAId}
             />
             {errors.state && (
               <small className="p-error">{errors.state.message}</small>
             )}
+            {errors.lga && (
+              <small className="p-error">{errors.lga.message}</small>
+            )}
           </div>
         </div>
+
+        {/* City and Address */}
         <div className={`w-full flex lg:flex-row flex-col gap-3`}>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>City</label>
-            <InputText
-              {...register("city")}
-              className={`w-full p-inputtext-sm`}
-            />
+            <InputText {...register("city")} className={`w-full p-inputtext-sm`} />
             {errors.city && (
               <small className="p-error">{errors.city.message}</small>
             )}
           </div>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>Address</label>
-            <InputText
-              {...register("address")}
-              className={`w-full p-inputtext-sm`}
-            />
-            {errors.address && (
-              <small className="p-error">{errors.address.message}</small>
+            <InputText {...register("address_line")} className={`w-full p-inputtext-sm`} />
+            {errors.address_line && (
+              <small className="p-error">{errors.address_line.message}</small>
             )}
           </div>
         </div>
+
+        {/* Country */}
+        <div className={`w-full flex flex-col gap-1`}>
+          <label className={`text-primary-neutral`}>Country</label>
+          <InputText {...register("country")} defaultValue="Nigeria" className={`w-full p-inputtext-sm`} />
+          {errors.country && (
+            <small className="p-error">{errors.country.message}</small>
+          )}
+        </div>
+
+        {/* Password fields */}
         <div className={`w-full flex lg:flex-row flex-col gap-3`}>
           <div className={`flex flex-col gap-1 w-full`}>
             <label className={`text-primary-neutral`}>Password</label>
@@ -310,12 +317,11 @@ const AccountForm = () => {
               )}
             />
             {errors.password_confirm && (
-              <small className="p-error">
-                {errors.password_confirm.message}
-              </small>
+              <small className="p-error">{errors.password_confirm.message}</small>
             )}
           </div>
         </div>
+        
         <Button
           loading={registerLoading}
           type="submit"

@@ -7,9 +7,10 @@ declare interface IRegisterForm {
   gender: string;
   phone_number: string;
   email: string;
-  address: string;
+  address_line: string;  // was "address" — backend field is address_line
   city: string;
-  state: string;
+  state: number | null;  // was string — backend expects an ID (integer FK)
+  lga: number | null;    // was optional — make it required to match backend
   country: string;
   password: string;
   password_confirm: string;
