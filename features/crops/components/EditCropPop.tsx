@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { enqueueSnackbar } from "notistack";
@@ -16,6 +16,29 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Calendar } from "primereact/calendar";
 import { FileUpload } from "primereact/fileupload";
 import { Image } from "primereact/image";
+
+const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dmlrvkbnp';
+
+// Helper function to get full Cloudinary URL or complete image path
+const getFullImageUrl = (imgPath: string | undefined): string | null => {
+  if (!imgPath || typeof imgPath !== 'string' || imgPath.trim() === "") return null;
+  
+  const trimmedPath = imgPath.trim();
+  
+  // If it's already a full URL, return as is
+  if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://')) {
+    return trimmedPath;
+  }
+  
+  // If it's a Cloudinary path, construct the full URL
+  if (trimmedPath.includes('image/upload/') || trimmedPath.match(/^v\d+\//) || !trimmedPath.includes('/')) {
+    const path = trimmedPath.includes('/') ? trimmedPath : `image/upload/${trimmedPath}`;
+    return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${path}`;
+  }
+  
+  // Fallback
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${trimmedPath}`;
+};
 
 const EditCropPop = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +56,12 @@ const EditCropPop = () => {
   const selectedCrop = useAppSelector((state) => state.crops.selectedCrop);
 
   const [EditACropMutation] = useEditACropMutation();
+  
+  // Memoize the image URL to avoid unnecessary recalculations
+  const imageSrc = useMemo(
+    () => getFullImageUrl(selectedCrop?.img) || "",
+    [selectedCrop?.img]
+  );
 
   // ✅ Fixed: moved to useEffect
   useEffect(() => {
@@ -40,7 +69,7 @@ const EditCropPop = () => {
       enqueueSnackbar(updateCropsError, { variant: "error" });
       dispatch(clearCropsError());
     }
-  }, [updateCropsError]);
+  }, [updateCropsError, dispatch]);
 
   const CropSchema = yup
     .object({
@@ -317,15 +346,23 @@ const EditCropPop = () => {
                     />
                   )}
                 />
-              ) : (
+              ) : imageSrc ? (
                 <Image
                   preview
                   width={`200px`}
                   height={`200px`}
-                  src={selectedCrop?.img}
+                  src={imageSrc}
                   alt="Crop image"
                   className={`max-w-[200px]`}
+                  onError={(e) => {
+                    const imgElement = e.target as HTMLImageElement;
+                    imgElement.style.display = 'none';
+                  }}
                 />
+              ) : (
+                <div className={`flex items-center justify-center w-[200px] h-[200px] bg-gray-200 rounded`}>
+                  <span className={`text-gray-500 text-sm`}>No image available</span>
+                </div>
               )}
               {errors.img && (
                 <small className="p-error">{errors.img.message}</small>

@@ -69,17 +69,27 @@ const Crops = () => {
   };
 
   // Helper function to get full Cloudinary URL
-  const getFullImageUrl = (imgPath: string | undefined) => {
-    if (!imgPath) return outofstock.src;
+  const getFullImageUrl = (imgPath: string | undefined): string => {
+    // Return fallback immediately for empty/invalid paths
+    if (!imgPath || typeof imgPath !== 'string' || imgPath.trim() === "") {
+      return outofstock.src;
+    }
+    
+    const trimmedPath = imgPath.trim();
     
     // If it's already a full URL, return as is
-    if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
-      return imgPath;
+    if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://')) {
+      return trimmedPath;
     }
     
     // If it's a Cloudinary path (starts with image/upload/ or v...)
-    if (imgPath.includes('image/upload/') || imgPath.match(/^v\d+\//)) {
-      return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${imgPath}`;
+    if (trimmedPath.includes('image/upload/') || trimmedPath.match(/^v\d+\//)) {
+      return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${trimmedPath}`;
+    }
+    
+    // Try to construct URL for public_id format
+    if (!trimmedPath.includes('/')) {
+      return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${trimmedPath}`;
     }
     
     // Fallback to out of stock image

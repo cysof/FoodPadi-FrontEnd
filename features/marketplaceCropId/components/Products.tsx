@@ -1,80 +1,142 @@
-// features/marketplace/components/Products.tsx
+// features/marketplace/components/ProductCard.tsx (Defensive version)
 "use client";
 
-import React, { useState } from "react";
-import { useGetAllProductsQuery } from "../data/MarketApi";
-import { useAppSelector } from "@/store/hooks";
-import ProductCard from "./ProductCard";
-import ProductsLoader from "./ProductsLoader";
-import { Pagination } from "@/components";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState, useEffect, useMemo } from "react";
 
-const Products = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const getAllProductsLoading = useAppSelector(
-    (state) => state.market.getAllProductsLoading
-  );
-  const getAllProductsError = useAppSelector(
-    (state) => state.market.getAllProductsError
-  );
-  const products = useAppSelector((state) => state.market.products);
-  const search = useAppSelector((state) => state.market.search);
-  const count = useAppSelector((state) => state.market.count);
-  const next = useAppSelector((state) => state.market.next);
-  const previous = useAppSelector((state) => state.market.previous);
-
-  const query = {
-    ...(search ? { search } : {}),
-    page: currentPage,
+interface ProductCardProps {
+  product: {
+    id: string | number;
+    crop_name: string;
+    img?: string | null;
+    image_url?: string | null;
+    thumbnail_url?: string | null;
+    price_per_unit: number;
+    unit: string;
+    quantity: number;
+    availability: string;
+    farmer_name?: string;
   };
+}
 
-  useGetAllProductsQuery(query);
+const ProductCard = ({ product }: ProductCardProps) => {
+  const [imageError, setImageError] = useState(false);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  // Use useMemo to compute the image source
+  const imageSource = useMemo(() => {
+    if (!product) {
+      console.log("No product");
+      return null;
+    }
 
-  return getAllProductsLoading ? (
-    <ProductsLoader />
-  ) : getAllProductsError ? (
-    <div
-      className={`w-full h-svh flex flex-col justify-center items-center gap-3 max-w-7xl mx-auto bg-white`}
-    >
-      <p className={`font-inter font-medium text-lg text-center text-black`}>
-        Error fetching Market products
-      </p>
-      <span
-        className={`rounded-md border border-gray-300 py-2 px-5 text-black hover:bg-primary hover:text-white duration-300 transition-all cursor-pointer`}
-        onClick={() => window.location.reload()}
-      >
-        Click to reload your browser
-      </span>
-    </div>
-  ) : products.length === 0 ? (
-    <div
-      className={`text-black text-lg font-inter h-svh w-full py-10 max-w-7xl`}
-    >
-      <p className={`text-center`}>No products yet in the market</p>
-    </div>
-  ) : (
-    <div className={`min-h-svh py-10 px-3 md:px-10 max-w-7xl w-full mx-auto`}>
-      <div
-        className={`grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full`}
-      >
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-      <Pagination
-        count={count}
-        next={next}
-        previous={previous}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
+    const isAvailable = product.availability?.toLowerCase() === "available";
+    
+    if (!isAvailable) {
+      console.log("Product not available");
+      return null;
+    }
+
+    // Get the first valid image URL
+    const imageUrl = product.img || product.image_url || product.thumbnail_url;
+    
+    if (!imageUrl || imageUrl.trim() === "") {
+      console.log("Empty or missing image URL");
+      return null;
+    }
+
+    // Clean and return the URL
+    let cleanUrl = imageUrl.trim();
+    if (cleanUrl.startsWith("http://")) {
+      cleanUrl = cleanUrl.replace("http://", "https://");
+    }
+    
+    console.log("Using image URL:", cleanUrl);
+    return cleanUrl;
+  }, [product]);
+
+  // Don't render Image at all if no valid source
+  const renderImage = () => {
+    if (imageError) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+          <span className="text-gray-400 text-sm">Image error</span>
+        </div>
+      );
+    }
+
+    if (!imageSource) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+          <span className="text-gray-400 text-sm">No image</span>
+        </div>
+      );
+    }
+
+    return (
+      <Image
+        src={imageSource}
+        alt={product.crop_name || "Product image"}
+        fill
+        className="object-cover group-hover:scale-105 transition-transform duration-300"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        onError={() => {
+          console.error("Image failed to load:", imageSource);
+          setImageError(true);
+        }}
+        onLoad={() => {
+          console.log("Image loaded:", imageSource);
+          setImageError(false);
+        }}
       />
-    </div>
+    );
+  };
+
+  const isAvailable = product?.availability?.toLowerCase() === "available";
+
+  return (
+    <Link
+      href={`/marketplace/${product.id}`}
+      className="group block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+    >
+      <div className="relative aspect-square w-full bg-gray-100">
+        {renderImage()}
+      </div>
+
+      <div className="p-4">
+        <h3 className="font-semibold text-lg text-gray-800 truncate">
+          {product.crop_name || "Unknown Product"}
+        </h3>
+        
+        <p className="text-sm text-gray-600 mt-1">
+          {product.farmer_name || "Unknown Farmer"}
+        </p>
+        
+        <div className="mt-2 flex items-center justify-between">
+          <div>
+            <span className="text-lg font-bold text-green-600">
+              ₦{Number(product.price_per_unit || 0).toLocaleString()}
+            </span>
+            <span className="text-sm text-gray-500"> /{product.unit || "unit"}</span>
+          </div>
+          
+          <span
+            className={`text-xs px-2 py-1 rounded-full ${
+              isAvailable
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {isAvailable ? "In Stock" : "Out of Stock"}
+          </span>
+        </div>
+        
+        <div className="mt-2 text-sm text-gray-500">
+          Quantity: {product.quantity || 0} {product.unit || "units"}
+        </div>
+      </div>
+    </Link>
   );
 };
 
-export default Products;
+export default ProductCard;
