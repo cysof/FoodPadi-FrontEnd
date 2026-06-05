@@ -47,7 +47,8 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await fetch(`${baseUrl}accounts/api/locations/states/`);
+        const response = await fetch(`${baseUrl}accounts/locations/states/`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         const data = await response.json();
         setStates(data);
       } catch (error) {
@@ -83,7 +84,8 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const fetchLgas = async (stateId: number) => {
     setLoadingLgas(true);
     try {
-      const response = await fetch(`${baseUrl}accounts/api/locations/states/${stateId}/lgas/`);
+      const response = await fetch(`${baseUrl}accounts/locations/states/${stateId}/lgas/`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       const data = await response.json();
       setLgas(data);
     } catch (error) {

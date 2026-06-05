@@ -332,6 +332,7 @@ const OrderPage = () => {
                 width={300}
                 height={200}
                 className={`rounded-2xl object-cover`}
+                priority
               />
             </div>
           )}
