@@ -33,12 +33,53 @@ const accountBaseQuery = fetchBaseQuery({
   },
 });
 
+// ✅ Custom handler for FormData to ensure proper multipart/form-data encoding
+async function handleFormDataRequest(
+  args: FetchArgs,
+  getState: () => any,
+  baseUrl: string
+) {
+  const token = (getState() as RootState).login.token.access;
+  const headers = new Headers();
+  
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+  
+  // Don't set Content-Type - let browser handle it for FormData
+  const url = new URL(args.url || "", baseUrl).toString();
+  
+  try {
+    const response = await fetch(url, {
+      method: args.method || 'POST',
+      headers,
+      body: args.body,
+      credentials: 'include',
+    });
+    
+    const data = await response.json().catch(() => ({}));
+    
+    if (!response.ok) {
+      return { error: { status: response.status, data } };
+    }
+    
+    return { data };
+  } catch (error: any) {
+    return { error: { status: 0, data: error?.message } };
+  }
+}
+
 // ✅ Fixed: using async function declaration instead of const arrow function
 async function baseQueryWithReauth(
   args: string | FetchArgs,
   api: Parameters<BaseQueryFn>[1],
   extraOption: Parameters<BaseQueryFn>[2]
 ) {
+  // Check if this is a FormData request
+  if (typeof args === 'object' && args.body instanceof FormData) {
+    return handleFormDataRequest(args, api.getState, process.env.NEXT_PUBLIC_BASE_URL || '');
+  }
+  
   let result = await baseQuery(args, api, extraOption);
   if (result.error && result.error.status === 401) {
     const currentRefreshToken = (api.getState() as RootState).login?.token.refresh;
@@ -60,7 +101,13 @@ async function baseQueryWithReauth(
     if (refreshResult.data) {
       const newAuthToken = refreshResult.data as IToken;
       api.dispatch(setToken(newAuthToken));
-      result = await baseQuery(args, api, extraOption);
+      
+      // Re-check if it's FormData before retrying
+      if (typeof args === 'object' && args.body instanceof FormData) {
+        result = await handleFormDataRequest(args, api.getState, process.env.NEXT_PUBLIC_BASE_URL || '');
+      } else {
+        result = await baseQuery(args, api, extraOption);
+      }
     } else {
       api.dispatch({ type: "logout" });
     }

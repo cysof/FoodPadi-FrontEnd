@@ -6,7 +6,7 @@ const AccountApi = FetchAPI.injectEndpoints({
     // Get user profile
     getProfile: build.query<IUser, void>({
       query: () => ({
-        url: `accounts/api/profile/`,
+        url: `accounts/profile/`,
         method: "Get",
       }),
       providesTags: ["profile"],
@@ -15,7 +15,7 @@ const AccountApi = FetchAPI.injectEndpoints({
     // Update user profile
     updateProfile: build.mutation<IUpdateProfileResponse, IUpdateProfileForm>({
       query: (data) => ({
-        url: `accounts/api/profile/`,
+        url: `accounts/profile/`,
         method: "PATCH",
         body: data,
       }),
@@ -25,7 +25,7 @@ const AccountApi = FetchAPI.injectEndpoints({
     // Change password
     changePassword: build.mutation<IChangePasswordResponse, IChangePasswordInput>({
       query: (data) => ({
-        url: `accounts/api/change-password/`,
+        url: `accounts/change-password/`,
         method: "Post",
         body: data,
       }),

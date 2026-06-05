@@ -1,65 +1,62 @@
+// features/crops/data/CropApi.ts
 import { FetchAPI } from "@/store/FetchAPI";
 
 const CropApi = FetchAPI.injectEndpoints({
   endpoints: (build) => ({
-   logout: build.mutation<void, void>({
-  query: () => ({
-    url: `accounts/api/logout/`,
-    method: "Post",
-  }),
-}),
+    logout: build.mutation<void, void>({
+      query: () => ({
+        url: `accounts/logout/`,
+        method: "POST",
+      }),
+    }),
 
-    // create a crop
-    createCrop: build.mutation<void, FormData>({
-      query: (crop) => ({
-        url: `croplisting/crops/`,  // ✅ Removed /api/ from the middle
-        method: "Post",
-        body: crop,
+    createCrop: build.mutation<any, FormData>({
+      query: (formData) => ({
+        url: `croplisting/crops/`,
+        method: "POST",
+        body: formData,
       }),
       invalidatesTags: ["crops"],
     }),
 
-    // get all crops
     getAllCrops: build.query<IGetMarketProduceResponse, searchTerm>({
       query: ({ ...terms }) => ({
-        url: `croplisting/crops/my-listings/`,  // ✅ Removed /api/ from the middle
-        method: "Get",
+        url: `croplisting/crops/my-listings/`,
+        method: "GET",
         params: terms,
       }),
       providesTags: ["crops"],
     }),
 
-    // edit a crop
-    editACrop: build.mutation<void, ICropFormUpdate>({
-      query: ({ ...crop }) => ({
-        url: `croplisting/crops/${crop.id}/`,  // ✅ Removed /api/ from the middle
+    editACrop: build.mutation<any, { form: FormData; id: number }>({
+      query: ({ form, id }) => ({
+        url: `croplisting/crops/${id}/`,
         method: "PATCH",
-        body: crop.form,
+        body: form,
       }),
       invalidatesTags: ["crops"],
     }),
 
-    // Change the availability of a product
-    flagAvailability: build.mutation<void, IChangeAvailability>({
-      query: ({ ...crop }) => ({
-        url: `croplisting/crops/${crop.id}/`,  // ✅ Removed /api/ from the middle
+    flagAvailability: build.mutation<void, { id: number; availability: string }>({
+      query: ({ id, availability }) => ({
+        url: `croplisting/crops/${id}/`,
         method: "PATCH",
-        body: { availability: crop.availability },
+        body: { availability },
       }),
       invalidatesTags: ["crops"],
     }),
 
-    // delete a crop
-    deleteACrop: build.mutation<void, ICropInputID>({
-      query: ({ ...crop }) => ({
-        url: `croplisting/crops/${crop.id}/`,  // ✅ Removed /api/ from the middle
-        method: "Delete",
+    deleteACrop: build.mutation<void, { id: number }>({
+      query: ({ id }) => ({
+        url: `croplisting/crops/${id}/`,
+        method: "DELETE",
       }),
       invalidatesTags: ["crops"],
     }),
   }),
 });
 
+// Export hooks for use in components
 export const {
   useCreateCropMutation,
   useDeleteACropMutation,
@@ -68,5 +65,15 @@ export const {
   useLogoutMutation,
   useFlagAvailabilityMutation
 } = CropApi;
-export const { createCrop, deleteACrop, editACrop, getAllCrops, logout, flagAvailability } =
-  CropApi.endpoints;
+
+// Export endpoint objects for use in slices or other places if needed
+export const { 
+  createCrop, 
+  editACrop, 
+  getAllCrops, 
+  deleteACrop, 
+  logout, 
+  flagAvailability 
+} = CropApi.endpoints;
+
+export default CropApi;

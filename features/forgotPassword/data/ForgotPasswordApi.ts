@@ -5,7 +5,7 @@ const ForgotPasswordApi = LoginAPI.injectEndpoints({
   endpoints: (build) => ({
     forgotPassword: build.mutation<{ detail: string }, { email: string }>({
       query: (data) => ({
-        url: `accounts/api/forgot-password/`,
+        url: `accounts/forgot-password/`,
         method: "Post",
         body: data,
       }),

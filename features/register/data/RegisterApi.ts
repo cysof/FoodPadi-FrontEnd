@@ -4,7 +4,7 @@ const RegisterApi = LoginAPI.injectEndpoints({
   endpoints: (build) => ({
     registerUser: build.mutation<void, IRegisterForm>({
       query: ({ ...user }) => ({
-        url: `accounts/api/register/`,
+        url: `accounts/register/`,
         method: "Post",
         body: user,
       }),

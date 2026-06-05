@@ -4,7 +4,7 @@ const LoginApi = LoginAPI.injectEndpoints({
   endpoints: (build) => ({
     loginUser: build.mutation<ILoginResponse, ILoginForm>({
       query: ({ ...user }) => ({
-        url: `accounts/api/login/`,
+        url: `accounts/login/`,
         method: "Post",
         body: user,
       }),
