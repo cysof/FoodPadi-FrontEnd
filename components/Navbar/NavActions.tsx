@@ -7,6 +7,7 @@ import { Button } from "primereact/button";
 import { confirmDialog } from "primereact/confirmdialog";
 import { useLogoutMutation } from "@/features/crops/data/CropApi";
 import { usePathname } from "next/navigation";
+import NotificationBell from "@/features/notifications/components/NotificationBell";
 
 const authLinks = [
   { name: "Dashboard", href: "/dashboard" },
@@ -38,37 +39,44 @@ const NavActions = () => {
     });
   };
 
-  if (isAuthenticated) {
-    return (
-      <div className={`flex flex-col md:flex-row items-start md:items-center gap-6`}>
-        {authLinks.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            className={`font-inter text-sm font-medium transition-colors duration-200 ${
-              pathname === link.href ||
-              (link.href === "/dashboard" && pathname.startsWith("/dashboard"))
-                ? `text-primary border-b-2 border-primary pb-0.5`
-                : `text-black hover:text-primary`
-            }`}
-          >
-            {link.name}
-          </Link>
-        ))}
-        <span className={`font-inter text-sm font-medium text-primary`}>
-          {user?.username}
-        </span>
-        <Button
-          onClick={confirmLogout}
-          outlined
-          severity="danger"
-          className={`py-1.5 px-4 text-sm font-inter font-medium`}
+
+
+// Inside the authenticated return, add NotificationBell before username:
+if (isAuthenticated) {
+  return (
+    <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+      {authLinks.map((link) => (
+        <Link
+          key={link.name}
+          href={link.href}
+          className={`font-inter text-sm font-medium transition-colors duration-200 ${
+            pathname === link.href ||
+            (link.href === "/dashboard" && pathname.startsWith("/dashboard"))
+              ? "text-primary border-b-2 border-primary pb-0.5"
+              : "text-black hover:text-primary"
+          }`}
         >
-          Logout
-        </Button>
-      </div>
-    );
-  }
+          {link.name}
+        </Link>
+      ))}
+
+      {/* ✅ Notification Bell */}
+      <NotificationBell />
+
+      <span className="font-inter text-sm font-medium text-primary">
+        {user?.username}
+      </span>
+      <Button
+        onClick={confirmLogout}
+        outlined
+        severity="danger"
+        className="py-1.5 px-4 text-sm font-inter font-medium"
+      >
+        Logout
+      </Button>
+    </div>
+  );
+}
 
   return (
     <div className={`flex flex-col md:flex-row items-center gap-3`}>

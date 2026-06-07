@@ -120,6 +120,6 @@ export const FetchAPI = createApi({
   baseQuery: baseQueryWithReauth,
   refetchOnMountOrArgChange: true,
   refetchOnReconnect: true,
-  tagTypes: ["crops", "orders", "profile", "deliveries"],
+  tagTypes: ["crops", "orders", "profile", "deliveries", "notifications"],
   endpoints: () => ({}),
 });
