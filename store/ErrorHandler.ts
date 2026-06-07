@@ -1,3 +1,4 @@
+// store/ErrorHandler.ts
 import { PayloadAction } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
@@ -9,25 +10,39 @@ export const returnError = (
     | undefined
   >
 ): string => {
-  // Check if action.payload is not undefined
   if (action.payload) {
     const { data, status } = action.payload;
 
-    // Check if there's a network-related error
+    // Network error
     if (status === "FETCH_ERROR") {
       return "Network error: Please check your internet connection.";
     }
 
-    // Check if the payload contains data with a message (error response from API)
-    if (
-      data &&
-      typeof data === "object" &&
-      "message" in data &&
-      typeof data.message === "string"
-    ) {
-      return (data as { message: string }).message;
+    // Handle API error response
+    if (data && typeof data === "object") {
+      // Check for details.non_field_errors (your backend structure)
+      if (
+        "details" in data &&
+        data.details &&
+        typeof data.details === "object" &&
+        "non_field_errors" in data.details &&
+        Array.isArray(data.details.non_field_errors) &&
+        data.details.non_field_errors.length > 0
+      ) {
+        return data.details.non_field_errors[0];
+      }
+
+      // Check for top-level error message
+      if ("error" in data && typeof data.error === "string") {
+        return data.error;
+      }
+
+      // Check for message field (fallback)
+      if ("message" in data && typeof data.message === "string") {
+        return data.message;
+      }
     }
   }
-  // Return a generic message if no specific error message is found
+
   return "An unknown error occurred";
 };

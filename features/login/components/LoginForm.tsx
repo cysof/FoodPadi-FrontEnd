@@ -51,7 +51,6 @@ const LoginForm = () => {
     },
   });
 
-  // ✅ Fixed: moved to useEffect
   useEffect(() => {
     if (loginError) {
       enqueueSnackbar(loginError, { variant: "error" });
@@ -68,6 +67,10 @@ const LoginForm = () => {
         enqueueSnackbar("Login successful", { variant: "success" });
         reset();
         router.push(query.get("url") ? `${query.get("url")}` : "/dashboard");
+      })
+      .catch(() => {
+        // Error is already handled by Redux slice (loginError state)
+        // This catch prevents "Uncaught (in promise)" errors in the console
       });
 
   return (
