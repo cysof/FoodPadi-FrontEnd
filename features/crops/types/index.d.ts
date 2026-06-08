@@ -1,14 +1,15 @@
 // features/crops/types/index.d.ts
 
 declare interface ICropForm {
-  crop_name: string;
   crop_description: string;
-  quantity: number;
-  img: File;
-  unit: string;
+  crop_name: string;
+  harvested_date: string;
+  img: File;  // remove null
   location: string;
   price_per_unit: number;
-  harvested_date: string;
+  quantity: number;
+  unit: string;
+  availability: string;
 }
 
 declare interface ICropFormUpdate {
@@ -64,10 +65,11 @@ declare interface ICropInput {
   unit: string;
   location: string;
   price_per_unit: number;
-  harvested_date: string;
+  harvested_date: string | null;
   is_Organic: boolean;
   availability: string;
-  img: string | File;
+  img: string | File | null | undefined;
   created_at: string;
   farmer: number;
+  additional_images?: ICropImage[];
 }

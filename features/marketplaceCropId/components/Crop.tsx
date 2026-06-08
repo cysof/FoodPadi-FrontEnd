@@ -1,4 +1,4 @@
-// features/marketplaceCropId/components/Crop.tsx (Compact Version)
+// features/marketplaceCropId/components/Crop.tsx (Updated with Gallery)
 "use client";
 
 import { useAppSelector } from "@/store/hooks";
@@ -27,6 +27,7 @@ const Crop = () => {
   const crop = useAppSelector((state) => state.marketPlaceCrop.product);
   const user = useAppSelector((state) => state.login);
   const [imageError, setImageError] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   if (!crop) {
     return (
@@ -37,7 +38,17 @@ const Crop = () => {
   }
 
   const isAvailable = crop?.availability?.toLowerCase() === "available";
-  const imageSrc = getImageSrc(crop?.img, isAvailable);
+  const coverImage = getImageSrc(crop?.img, isAvailable);
+  const activeImage = selectedImage || coverImage;
+
+  // Prepare all images: cover + additional images
+  const allImages = [
+    { id: 0, image_url: coverImage },
+    ...(crop.additional_images || []).map((img: any, idx: number) => ({
+      id: img.id || idx + 1,
+      image_url: img.image_url || img,
+    })),
+  ];
 
   return (
     <div className="w-full min-h-screen bg-gray-50 py-6 px-4">
@@ -53,16 +64,49 @@ const Crop = () => {
 
         {/* Main Card */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          {/* Image */}
-          <div className="relative w-full bg-gray-100 h-64 md:h-80">
-            <Image
-              fill
-              className="object-contain p-4"
-              src={imageError ? outofstock.src : imageSrc}
-              alt={crop.crop_name || "Crop image"}
-              onError={() => setImageError(true)}
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
+          {/* Gallery Section - Main Image + Thumbnails */}
+          <div className="w-full bg-gray-100">
+            {/* Main Image */}
+            <div className="relative w-full h-64 md:h-80">
+              <Image
+                fill
+                className="object-contain p-4"
+                src={imageError ? outofstock.src : activeImage}
+                alt={crop.crop_name || "Crop image"}
+                onError={() => setImageError(true)}
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+
+            {/* Thumbnail Gallery - only show if more than 1 image */}
+            {allImages.length > 1 && (
+              <div className="flex gap-2 px-4 py-3 border-t overflow-x-auto">
+                {allImages.map((img, index) => (
+                  <button
+                    key={img.id}
+                    onClick={() => {
+                      setSelectedImage(img.image_url);
+                      setImageError(false); // Reset error when switching images
+                    }}
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                      activeImage === img.image_url
+                        ? "border-primary"
+                        : "border-gray-200 hover:border-gray-400"
+                    }`}
+                  >
+                    <img
+                      src={img.image_url}
+                      alt={`${crop.crop_name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // If thumbnail fails to load, use out of stock image
+                        (e.target as HTMLImageElement).src = outofstock.src;
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Content */}

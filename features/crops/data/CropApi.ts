@@ -9,7 +9,6 @@ const CropApi = FetchAPI.injectEndpoints({
         method: "POST",
       }),
     }),
-
     createCrop: build.mutation<any, FormData>({
       query: (formData) => ({
         url: `croplisting/crops/`,
@@ -18,7 +17,6 @@ const CropApi = FetchAPI.injectEndpoints({
       }),
       invalidatesTags: ["crops"],
     }),
-
     getAllCrops: build.query<IGetMarketProduceResponse, searchTerm>({
       query: ({ ...terms }) => ({
         url: `croplisting/crops/my-listings/`,
@@ -27,7 +25,6 @@ const CropApi = FetchAPI.injectEndpoints({
       }),
       providesTags: ["crops"],
     }),
-
     editACrop: build.mutation<any, { form: FormData; id: number }>({
       query: ({ form, id }) => ({
         url: `croplisting/crops/${id}/`,
@@ -36,7 +33,6 @@ const CropApi = FetchAPI.injectEndpoints({
       }),
       invalidatesTags: ["crops"],
     }),
-
     flagAvailability: build.mutation<void, { id: number; availability: string }>({
       query: ({ id, availability }) => ({
         url: `croplisting/crops/${id}/`,
@@ -45,7 +41,6 @@ const CropApi = FetchAPI.injectEndpoints({
       }),
       invalidatesTags: ["crops"],
     }),
-
     deleteACrop: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
         url: `croplisting/crops/${id}/`,
@@ -53,27 +48,50 @@ const CropApi = FetchAPI.injectEndpoints({
       }),
       invalidatesTags: ["crops"],
     }),
+    // ✅ Add image to crop
+    addCropImage: build.mutation<ICropImage, { id: number; image: File }>({
+      query: ({ id, image }) => {
+        const formData = new FormData();
+        formData.append("image", image);
+        return {
+          url: `croplisting/crops/${id}/add-image/`,
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["crops"],
+    }),
+    // ✅ Remove image from crop
+    removeCropImage: build.mutation<void, { cropId: number; imageId: number }>({
+      query: ({ cropId, imageId }) => ({
+        url: `croplisting/crops/${cropId}/remove-image/${imageId}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["crops"],
+    }),
   }),
 });
 
-// Export hooks for use in components
 export const {
   useCreateCropMutation,
   useDeleteACropMutation,
   useGetAllCropsQuery,
   useEditACropMutation,
   useLogoutMutation,
-  useFlagAvailabilityMutation
+  useFlagAvailabilityMutation,
+  useAddCropImageMutation,
+  useRemoveCropImageMutation,
 } = CropApi;
 
-// Export endpoint objects for use in slices or other places if needed
-export const { 
-  createCrop, 
-  editACrop, 
-  getAllCrops, 
-  deleteACrop, 
-  logout, 
-  flagAvailability 
+export const {
+  createCrop,
+  editACrop,
+  getAllCrops,
+  deleteACrop,
+  logout,
+  flagAvailability,
+  addCropImage,
+  removeCropImage,
 } = CropApi.endpoints;
 
 export default CropApi;

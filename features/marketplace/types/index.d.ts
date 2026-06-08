@@ -6,6 +6,12 @@ declare type searchTerm = {
   page?: number;
 };
 
+declare interface ICropImage {
+  id: number;
+  image_url: string;
+  order: number;
+}
+
 declare interface ICrop {
   id: number;
   farmer_name: string;
@@ -19,6 +25,8 @@ declare interface ICrop {
   is_Organic: boolean;
   availability: string;
   img: string;
+  image_url: string;
+  additional_images: ICropImage[];
   created_at: string;
   farmer: number;
 }
