@@ -34,6 +34,21 @@ const Footer = () => {
               </Link>
             </li>
             <li>
+              <Link href="/about" className="hover:text-primary">
+                About Us
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-primary">
+                Contact Us
+              </Link>
+            </li>
+            <li>
+              <Link href="/marketplace" className="hover:text-primary">
+                Marketplace
+              </Link>
+            </li>
+            <li>
               <Link href="#how-it-works" className="hover:text-primary">
                 How It Works
               </Link>
@@ -52,9 +67,9 @@ const Footer = () => {
           <p className={`text-sm flex items-center gap-2`}>
             <MapPin width={16} /> House 17 Road 251 FHA Guzape
           </p>
-          <div className={`text-sm flex gap-2`}>  {/* Changed from <p> to <div> */}
+          <div className={`text-sm flex gap-2`}>
             <PhoneCall className="shrink-0" width={16} />{" "}
-            <div className={`flex items-center flex-wrap gap-2`}>  {/* Changed from <p> to <div> */}
+            <div className={`flex items-center flex-wrap gap-2`}>
               <Link
                 className={`hover:text-primary`}
                 href={`tel:+2349074366942`}
@@ -93,7 +108,7 @@ const Footer = () => {
           <Link
             target="_blank"
             href={`https://chat.whatsapp.com/CuueYeE9cQnJkgYgSLUDHC`}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md"
+            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md inline-block"
           >
             Join Now
           </Link>

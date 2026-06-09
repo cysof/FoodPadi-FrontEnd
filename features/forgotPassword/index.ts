@@ -5,13 +5,12 @@ export { default as ForgotPasswordForm } from "./components/ForgotPasswordForm";
 
 // API
 export { 
-  useRequestPasswordResetMutation,
+  useForgotPasswordMutation,        // ← was useRequestPasswordResetMutation
   useConfirmPasswordResetMutation,
 } from "./data/ForgotPasswordApi";
-
 // Types
 export type {
-  IPasswordResetRequest,
-  IPasswordResetConfirm,
+  IForgotPasswordInput,
+  IConfirmPasswordResetInput,
   IPasswordResetResponse,
 } from "./data/ForgotPasswordApi";

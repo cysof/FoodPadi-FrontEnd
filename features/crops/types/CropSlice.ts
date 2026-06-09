@@ -1,10 +1,13 @@
 // features/crops/data/CropSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createCrop, deleteACrop, editACrop, getAllCrops } from "./CropApi";
+import { createCrop, deleteACrop, editACrop, getAllCrops } from "../data/CropApi";
 import { returnError } from "@/store/ErrorHandler";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const initialState: ICropInitialState = {
+  count: 0,
+  next: null,
+  previous: null,
   crops: [],
   selectedCrop: {
     availability: "",
@@ -16,6 +19,8 @@ const initialState: ICropInitialState = {
     harvested_date: "",
     id: 0,
     img: "",
+    image_url: "",
+    additional_images: [],
     is_Organic: false,
     location: "",
     price_per_unit: 0,
@@ -33,10 +38,6 @@ const initialState: ICropInitialState = {
   showCreateCropModal: false,
   showUpdateCropModal: false,
   search: "",
-  // ✅ Added pagination fields
-  count: 0,
-  next: null,
-  previous: null,
 };
 
 const CropSlice = createSlice({

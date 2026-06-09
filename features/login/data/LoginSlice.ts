@@ -21,7 +21,11 @@ const initialState: LoginInitialState = {
     last_name: "",
     other_name: "",
     phone_number: "",
-    state: "",
+    state: 0,
+    address_line: "",
+    state_name: "",
+    lga: 0,
+    lga_name: "",
     username: "",
   },
   token: {

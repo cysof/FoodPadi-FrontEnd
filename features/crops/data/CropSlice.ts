@@ -8,6 +8,9 @@ import { returnError } from "@/store/ErrorHandler";
 
 const initialState: ICropInitialState = {
   crops: [],
+  count: 0,
+  next: null,
+  previous: null,
   selectedCrop: {
     availability: "",
     created_at: "",
@@ -18,6 +21,8 @@ const initialState: ICropInitialState = {
     harvested_date: "",
     id: 0,
     img: "",
+    image_url: "",
+    additional_images: [],
     is_Organic: false,
     location: "",
     price_per_unit: 0,

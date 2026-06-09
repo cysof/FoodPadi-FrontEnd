@@ -1,17 +1,17 @@
 // features/forgotPassword/data/ForgotPasswordApi.ts
 import { LoginAPI } from "@/store/LoginAPI";
 
-interface IForgotPasswordInput {
+export interface IForgotPasswordInput {
   email: string;
 }
 
-interface IConfirmPasswordResetInput {
+export interface IConfirmPasswordResetInput {
   token: string;
   new_password: string;
   confirm_password: string;
 }
 
-interface IPasswordResetResponse {
+export interface IPasswordResetResponse {
   detail: string;
 }
 
