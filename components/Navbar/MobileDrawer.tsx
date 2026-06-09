@@ -1,9 +1,10 @@
-// components/Navbar/MobileDrawer.tsx
 "use client";
 
 import { X } from "lucide-react";
 import NavLinks from "./NavLinks";
 import NavActions from "./NavActions";
+import Image from "next/image";
+import Link from "next/link";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -17,31 +18,54 @@ const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
       {isOpen && (
         <div
           onClick={onClose}
-          className={`fixed inset-0 bg-black/50 z-[998] md:hidden`}
+          className="fixed inset-0 bg-black/50 z-[998] md:hidden"
         />
       )}
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 left-0 h-full w-[280px] bg-white z-[999] shadow-xl flex flex-col gap-8 px-6 py-8 transition-transform duration-300 ease-in-out md:hidden ${
-          isOpen ? `translate-x-0` : `-translate-x-full`
-        }`}
+        // Change w-[300px] to w-[75vw] max-w-[280px]
+className={`fixed top-0 left-0 h-full w-[75vw] max-w-[170px] bg-white z-[999] flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
+  isOpen ? "translate-x-0" : "-translate-x-full"
+}`}
       >
-        {/* Close Button */}
-        <div className={`flex justify-end`}>
-          <X
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <Link href="/" onClick={onClose}>
+            <Image
+              src="/mainLogo.svg"
+              width={50}
+              height={18}
+              alt="Micro FoodBank Logo"
+            />
+          </Link>
+          <button
             onClick={onClose}
-            className={`cursor-pointer text-black hover:text-primary transition-colors duration-200`}
-            width={24}
-            height={24}
-          />
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <X width={18} height={18} className="text-gray-600" />
+          </button>
         </div>
 
-        {/* Nav Links */}
-        <NavLinks />
+{/* Nav Links */}
+<div className="flex flex-col px-4 py-4 gap-1 border-b border-gray-100">
+  <NavLinks onClose={onClose} />
+</div>
 
-        {/* Nav Actions */}
-        <NavActions />
+{/* Nav Actions */}
+<div className="flex flex-col px-4 py-4 gap-1">
+  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
+    Account
+  </p>
+  <NavActions onClose={onClose} />
+</div>
+
+        {/* Footer */}
+        <div className="mt-auto px-5 py-4 border-t border-gray-100">
+          <p className="text-xs text-gray-400 font-inter">
+            © {new Date().getFullYear()} Micro FoodBank
+          </p>
+        </div>
       </div>
     </>
   );

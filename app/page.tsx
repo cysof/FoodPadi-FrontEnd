@@ -1,13 +1,12 @@
 import { Footer, Navbar } from "@/components";
-import { Header, HowItWorks, JoinTheWaitList } from "@/features/home";
+import { Header, HowItWorks } from "@/features/home";
 
 export default function Home() {
   return (
-    <div className={`relative flex flex-col gap-7 .pt-27 bg-white`}>
+    <div className="relative flex flex-col bg-white">
       <Navbar />
       <Header />
       <HowItWorks />
-      <JoinTheWaitList />
       <Footer />
     </div>
   );

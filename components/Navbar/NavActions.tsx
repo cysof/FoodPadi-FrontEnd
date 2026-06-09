@@ -14,7 +14,13 @@ const authLinks = [
   { name: "Contact", href: "/contact" },
 ];
 
-const NavActions = () => {
+const NavActions = ({
+  scrolled = false,
+  onClose,
+}: {
+  scrolled?: boolean;
+  onClose?: () => void;
+}) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const token = useAppSelector((state) => state.login.token);
@@ -42,43 +48,53 @@ const NavActions = () => {
 
 
 // Inside the authenticated return, add NotificationBell before username:
+
 if (isAuthenticated) {
   return (
-    <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+    <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-6">
       {authLinks.map((link) => (
         <Link
           key={link.name}
           href={link.href}
-          className={`font-inter text-sm font-medium transition-colors duration-200 ${
+          className={`font-inter text-sm font-medium transition-all duration-200 pb-0.5 border-b-2 ${
             pathname === link.href ||
             (link.href === "/dashboard" && pathname.startsWith("/dashboard"))
-              ? "text-primary border-b-2 border-primary pb-0.5"
-              : "text-black hover:text-primary"
+              ? scrolled
+                ? "text-primary border-primary"
+                : "text-white border-yellow-400"
+              : scrolled
+              ? "text-gray-700 border-transparent hover:text-primary hover:border-primary"
+              : "text-white/85 border-transparent hover:text-white hover:border-yellow-400"
           }`}
         >
           {link.name}
         </Link>
       ))}
 
-      {/* ✅ Notification Bell */}
-      <NotificationBell />
+      {/* Bell + username */}
+      <div className={`flex items-center gap-3 transition-colors duration-300 ${
+        scrolled ? "text-gray-700" : "text-white"
+      }`}>
+        <NotificationBell />
+        <span className={`font-inter text-sm font-medium ${
+          scrolled ? "text-primary" : "text-white"
+        }`}>
+          {user?.username}
+        </span>
+      </div>
 
-      <span className="font-inter text-sm font-medium text-primary">
-        {user?.username}
-      </span>
-      <Button
+      {/* Logout */}
+      <button
         onClick={confirmLogout}
-        outlined
-        severity="danger"
-        className="py-1.5 px-4 text-sm font-inter font-medium"
+        className="font-inter text-sm font-semibold bg-yellow-400 text-green-900 px-4 py-1.5 rounded-lg hover:bg-yellow-300 transition-colors"
       >
         Logout
-      </Button>
+      </button>
     </div>
   );
 }
 
-  return (
+return (
     <div className={`flex flex-col md:flex-row items-center gap-3`}>
       <Link href={`/auth/login`}>
         <Button

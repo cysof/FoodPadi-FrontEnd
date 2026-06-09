@@ -44,6 +44,11 @@ html,
   transform: translateY(-20%);
 }
 
+.p-carousel-indicator.p-highlight button {
+  background-color: #16a34a !important;
+}
+
+
 /* set the primary button to be green */
 .p-button {
   @apply focus:ring-0;
