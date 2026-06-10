@@ -1,24 +1,21 @@
-// features/marketplaceCropId/components/Crop.tsx (Updated with Gallery)
 "use client";
 
 import { useAppSelector } from "@/store/hooks";
 import Image from "next/image";
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
 import outofstock from "@/public/outofstock.png";
 import OrderForm from "./OrderForm";
 import Link from "next/link";
 import { ArrowLeft, User2, Calendar, Package, MapPin, Leaf } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const getImageSrc = (img: string | undefined | null, isAvailable: boolean): string => {
   if (!isAvailable) return outofstock.src;
   if (!img || img.trim() === "") return outofstock.src;
-  
   let imageUrl = img;
   if (imageUrl.startsWith("http://")) {
     imageUrl = imageUrl.replace("http://", "https://");
   }
-  
   return imageUrl;
 };
 
@@ -32,7 +29,7 @@ const Crop = () => {
   if (!crop) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading crop details...</p>
+        <p className="text-gray-500 font-inter">Loading crop details...</p>
       </div>
     );
   }
@@ -41,7 +38,6 @@ const Crop = () => {
   const coverImage = getImageSrc(crop?.img, isAvailable);
   const activeImage = selectedImage || coverImage;
 
-  // Prepare all images: cover + additional images
   const allImages = [
     { id: 0, image_url: coverImage },
     ...(crop.additional_images || []).map((img: any, idx: number) => ({
@@ -51,46 +47,52 @@ const Crop = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 py-6 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
-        <Link 
-          href="/marketplace" 
-          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 mb-4 text-sm transition-colors"
+    <div className="w-full min-h-screen bg-gray-50 py-6 px-4 pt-20">
+      <div className="max-w-5xl mx-auto">
+
+        {/* Back link */}
+        <Link
+          href="/marketplace"
+          className="inline-flex items-center gap-2 text-green-700 hover:text-green-800 mb-6 text-sm font-medium font-inter transition-colors"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={16} />
           Back to Marketplace
         </Link>
 
-        {/* Main Card */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          {/* Gallery Section - Main Image + Thumbnails */}
-          <div className="w-full bg-gray-100">
-            {/* Main Image */}
-            <div className="relative w-full h-64 md:h-80">
+        {/* Two column layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+
+          {/* Left — Image gallery */}
+          <div className="flex flex-col gap-3">
+            <div className="relative w-full h-72 md:h-80 rounded-2xl overflow-hidden bg-gray-100">
               <Image
                 fill
-                className="object-contain p-4"
+                className="object-cover"
                 src={imageError ? outofstock.src : activeImage}
                 alt={crop.crop_name || "Crop image"}
                 onError={() => setImageError(true)}
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
+              <span className={`absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full ${
+                isAvailable ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+              }`}>
+                {isAvailable ? "✓ In Stock" : "Out of Stock"}
+              </span>
             </div>
 
-            {/* Thumbnail Gallery - only show if more than 1 image */}
+            {/* Thumbnails */}
             {allImages.length > 1 && (
-              <div className="flex gap-2 px-4 py-3 border-t overflow-x-auto">
+              <div className="flex gap-2 overflow-x-auto pb-1">
                 {allImages.map((img, index) => (
                   <button
                     key={img.id}
                     onClick={() => {
                       setSelectedImage(img.image_url);
-                      setImageError(false); // Reset error when switching images
+                      setImageError(false);
                     }}
-                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                    className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
                       activeImage === img.image_url
-                        ? "border-primary"
+                        ? "border-green-600"
                         : "border-gray-200 hover:border-gray-400"
                     }`}
                   >
@@ -99,7 +101,6 @@ const Crop = () => {
                       alt={`${crop.crop_name} ${index + 1}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        // If thumbnail fails to load, use out of stock image
                         (e.target as HTMLImageElement).src = outofstock.src;
                       }}
                     />
@@ -109,47 +110,49 @@ const Crop = () => {
             )}
           </div>
 
-          {/* Content */}
-          <div className="p-5">
-            {/* Title & Farmer */}
-            <div className="mb-4">
-              <h1 className="font-bold text-2xl text-gray-900 mb-1">
+          {/* Right — Product details */}
+          <div className="flex flex-col gap-5">
+
+            {/* Title + farmer */}
+            <div>
+              <h1 className="font-inter font-bold text-2xl md:text-3xl text-gray-900 capitalize mb-2">
                 {crop.crop_name}
               </h1>
-              <div className="flex items-center gap-2 text-gray-600">
-                <User2 size={16} />
-                <span className="text-sm">{crop.farmer_name || "Unknown Farmer"}</span>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center">
+                  <User2 size={14} className="text-green-700" />
+                </div>
+                <span className="font-inter text-sm text-green-700 font-medium capitalize">
+                  {crop.farmer_name || "Unknown Farmer"}
+                </span>
               </div>
             </div>
 
-            {/* Price & Availability */}
-            <div className="flex items-center justify-between mb-4 pb-4 border-b">
-              <div>
-                <span className="text-2xl font-bold text-primary">
-                  {new Intl.NumberFormat("en-NG", {
-                    style: "currency",
-                    currency: "NGN",
-                  }).format(Number(crop.price_per_unit || 0))}
-                </span>
-                <span className="text-gray-500">/{crop.unit || "unit"}</span>
-              </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                isAvailable ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-              }`}>
-                {isAvailable ? "In Stock" : "Out of Stock"}
+            {/* Price */}
+            <div className="flex items-end gap-2">
+              <span className="font-inter font-bold text-3xl text-green-800">
+                {new Intl.NumberFormat("en-NG", {
+                  style: "currency",
+                  currency: "NGN",
+                }).format(Number(crop.price_per_unit || 0))}
+              </span>
+              <span className="text-gray-400 text-sm mb-1 font-inter">
+                /{crop.unit || "unit"}
               </span>
             </div>
 
-            {/* Details Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Package size={16} />
-                <span>{crop.quantity || 0} {crop.unit || "units"} available</span>
+            {/* Meta grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
+                <Package size={15} className="text-green-600 shrink-0" />
+                <span className="font-inter text-xs text-gray-600">
+                  {crop.quantity || 0} {crop.unit || "units"} available
+                </span>
               </div>
               {crop.harvested_date && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Calendar size={16} />
-                  <span>
+                <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
+                  <Calendar size={15} className="text-green-600 shrink-0" />
+                  <span className="font-inter text-xs text-gray-600">
                     {new Intl.DateTimeFormat("en-US", {
                       month: "short",
                       day: "numeric",
@@ -159,47 +162,60 @@ const Crop = () => {
                 </div>
               )}
               {crop.location && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <MapPin size={16} />
-                  <span className="truncate">{crop.location}</span>
+                <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
+                  <MapPin size={15} className="text-green-600 shrink-0" />
+                  <span className="font-inter text-xs text-gray-600 truncate">
+                    {crop.location}
+                  </span>
                 </div>
               )}
               {crop.is_Organic !== undefined && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Leaf size={16} />
-                  <span>{crop.is_Organic ? "Organic" : "Conventional"}</span>
+                <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
+                  <Leaf size={15} className="text-green-600 shrink-0" />
+                  <span className="font-inter text-xs text-gray-600">
+                    {crop.is_Organic ? "Organic" : "Conventional"}
+                  </span>
                 </div>
               )}
             </div>
 
             {/* Description */}
             {crop.crop_description && (
-              <div className="mb-5 p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-700 leading-relaxed">
+              <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                <p className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-2 font-inter">
+                  About this product
+                </p>
+                <p className="font-inter text-sm text-gray-600 leading-relaxed">
                   {crop.crop_description}
                 </p>
               </div>
             )}
-
-            {/* Order Section */}
-            <div className="pt-2">
-              {!isAvailable ? (
-                <div className="bg-red-50 rounded-lg p-4 text-center">
-                  <p className="text-red-700 text-sm font-medium">Currently Out of Stock</p>
-                </div>
-              ) : user.token && user?.user?.id ? (
-                <OrderForm />
-              ) : (
-                <Link
-                  className="block w-full bg-primary hover:bg-primary/90 text-white text-center py-3 rounded-lg transition-colors font-medium"
-                  href={`/auth/login?url=${path}`}
-                >
-                  Login to Order
-                </Link>
-              )}
-            </div>
           </div>
         </div>
+
+        {/* Order section — full width */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+          <h2 className="font-inter font-bold text-lg text-gray-900 mb-5 pb-4 border-b border-gray-100">
+            🛒 Place Your Order
+          </h2>
+          {!isAvailable ? (
+            <div className="bg-red-50 rounded-xl p-4 text-center">
+              <p className="text-red-700 text-sm font-medium font-inter">
+                This product is currently out of stock
+              </p>
+            </div>
+          ) : user.token && user?.user?.id ? (
+            <OrderForm />
+          ) : (
+            <Link
+              className="block w-full bg-yellow-400 hover:bg-yellow-300 text-green-900 text-center py-3 rounded-xl transition-colors font-inter font-semibold"
+              href={`/auth/login?url=${path}`}
+            >
+              Login to Place Order
+            </Link>
+          )}
+        </div>
+
       </div>
     </div>
   );

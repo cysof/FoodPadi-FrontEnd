@@ -21,7 +21,7 @@ const Header = () => {
 
           {/* Badge */}
           <span className="bg-yellow-400/20 border border-yellow-400/50 text-yellow-300 text-xs font-medium px-4 py-1.5 rounded-full uppercase tracking-wider">
-            🌱 Nigeria's Agri Marketplace
+            🌱 ...Feeding African Homes
           </span>
 
           {/* Headline */}

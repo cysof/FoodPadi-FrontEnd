@@ -1,4 +1,3 @@
-// components/UserSideBar.tsx
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -32,90 +31,25 @@ const UserSideBar = () => {
   const [LogoutMutation] = useLogoutMutation();
 
   const farmerLinks = [
-    {
-      name: "Dashboard",
-      icon: LayoutDashboard,
-      link: "/dashboard",
-      exact: true,
-    },
-    {
-      name: "Marketplace",
-      icon: ShoppingBag,
-      link: "/marketplace",
-      exact: false,
-    },
-    {
-      name: "My Crops",
-      icon: Leaf,
-      link: "/dashboard/crops",
-      exact: false,
-    },
-    {
-      name: "Orders",
-      icon: Package,
-      link: "/dashboard/orders",
-      exact: false,
-    },
-    {
-      name: "Account",
-      icon: User,
-      link: "/dashboard/account",
-      exact: false,
-    },
+    { name: "Dashboard", icon: LayoutDashboard, link: "/dashboard", exact: true },
+    { name: "Marketplace", icon: ShoppingBag, link: "/marketplace", exact: false },
+    { name: "My Crops", icon: Leaf, link: "/dashboard/crops", exact: false },
+    { name: "Orders", icon: Package, link: "/dashboard/orders", exact: false },
+    { name: "Account", icon: User, link: "/dashboard/account", exact: false },
   ];
 
   const buyerLinks = [
-    {
-      name: "Dashboard",
-      icon: LayoutDashboard,
-      link: "/dashboard",
-      exact: true,
-    },
-    {
-      name: "Marketplace",
-      icon: ShoppingBag,
-      link: "/marketplace",
-      exact: false,
-    },
-    {
-      name: "My Orders",
-      icon: Package,
-      link: "/dashboard/orders",
-      exact: false,
-    },
-    {
-      name: "Account",
-      icon: User,
-      link: "/dashboard/account",
-      exact: false,
-    },
+    { name: "Dashboard", icon: LayoutDashboard, link: "/dashboard", exact: true },
+    { name: "Marketplace", icon: ShoppingBag, link: "/marketplace", exact: false },
+    { name: "My Orders", icon: Package, link: "/dashboard/orders", exact: false },
+    { name: "Account", icon: User, link: "/dashboard/account", exact: false },
   ];
 
   const transporterLinks = [
-    {
-      name: "Dashboard",
-      icon: LayoutDashboard,
-      link: "/dashboard",
-      exact: true,
-    },
-    {
-      name: "Marketplace",
-      icon: ShoppingBag,
-      link: "/marketplace",
-      exact: false,
-    },
-    {
-      name: "Deliveries",
-      icon: Truck,
-      link: "/dashboard/deliveries",
-      exact: false,
-    },
-    {
-      name: "Account",
-      icon: User,
-      link: "/dashboard/account",
-      exact: false,
-    },
+    { name: "Dashboard", icon: LayoutDashboard, link: "/dashboard", exact: true },
+    { name: "Marketplace", icon: ShoppingBag, link: "/marketplace", exact: false },
+    { name: "Deliveries", icon: Truck, link: "/dashboard/deliveries", exact: false },
+    { name: "Account", icon: User, link: "/dashboard/account", exact: false },
   ];
 
   const links =
@@ -127,78 +61,106 @@ const UserSideBar = () => {
       ? transporterLinks
       : farmerLinks;
 
+  const closeSidebar = () => dispatch(setHideSideBar(true));
+
   return (
-    <div
-      className={` ${
-        hideSideBar
-          ? `-translate-x-full absolute md:relative z-50 md:translate-x-0 md:shrink-0 drop-shadow-lg`
-          : `translate-0 drop-shadow-lg md:drop-shadow-none md:relative absolute z-50`
-      } delay-200 overflow-hidden h-dvh w-max bg-secondary py-4 transition-all ease-in-out duration-300 text-black`}
-    >
+    <>
+      {/* Backdrop — mobile only */}
       {!hideSideBar && (
-        <X
-          onClick={() => dispatch(setHideSideBar(true))}
-          className={`cursor-pointer absolute top-2 right-2 text-black md:hidden flex`}
+        <div
+          onClick={closeSidebar}
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
         />
       )}
-      <Link href="/">
-        <Image
-          src={`/mainLogo.svg`}
-          className={`shrink-0 px-2 pt-5 md:pt-0 ${
-            expandSidebar || !hideSideBar ? `w-[150px]` : `w-[50px]`
-          } duration-300 cursor-pointer`}
-          width={150}
-          height={150}
-          alt="logo"
-        />
-      </Link>
-      <ul className={`w-full flex flex-col gap-px pt-5`}>
-        {links.map((link) => (
-          <li key={link.name} className={`w-full`}>
-            <Link
-              className={`w-full flex items-center gap-3 px-3 py-2 ${
-                link.exact && path === link.link
-                  ? `bg-primary text-secondary`
-                  : !link.exact &&
-                    path.startsWith(link.link) &&
-                    `bg-primary text-secondary`
-              } hover:bg-primary hover:text-secondary`}
-              href={link.link}
-            >
-              <link.icon className={`h-5 w-5 shrink-0`} />
-              <span
-                className={`transition-all duration-300 ease-in-out ${
-                  expandSidebar
-                    ? `flex`
-                    : ` ${!hideSideBar ? `flex` : `hidden`}`
-                }`}
-              >
-                {link.name}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <Link
-        href={`#`}
-        onClick={() =>
-          LogoutMutation()
-            .unwrap()
-            .then(() => dispatch({ type: "logout" }))
-            .catch(() => dispatch({ type: "logout" }))
-        }
-        className={`font-[400] absolute bottom-10 text-[16px] mx-auto text-[#9A0000] flex gap-2 items-center cursor-pointer font-lato text-center px-5 py-3`}
+
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed md:relative z-50 h-dvh bg-white border-r border-gray-200
+          flex flex-col transition-all ease-in-out duration-300
+          ${hideSideBar
+            ? "-translate-x-full md:translate-x-0"
+            : "translate-x-0"
+          }
+          ${expandSidebar || !hideSideBar ? "w-[200px]" : "md:w-[60px] w-[200px]"}
+        `}
       >
-        <LogOut width={18} height={18} />
-        <span
-          className={`transition-all duration-300 ease-in-out ${
-            expandSidebar ? `flex` : ` ${!hideSideBar ? `flex` : `hidden`}`
-          }`}
-        >
-          Log Out
-        </span>
-      </Link>
-    </div>
+        {/* Close button — mobile only */}
+        <div className="flex items-center justify-between px-3 pt-4 pb-2 md:pt-3">
+          <Link href="/" onClick={closeSidebar}>
+            <Image
+              src="/mainLogo.svg"
+              className={`shrink-0 transition-all duration-300 ${
+                expandSidebar || !hideSideBar ? "w-[120px]" : "md:w-[36px] w-[120px]"
+              }`}
+              width={120}
+              height={40}
+              alt="Micro FoodBank Logo"
+            />
+          </Link>
+          <X
+            onClick={closeSidebar}
+            className="cursor-pointer text-gray-500 hover:text-gray-800 md:hidden"
+            width={18}
+            height={18}
+          />
+        </div>
+
+        {/* Nav Links */}
+        <ul className="w-full flex flex-col gap-1 pt-4 px-2 flex-1">
+          {links.map((link) => {
+            const isActive =
+              link.exact ? path === link.link : path.startsWith(link.link);
+            return (
+              <li key={link.name} className="w-full">
+                <Link
+                  href={link.link}
+                  onClick={closeSidebar}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 font-inter text-sm font-medium ${
+                    isActive
+                      ? "bg-primary text-white"
+                      : "text-gray-600 hover:bg-green-50 hover:text-primary"
+                  }`}
+                >
+                  <link.icon className="h-5 w-5 shrink-0" />
+                  <span
+                    className={`transition-all duration-300 whitespace-nowrap ${
+                      expandSidebar || !hideSideBar
+                        ? "flex"
+                        : "hidden md:hidden"
+                    }`}
+                  >
+                    {link.name}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Logout */}
+        <div className="px-2 pb-6">
+          <button
+            onClick={() =>
+              LogoutMutation()
+                .unwrap()
+                .then(() => dispatch({ type: "logout" }))
+                .catch(() => dispatch({ type: "logout" }))
+            }
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200 font-inter text-sm font-medium"
+          >
+            <LogOut className="h-5 w-5 shrink-0" />
+            <span
+              className={`transition-all duration-300 whitespace-nowrap ${
+                expandSidebar || !hideSideBar ? "flex" : "hidden md:hidden"
+              }`}
+            >
+              Log Out
+            </span>
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 

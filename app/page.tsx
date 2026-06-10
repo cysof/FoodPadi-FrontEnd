@@ -3,7 +3,7 @@ import { Header, HowItWorks } from "@/features/home";
 
 export default function Home() {
   return (
-    <div className="relative flex flex-col bg-white">
+    <div className="relative flex flex-col bg-white overflow-x-hidden">
       <Navbar />
       <Header />
       <HowItWorks />

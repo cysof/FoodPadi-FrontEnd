@@ -199,218 +199,225 @@ const AddCropPop = () => {
     <Dialog
       visible={showCreateCropModal}
       modal
-      className="mx-2 bg-white overflow-auto noScroll rounded-lg py-7 px-3 md:px-5 w-full max-w-[700px]"
+      className="mx-2 bg-white rounded-lg w-full max-w-[700px]"
+      style={{ maxHeight: '90vh' }}
       onHide={handleCancel}
       content={() => (
-        <div className="w-full bg-white">
-          <h3 className="text-center capitalize font-Square font-semibold text-2xl text-black mb-4">
-            Add New Crop
-          </h3>
+        <div className="w-full bg-white rounded-lg flex flex-col" style={{ maxHeight: '90vh' }}>
+          {/* Header — fixed */}
+          <div className="px-5 pt-6 pb-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+            <h3 className="text-center capitalize font-Square font-semibold text-2xl text-black">
+              Add New Crop
+            </h3>
+          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-            {/* Title */}
-            <div className="flex flex-col gap-2">
-              <label className="font-inter font-medium text-sm text-gray-500">Title *</label>
-              <InputText {...register("crop_name")} />
-              {errors.crop_name && <small className="text-red-500">{errors.crop_name.message}</small>}
-            </div>
-
-            {/* Description */}
-            <div className="flex flex-col gap-2">
-              <label className="font-inter font-medium text-sm text-gray-500">Description *</label>
-              <InputTextarea rows={3} className="resize-none" {...register("crop_description")} />
-              {errors.crop_description && <small className="text-red-500">{errors.crop_description.message}</small>}
-            </div>
-
-            {/* Harvest Date */}
-            <div className="flex flex-col gap-2">
-              <label className="font-inter font-medium text-sm text-gray-500">Date of Harvest *</label>
-              <Controller
-                name="harvested_date"
-                control={control}
-                render={({ field }) => (
-                  <Calendar
-                    dateFormat="yy-mm-dd"
-                    value={field.value ? new Date(field.value) : null}
-                    onBlur={field.onBlur}
-                    onChange={(e) => field.onChange(e.value)}
-                    showIcon
-                    iconPos="left"
-                  />
-                )}
-              />
-              {errors.harvested_date && <small className="text-red-500">{errors.harvested_date.message}</small>}
-            </div>
-
-            {/* Quantity & Unit */}
-            <div className="grid grid-cols-2 gap-3">
+          {/* Scrollable content */}
+          <div className="overflow-y-auto flex-1 px-4 md:px-6 py-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+              {/* Title */}
               <div className="flex flex-col gap-2">
-                <label className="font-inter font-medium text-sm text-gray-500">Quantity *</label>
-                <InputText type="number" min="1" {...register("quantity")} />
-                {errors.quantity && <small className="text-red-500">{errors.quantity.message}</small>}
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-inter font-medium text-sm text-gray-500">Unit *</label>
-                <InputText {...register("unit")} />
-                {errors.unit && <small className="text-red-500">{errors.unit.message}</small>}
-              </div>
-            </div>
-
-            {/* Location */}
-            <div className="flex flex-col gap-2">
-              <label className="font-inter font-medium text-sm text-gray-500">Location *</label>
-              <InputText {...register("location")} />
-              {errors.location && <small className="text-red-500">{errors.location.message}</small>}
-            </div>
-
-            {/* Price */}
-            <div className="flex flex-col gap-2">
-              <label className="font-inter font-medium text-sm text-gray-500">Price per Unit (₦) *</label>
-              <InputText type="number" step="0.01" min="0" {...register("price_per_unit")} />
-              {errors.price_per_unit && <small className="text-red-500">{errors.price_per_unit.message}</small>}
-            </div>
-
-            {/* Availability */}
-            <div className="flex flex-col gap-2">
-              <label className="font-inter font-medium text-sm text-gray-500">Availability *</label>
-              <Controller
-                name="availability"
-                control={control}
-                render={({ field }) => (
-                  <Dropdown
-                    {...field}
-                    options={[
-                      { label: "Available", value: "AVAILABLE" },
-                      { label: "Out of Stock", value: "OUT_OF_STOCK" },
-                    ]}
-                    placeholder="Select availability"
-                    className="w-full"
-                  />
-                )}
-              />
-              {errors.availability && <small className="text-red-500">{errors.availability.message}</small>}
-            </div>
-
-            {/* Images */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <label className="font-inter font-medium text-sm text-gray-500">
-                  Crop Images * <span className="text-gray-400">(1 cover + up to 3 additional)</span>
-                </label>
-                <span className="text-xs text-gray-400">
-                  {primaryImage ? 1 + additionalImages.length : additionalImages.length}/4 images
-                </span>
+                <label className="font-inter font-medium text-sm text-gray-500">Title *</label>
+                <InputText {...register("crop_name")} />
+                {errors.crop_name && <small className="text-red-500">{errors.crop_name.message}</small>}
               </div>
 
-              {/* Cover Image */}
+              {/* Description */}
               <div className="flex flex-col gap-2">
-                <p className="font-inter text-xs font-medium text-gray-500">Cover Image *</p>
+                <label className="font-inter font-medium text-sm text-gray-500">Description *</label>
+                <InputTextarea rows={3} className="resize-none" {...register("crop_description")} />
+                {errors.crop_description && <small className="text-red-500">{errors.crop_description.message}</small>}
+              </div>
+
+              {/* Harvest Date */}
+              <div className="flex flex-col gap-2">
+                <label className="font-inter font-medium text-sm text-gray-500">Date of Harvest *</label>
                 <Controller
-                  name="img"
+                  name="harvested_date"
                   control={control}
                   render={({ field }) => (
-                    <div>
-                      {!primaryImage ? (
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary transition-colors">
-                          <i className="pi pi-image text-2xl text-gray-400" />
-                          <p className="font-inter text-sm text-gray-400 mt-1">Click to upload cover image</p>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handlePrimaryImageSelect(file, field.onChange);
-                            }}
-                          />
-                        </label>
-                      ) : (
-                        <div className="relative">
-                          <img
-                            src={primaryImage.preview}
-                            alt="Cover"
-                            className="w-full h-48 object-cover rounded-xl border border-gray-200"
-                          />
-                          <Button
-                            type="button"
-                            icon="pi pi-times"
-                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 text-white border-0 flex items-center justify-center"
-                            onClick={() => {
-                              URL.revokeObjectURL(primaryImage.preview);
-                              setPrimaryImage(null);
-                              field.onChange(undefined);
-                            }}
-                          />
-                          <span className="absolute bottom-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded-full">
-                            Cover
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                    <Calendar
+                      dateFormat="yy-mm-dd"
+                      value={field.value ? new Date(field.value) : null}
+                      onBlur={field.onBlur}
+                      onChange={(e) => field.onChange(e.value)}
+                      showIcon
+                      iconPos="left"
+                    />
                   )}
                 />
-                {errors.img && <small className="text-red-500">{errors.img.message}</small>}
+                {errors.harvested_date && <small className="text-red-500">{errors.harvested_date.message}</small>}
               </div>
 
-              {/* Additional Images */}
-              <div className="flex flex-col gap-2">
-                <p className="font-inter text-xs font-medium text-gray-500">
-                  Additional Images <span className="text-gray-400">(optional, max 3)</span>
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {additionalImages.map((img, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={img.preview}
-                        alt={`Additional ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-xl border border-gray-200"
-                      />
-                      <Button
-                        type="button"
-                        icon="pi pi-times"
-                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white border-0 flex items-center justify-center"
-                        onClick={() => removeAdditionalImage(index)}
-                      />
-                    </div>
-                  ))}
-                  {remainingSlots > 0 && (
-                    <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary transition-colors">
-                      <i className="pi pi-plus text-xl text-gray-400" />
-                      <p className="font-inter text-xs text-gray-400 mt-1">Add photo</p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={handleAdditionalImageSelect}
-                      />
-                    </label>
-                  )}
+              {/* Quantity & Unit */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-2">
+                  <label className="font-inter font-medium text-sm text-gray-500">Quantity *</label>
+                  <InputText type="number" min="1" {...register("quantity")} />
+                  {errors.quantity && <small className="text-red-500">{errors.quantity.message}</small>}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-inter font-medium text-sm text-gray-500">Unit *</label>
+                  <InputText {...register("unit")} />
+                  {errors.unit && <small className="text-red-500">{errors.unit.message}</small>}
                 </div>
               </div>
-            </div>
 
-            {/* Buttons */}
-            <div className="flex gap-3 flex-col-reverse w-full md:flex-row mt-4">
-              <Button
-                type="button"
-                disabled={createCropsLoading || isUploading}
-                onClick={handleCancel}
-                outlined
-                severity="danger"
-                className="flex justify-center w-full items-center font-square font-medium text-sm"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                loading={createCropsLoading || isUploading}
-                className="flex flex-row-reverse gap-2 justify-center primary w-full items-center font-square font-medium text-sm"
-              >
-                Post Crop
-              </Button>
-            </div>
-          </form>
+              {/* Location */}
+              <div className="flex flex-col gap-2">
+                <label className="font-inter font-medium text-sm text-gray-500">Location *</label>
+                <InputText {...register("location")} />
+                {errors.location && <small className="text-red-500">{errors.location.message}</small>}
+              </div>
+
+              {/* Price */}
+              <div className="flex flex-col gap-2">
+                <label className="font-inter font-medium text-sm text-gray-500">Price per Unit (₦) *</label>
+                <InputText type="number" step="0.01" min="0" {...register("price_per_unit")} />
+                {errors.price_per_unit && <small className="text-red-500">{errors.price_per_unit.message}</small>}
+              </div>
+
+              {/* Availability */}
+              <div className="flex flex-col gap-2">
+                <label className="font-inter font-medium text-sm text-gray-500">Availability *</label>
+                <Controller
+                  name="availability"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      {...field}
+                      options={[
+                        { label: "Available", value: "AVAILABLE" },
+                        { label: "Out of Stock", value: "OUT_OF_STOCK" },
+                      ]}
+                      placeholder="Select availability"
+                      className="w-full"
+                    />
+                  )}
+                />
+                {errors.availability && <small className="text-red-500">{errors.availability.message}</small>}
+              </div>
+
+              {/* Images */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <label className="font-inter font-medium text-sm text-gray-500">
+                    Crop Images * <span className="text-gray-400">(1 cover + up to 3 additional)</span>
+                  </label>
+                  <span className="text-xs text-gray-400">
+                    {primaryImage ? 1 + additionalImages.length : additionalImages.length}/4 images
+                  </span>
+                </div>
+
+                {/* Cover Image */}
+                <div className="flex flex-col gap-2">
+                  <p className="font-inter text-xs font-medium text-gray-500">Cover Image *</p>
+                  <Controller
+                    name="img"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                        {!primaryImage ? (
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary transition-colors">
+                            <i className="pi pi-image text-2xl text-gray-400" />
+                            <p className="font-inter text-sm text-gray-400 mt-1">Click to upload cover image</p>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handlePrimaryImageSelect(file, field.onChange);
+                              }}
+                            />
+                          </label>
+                        ) : (
+                          <div className="relative">
+                            <img
+                              src={primaryImage.preview}
+                              alt="Cover"
+                              className="w-full h-48 object-cover rounded-xl border border-gray-200"
+                            />
+                            <Button
+                              type="button"
+                              icon="pi pi-times"
+                              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 text-white border-0 flex items-center justify-center"
+                              onClick={() => {
+                                URL.revokeObjectURL(primaryImage.preview);
+                                setPrimaryImage(null);
+                                field.onChange(undefined);
+                              }}
+                            />
+                            <span className="absolute bottom-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded-full">
+                              Cover
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  />
+                  {errors.img && <small className="text-red-500">{errors.img.message}</small>}
+                </div>
+
+                {/* Additional Images */}
+                <div className="flex flex-col gap-2">
+                  <p className="font-inter text-xs font-medium text-gray-500">
+                    Additional Images <span className="text-gray-400">(optional, max 3)</span>
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {additionalImages.map((img, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={img.preview}
+                          alt={`Additional ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-xl border border-gray-200"
+                        />
+                        <Button
+                          type="button"
+                          icon="pi pi-times"
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white border-0 flex items-center justify-center"
+                          onClick={() => removeAdditionalImage(index)}
+                        />
+                      </div>
+                    ))}
+                    {remainingSlots > 0 && (
+                      <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary transition-colors">
+                        <i className="pi pi-plus text-xl text-gray-400" />
+                        <p className="font-inter text-xs text-gray-400 mt-1">Add photo</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                          onChange={handleAdditionalImageSelect}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 flex-col-reverse w-full md:flex-row mt-4 pb-2">
+                <Button
+                  type="button"
+                  disabled={createCropsLoading || isUploading}
+                  onClick={handleCancel}
+                  outlined
+                  severity="danger"
+                  className="flex justify-center w-full items-center font-square font-medium text-sm"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  loading={createCropsLoading || isUploading}
+                  className="flex flex-row-reverse gap-2 justify-center primary w-full items-center font-square font-medium text-sm"
+                >
+                  Post Crop
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     />

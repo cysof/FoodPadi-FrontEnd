@@ -48,6 +48,15 @@ html,
   background-color: #16a34a !important;
 }
 
+.p-dialog {
+  max-height: 90vh !important;
+  overflow: hidden !important;
+}
+
+.p-dialog-content {
+  overflow-y: auto !important;
+  padding: 0 !important;
+}
 
 /* set the primary button to be green */
 .p-button {

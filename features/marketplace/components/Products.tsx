@@ -24,45 +24,37 @@ const Products = () => {
   const next = useAppSelector((state) => state.market.next);
   const previous = useAppSelector((state) => state.market.previous);
 
-  const query = {
+  useGetAllProductsQuery({
     ...(search ? { search } : {}),
     page: currentPage,
-  };
-
-  useGetAllProductsQuery(query);
+  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (getAllProductsLoading) {
-    return <ProductsLoader />;
-  }
+  if (getAllProductsLoading) return <ProductsLoader />;
 
   if (getAllProductsError) {
     return (
-      <div
-        className={`w-full h-svh flex flex-col justify-center items-center gap-3 max-w-7xl mx-auto bg-white`}
-      >
-        <p
-          className={`font-inter font-medium text-lg text-center text-black`}
-        >
-          Error fetching Market products
+      <div className="w-full min-h-[400px] flex flex-col justify-center items-center gap-4 px-4">
+        <p className="font-inter font-medium text-lg text-center text-gray-700">
+          Error fetching marketplace products
         </p>
-        <span
-          className={`rounded-md border border-gray-300 py-2 px-5 text-black hover:bg-primary hover:text-white duration-300 transition-all cursor-pointer`}
+        <button
           onClick={() => window.location.reload()}
+          className="font-inter text-sm border border-gray-300 py-2 px-6 rounded-lg text-gray-700 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
         >
-          Click to reload your browser
-        </span>
+          Reload page
+        </button>
       </div>
     );
   }
 
   if (products.length === 0) {
     return (
-      <div className={`max-w-7xl w-full mx-auto`}>
+      <div className="max-w-7xl w-full mx-auto px-4 py-10">
         <EmptyState
           icon={Leaf}
           title={search ? "No Results Found" : "No Products Yet"}
@@ -72,32 +64,39 @@ const Products = () => {
               : "No farm produce is listed in the marketplace yet. Check back soon!"
           }
           actionLabel={search ? "Clear Search" : undefined}
-          onAction={
-            search ? () => window.location.reload() : undefined
-          }
+          onAction={search ? () => window.location.reload() : undefined}
         />
       </div>
     );
   }
 
   return (
-    <div
-      className={`min-h-svh py-10 px-3 md:px-10 max-w-7xl w-full mx-auto`}
-    >
-      <div
-        className={`grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full`}
-      >
+    <div className="max-w-7xl w-full mx-auto px-4 md:px-10 py-6">
+      {/* Results count */}
+      <div className="flex items-center justify-between mb-5">
+        <p className="font-inter text-sm text-gray-500">
+          <span className="text-gray-900 font-semibold">{count}</span>{" "}
+          {count === 1 ? "product" : "products"} found
+        </p>
+      </div>
+
+      {/* Grid */}
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
-      <Pagination
-        count={count}
-        next={next}
-        previous={previous}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
+
+      {/* Pagination */}
+      <div className="mt-8">
+        <Pagination
+          count={count}
+          next={next}
+          previous={previous}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
+      </div>
     </div>
   );
 };

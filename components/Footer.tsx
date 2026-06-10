@@ -12,149 +12,151 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 w-full text-white py-10 px-5 md:px-10 lg:px-20">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {/* About Section */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">About Us</h3>
-          <p className="text-sm leading-relaxed">
-            We&apos;re building a trusted digital marketplace that connects
-            Nigerian farmers with buyers and transporters—making agricultural
-            trade easier, faster, and fair.
-          </p>
-        </div>
+    <footer className="bg-gray-900 w-full text-white py-12 px-5 md:px-10 lg:px-20">
+      <div className="max-w-7xl mx-auto">
 
-        {/* Quick Links */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link href="/" className="hover:text-primary">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="hover:text-primary">
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:text-primary">
-                Contact Us
-              </Link>
-            </li>
-            <li>
-              <Link href="/marketplace" className="hover:text-primary">
-                Marketplace
-              </Link>
-            </li>
-            <li>
-              <Link href="#how-it-works" className="hover:text-primary">
-                How It Works
-              </Link>
-            </li>
-            <li>
-              <Link href="#waitlist" className="hover:text-primary">
-                Join Waitlist
-              </Link>
-            </li>
-          </ul>
-        </div>
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
 
-        {/* Contact Info */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Contact</h3>
-          <p className={`text-sm flex items-center gap-2`}>
-            <MapPin width={16} /> House 17 Road 251 FHA Guzape
-          </p>
-          <div className={`text-sm flex gap-2`}>
-            <PhoneCall className="shrink-0" width={16} />{" "}
-            <div className={`flex items-center flex-wrap gap-2`}>
+          {/* Brand Column */}
+          <div className="lg:col-span-1">
+            <p className="text-base font-bold text-white mb-2">Micro FoodBank</p>
+            <span className="inline-block bg-yellow-400/15 border border-yellow-400/30 text-yellow-400 text-xs font-medium px-3 py-1 rounded-full mb-4">
+              🌱 ...Feeding African Homes
+            </span>
+            <p className="text-sm text-gray-400 leading-relaxed mb-5">
+              A trusted digital marketplace connecting Nigerian farmers with
+              buyers and transporters — making agricultural trade easier,
+              faster, and fair.
+            </p>
+            <Link
+              href="/marketplace"
+              className="inline-flex items-center gap-2 bg-yellow-400 text-green-900 text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-yellow-300 transition-colors mb-5"
+            >
+              Browse Marketplace →
+            </Link>
+
+            {/* Social Icons */}
+            <div className="flex gap-3 mt-5">
               <Link
-                className={`hover:text-primary`}
-                href={`tel:+2349074366942`}
+                target="_blank"
+                href="https://www.facebook.com/profile.php?id=61575881856380"
+                aria-label="Facebook"
+                className="w-9 h-9 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 hover:text-yellow-400 hover:border-yellow-400/50 transition-colors"
               >
-                09074366942,{" "}
+                <Facebook width={16} />
               </Link>
               <Link
-                className={`hover:text-primary`}
-                href={`tel:+2349169029904`}
+                href="#"
+                target="_blank"
+                aria-label="Instagram"
+                className="w-9 h-9 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 hover:text-yellow-400 hover:border-yellow-400/50 transition-colors"
               >
-                09169029904,{" "}
+                <Instagram width={16} />
               </Link>
               <Link
-                className={`hover:text-primary`}
-                href={`tel:+2347080109521`}
+                href="#"
+                target="_blank"
+                aria-label="Twitter"
+                className="w-9 h-9 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 hover:text-yellow-400 hover:border-yellow-400/50 transition-colors"
               >
-                07080109521
+                <Twitter width={16} />
+              </Link>
+              <Link
+                href="#"
+                target="_blank"
+                aria-label="LinkedIn"
+                className="w-9 h-9 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 hover:text-yellow-400 hover:border-yellow-400/50 transition-colors"
+              >
+                <Linkedin width={16} />
               </Link>
             </div>
           </div>
-          <p className={`text-sm flex items-center gap-2`}>
-            <Mail width={16} />{" "}
-            <Link
-              className={`hover:text-primary`}
-              href={`mailto:microfoodbankltd@gmail.com`}
-            >
-              microfoodbankltd@gmail.com
-            </Link>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-xs font-semibold text-white uppercase tracking-widest mb-5 font-inter">
+              Quick Links
+            </h3>
+            <ul className="flex flex-col gap-3">
+              {[
+                { name: "Home", href: "/" },
+                { name: "Marketplace", href: "/marketplace" },
+                { name: "About Us", href: "/about" },
+                { name: "Contact Us", href: "/contact" },
+                { name: "How It Works", href: "#how-it-works" },
+                { name: "Dashboard", href: "/dashboard" },
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 hover:text-yellow-400 transition-colors font-inter"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-xs font-semibold text-white uppercase tracking-widest mb-5 font-inter">
+              Contact Us
+            </h3>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center flex-shrink-0">
+                  <MapPin width={14} className="text-yellow-400" />
+                </div>
+                <p className="text-sm text-gray-400 leading-relaxed font-inter">
+                  House 17 Road 251 FHA Guzape, Abuja
+                </p>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center flex-shrink-0">
+                  <PhoneCall width={14} className="text-yellow-400" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  {["09074366942", "09169029904", "07080109521"].map((num) => (
+                    <Link
+                      key={num}
+                      href={`tel:+234${num.slice(1)}`}
+                      className="text-sm text-gray-400 hover:text-yellow-400 transition-colors font-inter"
+                    >
+                      {num}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center flex-shrink-0">
+                  <Mail width={14} className="text-yellow-400" />
+                </div>
+                <Link
+                  href="mailto:microfoodbankltd@gmail.com"
+                  className="text-sm text-gray-400 hover:text-yellow-400 transition-colors font-inter"
+                >
+                  microfoodbankltd@gmail.com
+                </Link>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-center">
+          <p className="text-xs text-gray-500 font-inter">
+            © {new Date().getFullYear()} Micro FoodBank. All rights reserved.
+          </p>
+          <p className="text-xs text-gray-500 font-inter">
+            Built to support agriculture in Nigeria 🇳🇬
           </p>
         </div>
 
-        {/* Newsletter + Social Media */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Join Waitlist</h3>
-
-          <Link
-            target="_blank"
-            href={`https://chat.whatsapp.com/CuueYeE9cQnJkgYgSLUDHC`}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md inline-block"
-          >
-            Join Now
-          </Link>
-
-          {/* Social Icons */}
-          <div className="flex space-x-4 mt-4">
-            <Link
-              target="_blank"
-              href="https://www.facebook.com/profile.php?id=61575881856380"
-              aria-label="Facebook"
-              className="hover:text-primary"
-            >
-              <Facebook width={20} />
-            </Link>
-            <Link
-              href="#"
-              target="_blank"
-              aria-label="Instagram"
-              className="hover:text-primary"
-            >
-              <Instagram width={20} />
-            </Link>
-            <Link
-              href="#"
-              target="_blank"
-              aria-label="Twitter"
-              className="hover:text-primary"
-            >
-              <Twitter width={20} />
-            </Link>
-            <Link
-              href="#"
-              target="_blank"
-              aria-label="LinkedIn"
-              className="hover:text-primary"
-            >
-              <Linkedin width={20} />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Line */}
-      <div className="mt-10 border-t border-gray-700 flex flex-col items-center pt-5 text-center text-sm text-gray-400">
-        <p>© {new Date().getFullYear()} Micro FoodBank. All rights reserved.</p>
-        <p>Built to support agriculture in Nigeria.</p>
       </div>
     </footer>
   );

@@ -25,7 +25,7 @@ const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
       {/* Drawer */}
       <div
         // Change w-[300px] to w-[75vw] max-w-[280px]
-className={`fixed top-0 left-0 h-full w-[75vw] max-w-[170px] bg-white z-[999] flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
+className={`fixed top-0 left-0 h-full w-[75vw] max-w-[180px] bg-white z-[999] flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
   isOpen ? "translate-x-0" : "-translate-x-full"
 }`}
       >

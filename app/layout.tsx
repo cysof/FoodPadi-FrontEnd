@@ -74,7 +74,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
-      <body className={`font-inter ${inter.variable} ${square.variable}`}>
+     <body className="overflow-x-hidden">
         <StoreProvider>
           <PrimeReactProvider>
             {children}
