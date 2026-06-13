@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sevalla": {
+      "type": "http",
+      "url": "https://mcp.sevalla.com/mcp",
+      "headers": {
+        "Authorization": "svl_aff1951d8f37f9efc609f067b072a5be87c599c601d32b68ff2b0ac8095caabd"
+      }
+    }
+  }
+}
+
+
