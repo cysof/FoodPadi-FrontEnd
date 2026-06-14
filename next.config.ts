@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
         hostname: "127.0.0.1",
         pathname: "/**",
       },
+      
       {
         protocol: "http",
         hostname: "localhost",
@@ -33,6 +34,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+};
+
+// next.config.js
+module.exports = {
+  output: 'standalone',
 };
 
 export default nextConfig;
