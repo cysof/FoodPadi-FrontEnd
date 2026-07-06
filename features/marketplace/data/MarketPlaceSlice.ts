@@ -8,6 +8,8 @@ const initialState: IMarketplaceInitialState = {
   getAllProductsError: "",
   products: [],
   search: "",
+  selectedCategory: null,
+  inStockOnly: false,
   count: 0,
   next: null,
   previous: null,
@@ -20,13 +22,17 @@ const MarketPlaceSlice = createSlice({
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
     },
+    setSelectedCategory: (state, action: PayloadAction<number | null>) => {
+      state.selectedCategory = action.payload;
+    },
+    setInStockOnly: (state, action: PayloadAction<boolean>) => {
+      state.inStockOnly = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(getAllProducts.matchPending, (state) => {
       state.getAllProductsLoading = true;
     });
-
-    // ✅ Fixed: single matchFulfilled with all fields
     builder.addMatcher(
       getAllProducts.matchFulfilled,
       (state, action: PayloadAction<IGetMarketProduceResponse>) => {
@@ -37,7 +43,6 @@ const MarketPlaceSlice = createSlice({
         state.previous = action.payload.previous;
       }
     );
-
     builder.addMatcher(
       getAllProducts.matchRejected,
       (state, action) => {
@@ -48,5 +53,5 @@ const MarketPlaceSlice = createSlice({
   },
 });
 
-export const { setSearchTerm } = MarketPlaceSlice.actions;
+export const { setSearchTerm, setSelectedCategory, setInStockOnly } = MarketPlaceSlice.actions;
 export default MarketPlaceSlice.reducer;

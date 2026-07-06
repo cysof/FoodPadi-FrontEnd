@@ -6,12 +6,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { Dropdown } from "primereact/dropdown";
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { enqueueSnackbar } from "notistack";
 import { clearCropsError, setShowUpdateCropModal } from "../data/CropSlice";
 import { useEditACropMutation, useAddCropImageMutation, useRemoveCropImageMutation } from "../data/CropApi";
+import { useGetCategoriesQuery, useGetUnitsQuery } from "@/features/marketplace/data/MarketApi";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Calendar } from "primereact/calendar";
 
@@ -33,8 +35,7 @@ const getFullImageUrl = (imgPath: string | undefined): string | null => {
 const EditCropPop = () => {
   const dispatch = useAppDispatch();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  
-  // STEP 1: Add local state for images
+
   const [localAdditionalImages, setLocalAdditionalImages] = useState<ICropImage[]>([]);
   const [localCoverImage, setLocalCoverImage] = useState<string>("");
 
@@ -47,8 +48,11 @@ const EditCropPop = () => {
   const [addCropImage, { isLoading: addingImage }] = useAddCropImageMutation();
   const [removeCropImage, { isLoading: removingImage }] = useRemoveCropImageMutation();
 
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: units = [] } = useGetUnitsQuery();
+
   const imageSrc = useMemo(
-    () => getFullImageUrl(selectedCrop?.img) || "",
+    () => getFullImageUrl(selectedCrop?.img as string) || "",
     [selectedCrop?.img]
   );
 
@@ -62,12 +66,14 @@ const EditCropPop = () => {
   const CropSchema = yup.object({
     crop_description: yup.string().required("Required"),
     crop_name: yup.string().required("Required"),
+    category: yup.number().typeError("Category is required").required("Required"),
     harvested_date: yup.string().nullable(),
     img: yup.mixed<File | string>().nullable(),
     location: yup.string().required("Required"),
     price_per_unit: yup.number().required("Required"),
     quantity: yup.number().min(1).required("Required"),
-    unit: yup.string().required("Required"),
+    unit: yup.number().typeError("Unit is required").required("Required"),
+    custom_unit_note: yup.string().optional(),
     id: yup.number().required("Required"),
     farmer_name: yup.string().required("Required"),
     is_Organic: yup.boolean().required("Required"),
@@ -83,6 +89,7 @@ const EditCropPop = () => {
     reset,
     getValues,
     setValue,
+    watch,
     formState: { errors, dirtyFields },
   } = useForm<ICropInput>({
     mode: "all",
@@ -90,12 +97,14 @@ const EditCropPop = () => {
     defaultValues: {
       crop_description: "",
       crop_name: "",
+      category: undefined,
       harvested_date: null,
       img: undefined,
       location: "",
       price_per_unit: 0,
       quantity: 0,
-      unit: "",
+      unit: undefined,
+      custom_unit_note: "",
       availability: "",
       created_at: "",
       farmer: 0,
@@ -105,15 +114,33 @@ const EditCropPop = () => {
     },
   });
 
-  // STEP 2: Sync from selectedCrop when modal opens
+  const selectedUnitId = watch("unit");
+  const selectedUnit = units.find((u) => u.id === selectedUnitId);
+  const isOtherUnit = !!selectedUnit?.is_other;
+
+  // Sync from selectedCrop when modal opens.
+  // category/unit come back from the API as nested objects — extract just the id
+  // so the dropdown can match against it, since the form submits plain IDs.
   useEffect(() => {
     if (selectedCrop) {
+      const categoryId =
+        typeof selectedCrop.category === "object" && selectedCrop.category
+          ? selectedCrop.category.id
+          : (selectedCrop.category as unknown as number);
+
+      const unitId =
+        typeof selectedCrop.unit === "object" && selectedCrop.unit
+          ? selectedCrop.unit.id
+          : (selectedCrop.unit as unknown as number);
+
       reset({
         ...selectedCrop,
+        category: categoryId,
+        unit: unitId,
         harvested_date: selectedCrop.harvested_date || null,
       } as any);
       setLocalAdditionalImages(selectedCrop.additional_images || []);
-      setLocalCoverImage(getFullImageUrl(selectedCrop.img) || "");
+      setLocalCoverImage(getFullImageUrl(selectedCrop.img as string) || "");
       setSelectedFile(null);
     }
   }, [selectedCrop]);
@@ -141,6 +168,12 @@ const EditCropPop = () => {
     if (Object.keys(changedFromDirty).length === 0) {
       enqueueSnackbar("No changes to update", { variant: "info" });
       return dispatch(setShowUpdateCropModal({ show: false }));
+    }
+
+    const currentValues = getValues();
+    if (isOtherUnit && !currentValues.custom_unit_note?.trim()) {
+      enqueueSnackbar("Please describe the unit when selecting 'Other'", { variant: "error" });
+      return;
     }
 
     const formData = new FormData();
@@ -173,7 +206,6 @@ const EditCropPop = () => {
     }
   };
 
-  // STEP 7: Update handleCancel to reset local state
   const handleCancel = useCallback(() => {
     reset();
     setSelectedFile(null);
@@ -182,7 +214,6 @@ const EditCropPop = () => {
     dispatch(setShowUpdateCropModal({ show: false }));
   }, [dispatch, reset]);
 
-  // STEP 5: Update cover image preview after selection
   const handleImageSelect = (file: File) => {
     if (!file.type.startsWith('image/')) {
       enqueueSnackbar("Please select an image file", { variant: "error" });
@@ -197,7 +228,6 @@ const EditCropPop = () => {
     setValue("img", file);
   };
 
-  // STEP 3: Update local state after add image
   const handleAddAdditionalImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -213,7 +243,6 @@ const EditCropPop = () => {
 
     try {
       const result = await addCropImage({ id: selectedCrop.id, image: file }).unwrap();
-      // ✅ Update local state immediately
       setLocalAdditionalImages((prev) => [...prev, result]);
       enqueueSnackbar("Image added successfully", { variant: "success" });
     } catch (error: any) {
@@ -225,11 +254,9 @@ const EditCropPop = () => {
     e.target.value = "";
   };
 
-  // STEP 4: Update local state after remove image
   const handleRemoveAdditionalImage = async (imageId: number) => {
     try {
       await removeCropImage({ cropId: selectedCrop.id, imageId }).unwrap();
-      // ✅ Remove from local state immediately
       setLocalAdditionalImages((prev) => prev.filter((img) => img.id !== imageId));
       enqueueSnackbar("Image removed successfully", { variant: "success" });
     } catch (error: any) {
@@ -240,9 +267,8 @@ const EditCropPop = () => {
     }
   };
 
-  // Determine which cover image to display
-  const displayCoverImage = selectedFile 
-    ? URL.createObjectURL(selectedFile) 
+  const displayCoverImage = selectedFile
+    ? URL.createObjectURL(selectedFile)
     : localCoverImage || imageSrc;
 
   return (
@@ -263,6 +289,25 @@ const EditCropPop = () => {
               <label className="font-inter font-medium text-sm text-gray-500">Title</label>
               <InputText id="crop_name" {...register("crop_name")} />
               {errors.crop_name && <small className="p-error">{errors.crop_name.message}</small>}
+            </div>
+
+            {/* Category */}
+            <div className="flex flex-col gap-2">
+              <label className="font-inter font-medium text-sm text-gray-500">Category</label>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Dropdown
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value)}
+                    options={categories.map((c) => ({ label: c.name, value: c.id }))}
+                    placeholder="Select category"
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.category && <small className="p-error">{errors.category.message}</small>}
             </div>
 
             {/* Description */}
@@ -301,11 +346,36 @@ const EditCropPop = () => {
                 {errors.quantity && <small className="p-error">{errors.quantity.message}</small>}
               </div>
               <div className="flex flex-col gap-2">
-                <label className="font-inter font-medium text-sm text-gray-500">Unit</label>
-                <InputText id="unit" {...register("unit")} />
+                <label className="font-inter font-medium text-sm text-gray-500">Selling unit</label>
+                <Controller
+                  name="unit"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={units.map((u) => ({ label: u.name, value: u.id }))}
+                      placeholder="Select unit"
+                      className="w-full"
+                    />
+                  )}
+                />
                 {errors.unit && <small className="p-error">{errors.unit.message}</small>}
               </div>
             </div>
+
+            {/* Custom unit note — only shown when "Other" is selected */}
+            {isOtherUnit && (
+              <div className="flex flex-col gap-2">
+                <label className="font-inter font-medium text-sm text-gray-500">
+                  Describe your unit
+                </label>
+                <InputText
+                  placeholder="e.g. paint rubber, olodo, derica"
+                  {...register("custom_unit_note")}
+                />
+              </div>
+            )}
 
             {/* Location */}
             <div className="flex flex-col gap-2">
@@ -364,7 +434,7 @@ const EditCropPop = () => {
               />
             </div>
 
-            {/* STEP 6: Image Management with Local State */}
+            {/* Image Management with Local State */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <label className="font-inter font-medium text-sm text-gray-500">
@@ -375,7 +445,7 @@ const EditCropPop = () => {
                 </label>
               </div>
 
-              {/* Cover Image - using localCoverImage */}
+              {/* Cover Image */}
               <div className="flex flex-col gap-2">
                 <p className="font-inter text-xs font-medium text-gray-500">Cover Image</p>
                 <div className="relative w-full h-48">
@@ -405,8 +475,7 @@ const EditCropPop = () => {
                   </label>
                 </div>
               </div>
-
-              {/* Additional Images - using localAdditionalImages */}
+              {/* Additional Images */}
               <div className="flex flex-col gap-2">
                 <p className="font-inter text-xs font-medium text-gray-500">
                   Additional Images <span className="text-gray-400">(optional, max 3)</span>
@@ -429,7 +498,6 @@ const EditCropPop = () => {
                       </button>
                     </div>
                   ))}
-
                   {localAdditionalImages.length < 3 && (
                     <label className={`flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary transition-colors ${addingImage ? 'opacity-50 pointer-events-none' : ''}`}>
                       {addingImage ? (
@@ -451,7 +519,6 @@ const EditCropPop = () => {
                 </div>
               </div>
             </div>
-
             {/* Buttons */}
             <div className="flex gap-3 flex-col-reverse w-full md:flex-row">
               <Button
@@ -478,5 +545,4 @@ const EditCropPop = () => {
     />
   );
 };
-
 export default EditCropPop;

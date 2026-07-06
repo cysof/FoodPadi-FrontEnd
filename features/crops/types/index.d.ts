@@ -3,12 +3,14 @@
 declare interface ICropForm {
   crop_description: string;
   crop_name: string;
+  category: number;
   harvested_date: string;
-  img: File;  // remove null
+  img: File;
   location: string;
   price_per_unit: number;
   quantity: number;
-  unit: string;
+  unit: number;
+  custom_unit_note?: string;
   availability: string;
 }
 
@@ -20,9 +22,11 @@ declare interface ICropFormUpdate {
 declare interface ICropSubmission {
   crop_name: string;
   crop_description: string;
+  category: number;
   quantity: number;
   img: File;
-  unit: string;
+  unit: number;
+  custom_unit_note?: string;
   location: string;
   price_per_unit: number;
   harvested_date: string;
@@ -61,8 +65,10 @@ declare interface ICropInput {
   farmer_name: string;
   crop_name: string;
   crop_description: string;
+  category: number | ICategory | null;
   quantity: number;
-  unit: string;
+  unit: number | IUnit;
+  custom_unit_note?: string;
   location: string;
   price_per_unit: number;
   harvested_date: string | null;

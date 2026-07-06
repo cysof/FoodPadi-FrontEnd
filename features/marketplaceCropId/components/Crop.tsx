@@ -137,7 +137,7 @@ const Crop = () => {
                 }).format(Number(crop.price_per_unit || 0))}
               </span>
               <span className="text-gray-400 text-sm mb-1 font-inter">
-                /{crop.unit || "unit"}
+                /{crop.unit?.name || "unit"}
               </span>
             </div>
 
@@ -146,7 +146,7 @@ const Crop = () => {
               <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
                 <Package size={15} className="text-green-600 shrink-0" />
                 <span className="font-inter text-xs text-gray-600">
-                  {crop.quantity || 0} {crop.unit || "units"} available
+                  {crop.quantity || 0} {crop.unit?.name || "units"} available
                 </span>
               </div>
               {crop.harvested_date && (

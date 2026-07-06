@@ -58,7 +58,7 @@ const ProductCard = ({ product }: { product: ICrop }) => {
             currency: "NGN",
           }).format(Number(product.price_per_unit))}
           <span className="text-xs font-normal text-gray-400">
-            /{product.unit}
+            /{product.unit?.name}
           </span>
         </p>
 

@@ -1,7 +1,7 @@
 // features/marketplace/components/Products.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useGetAllProductsQuery } from "../data/MarketApi";
 import { useAppSelector } from "@/store/hooks";
 import ProductCard from "./ProductCard";
@@ -20,12 +20,20 @@ const Products = () => {
   );
   const products = useAppSelector((state) => state.market.products);
   const search = useAppSelector((state) => state.market.search);
+  const selectedCategory = useAppSelector((state) => state.market.selectedCategory);
+  const inStockOnly = useAppSelector((state) => state.market.inStockOnly);
   const count = useAppSelector((state) => state.market.count);
   const next = useAppSelector((state) => state.market.next);
   const previous = useAppSelector((state) => state.market.previous);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedCategory, inStockOnly]);
+
   useGetAllProductsQuery({
     ...(search ? { search } : {}),
+    ...(selectedCategory ? { category: selectedCategory } : {}),
+    ...(inStockOnly ? { availability: "AVAILABLE" } : {}),
     page: currentPage,
   });
 

@@ -128,7 +128,7 @@ const OrderForm = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="font-inter text-sm font-medium text-gray-700">
-            Quantity ({product?.unit})
+            Quantity ({product?.unit?.name})
           </label>
           <input
             {...register("quantity")}
@@ -180,7 +180,7 @@ const OrderForm = () => {
         </div>
         <div className="flex justify-between font-inter text-sm">
           <span className="text-gray-500">Quantity</span>
-          <span className="text-gray-900 font-medium">{quantity} {product?.unit}</span>
+          <span className="text-gray-900 font-medium">{quantity} {product?.unit?.name}</span>
         </div>
         <div className="flex justify-between font-inter text-sm">
           <span className="text-gray-500">Price per unit</span>

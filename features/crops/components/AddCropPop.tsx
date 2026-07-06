@@ -1,6 +1,5 @@
 // features/crops/components/AddCropPop.tsx
 "use client";
-
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "primereact/button";
@@ -12,21 +11,10 @@ import * as yup from "yup";
 import { enqueueSnackbar } from "notistack";
 import { clearCropsError, setShowCreateCropModal } from "../data/CropSlice";
 import { useCreateCropMutation } from "../data/CropApi";
+import { useGetCategoriesQuery, useGetUnitsQuery } from "@/features/marketplace/data/MarketApi";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-
-interface ICropForm {
-  crop_description: string;
-  crop_name: string;
-  harvested_date: string;
-  img: File;
-  location: string;
-  price_per_unit: number;
-  quantity: number;
-  unit: string;
-  availability: string;
-}
 
 interface IImagePreview {
   file: File;
@@ -43,6 +31,9 @@ const AddCropPop = () => {
   const createCropsLoading = useAppSelector((state) => state.crops.createCropsLoading);
   const createCropsError = useAppSelector((state) => state.crops.createCropsError);
   const [CreateCropMutation] = useCreateCropMutation();
+
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: units = [] } = useGetUnitsQuery();
 
   useEffect(() => {
     if (createCropsError) {
@@ -61,6 +52,7 @@ const AddCropPop = () => {
   const CropSchema = yup.object({
     crop_description: yup.string().required("Description is required"),
     crop_name: yup.string().required("Title is required"),
+    category: yup.number().typeError("Category is required").required("Category is required"),
     harvested_date: yup.string().required("Harvest date is required"),
     img: yup.mixed<File>()
       .required("Cover image is required")
@@ -81,25 +73,32 @@ const AddCropPop = () => {
       .typeError("Quantity must be a number")
       .min(1, "Quantity must be at least 1")
       .required("Quantity is required"),
-    unit: yup.string().required("Unit is required"),
+    unit: yup.number().typeError("Unit is required").required("Unit is required"),
+    custom_unit_note: yup.string().optional(),
     availability: yup.string().required("Availability is required"),
   }).required();
 
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<ICropForm>({
+  const { register, handleSubmit, control, reset, watch, formState: { errors } } = useForm<ICropForm>({
     mode: "all",
     resolver: yupResolver(CropSchema) as any,
     defaultValues: {
       crop_description: "",
       crop_name: "",
+      category: undefined as unknown as number,
       harvested_date: "",
       img: undefined as unknown as File,
       location: "",
       price_per_unit: 0,
       quantity: 0,
-      unit: "",
+      unit: undefined as unknown as number,
+      custom_unit_note: "",
       availability: "",
     },
   });
+
+  const selectedUnitId = watch("unit");
+  const selectedUnit = units.find((u) => u.id === selectedUnitId);
+  const isOtherUnit = !!selectedUnit?.is_other;
 
   const validateAndCreatePreview = (file: File): IImagePreview | null => {
     if (!file.type.startsWith("image/")) {
@@ -124,18 +123,15 @@ const AddCropPop = () => {
   const handleAdditionalImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const totalImages = 1 + additionalImages.length + files.length;
-
     if (totalImages > 4) {
       enqueueSnackbar("Maximum 4 images allowed (1 cover + 3 additional)", { variant: "error" });
       return;
     }
-
     const newPreviews: IImagePreview[] = [];
     for (const file of files) {
       const result = validateAndCreatePreview(file);
       if (result) newPreviews.push(result);
     }
-
     setAdditionalImages((prev) => [...prev, ...newPreviews]);
     e.target.value = "";
   };
@@ -153,19 +149,22 @@ const AddCropPop = () => {
       return;
     }
 
-    setIsUploading(true);
+    const unitObj = units.find((u) => u.id === data.unit);
+    if (unitObj?.is_other && !data.custom_unit_note?.trim()) {
+      enqueueSnackbar("Please describe the unit when selecting 'Other'", { variant: "error" });
+      return;
+    }
 
+    setIsUploading(true);
     const { harvested_date, img, ...restData } = data;
     const formData = new FormData();
-
     formData.append("img", img, img.name);
     Object.entries(restData).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") return;
       formData.append(key, value.toString());
     });
-
     const formattedDate = new Date(harvested_date).toISOString().split("T")[0];
     formData.append("harvested_date", formattedDate);
-
     additionalImages.forEach((imgPreview) => {
       formData.append("additional_images", imgPreview.file, imgPreview.file.name);
     });
@@ -210,7 +209,6 @@ const AddCropPop = () => {
               Add New Crop
             </h3>
           </div>
-
           {/* Scrollable content */}
           <div className="overflow-y-auto flex-1 px-4 md:px-6 py-4">
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
@@ -219,6 +217,25 @@ const AddCropPop = () => {
                 <label className="font-inter font-medium text-sm text-gray-500">Title *</label>
                 <InputText {...register("crop_name")} />
                 {errors.crop_name && <small className="text-red-500">{errors.crop_name.message}</small>}
+              </div>
+
+              {/* Category */}
+              <div className="flex flex-col gap-2">
+                <label className="font-inter font-medium text-sm text-gray-500">Category *</label>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={categories.map((c) => ({ label: c.name, value: c.id }))}
+                      placeholder="Select category"
+                      className="w-full"
+                    />
+                  )}
+                />
+                {errors.category && <small className="text-red-500">{errors.category.message}</small>}
               </div>
 
               {/* Description */}
@@ -256,11 +273,39 @@ const AddCropPop = () => {
                   {errors.quantity && <small className="text-red-500">{errors.quantity.message}</small>}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-inter font-medium text-sm text-gray-500">Unit *</label>
-                  <InputText {...register("unit")} />
+                  <label className="font-inter font-medium text-sm text-gray-500">Selling unit *</label>
+                  <Controller
+                    name="unit"
+                    control={control}
+                    render={({ field }) => (
+                      <Dropdown
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.value)}
+                        options={units.map((u) => ({ label: u.name, value: u.id }))}
+                        placeholder="Select unit"
+                        className="w-full"
+                      />
+                    )}
+                  />
                   {errors.unit && <small className="text-red-500">{errors.unit.message}</small>}
                 </div>
               </div>
+
+              {/* Custom unit note — only shown when "Other" is selected */}
+              {isOtherUnit && (
+                <div className="flex flex-col gap-2">
+                  <label className="font-inter font-medium text-sm text-gray-500">
+                    Describe your unit *
+                  </label>
+                  <InputText
+                    placeholder="e.g. paint rubber, olodo, derica"
+                    {...register("custom_unit_note")}
+                  />
+                  <small className="text-gray-400">
+                    Your usual measure isn't listed — describe it so buyers understand.
+                  </small>
+                </div>
+              )}
 
               {/* Location */}
               <div className="flex flex-col gap-2">
@@ -307,7 +352,6 @@ const AddCropPop = () => {
                     {primaryImage ? 1 + additionalImages.length : additionalImages.length}/4 images
                   </span>
                 </div>
-
                 {/* Cover Image */}
                 <div className="flex flex-col gap-2">
                   <p className="font-inter text-xs font-medium text-gray-500">Cover Image *</p>
@@ -357,7 +401,6 @@ const AddCropPop = () => {
                   />
                   {errors.img && <small className="text-red-500">{errors.img.message}</small>}
                 </div>
-
                 {/* Additional Images */}
                 <div className="flex flex-col gap-2">
                   <p className="font-inter text-xs font-medium text-gray-500">

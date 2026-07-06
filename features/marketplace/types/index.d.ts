@@ -4,6 +4,8 @@ declare type searchTerm = {
   search?: string;
   ordering?: string;
   page?: number;
+  category?: number;
+  availability?: string;
 };
 
 declare interface ICropImage {
@@ -12,13 +14,28 @@ declare interface ICropImage {
   order: number;
 }
 
+declare interface ICategory {
+  id: number;
+  name: string;
+  slug: string;
+  display_order: number;
+}
+
+declare interface IUnit {
+  id: number;
+  name: string;
+  is_other: boolean;
+}
+
 declare interface ICrop {
   id: number;
   farmer_name: string;
   crop_name: string;
   crop_description: string;
+  category: ICategory | null;
   quantity: number;
-  unit: string;
+  unit: IUnit;
+  custom_unit_note?: string;
   location: string;
   price_per_unit: number;
   harvested_date: string;
@@ -36,6 +53,8 @@ declare interface IMarketplaceInitialState {
   getAllProductsError: string;
   products: ICrop[];
   search: string;
+  selectedCategory: number | null;
+  inStockOnly: boolean;
   count: number;
   next: string | null;
   previous: string | null;
@@ -46,4 +65,18 @@ declare interface IGetMarketProduceResponse {
   next: string;
   previous: string;
   results: ICrop[];
+}
+
+declare interface IGetCategoriesResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: ICategory[];
+}
+
+declare interface IGetUnitsResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: IUnit[];
 }

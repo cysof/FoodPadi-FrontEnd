@@ -138,7 +138,7 @@ const Crops = () => {
           style: "currency",
           currency: "NGN",
         }).format(validPrice)}
-        /{value.unit || 'unit'}
+        /{value.unit?.name || 'unit'}
       </div>
     );
   };

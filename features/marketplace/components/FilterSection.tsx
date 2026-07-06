@@ -3,22 +3,17 @@
 import { Search } from "lucide-react";
 import React, { useEffect } from "react";
 import { useDebounce } from "primereact/hooks";
-import { useAppDispatch } from "@/store/hooks";
-import { setSearchTerm } from "../data/MarketPlaceSlice";
-
-const filters = [
-  { label: "All Products", value: "" },
-  { label: "🌽 Grains", value: "grains" },
-  { label: "🥬 Vegetables", value: "vegetables" },
-  { label: "🍎 Fruits", value: "fruits" },
-  { label: "🐄 Livestock", value: "livestock" },
-  { label: "✅ In Stock", value: "available" },
-];
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setSearchTerm, setSelectedCategory, setInStockOnly } from "../data/MarketPlaceSlice";
+import { useGetCategoriesQuery } from "../data/MarketApi";
 
 const FilterSection = () => {
   const dispatch = useAppDispatch();
   const [inputValue, debouncedValue, setInputValue] = useDebounce("", 400);
-  const [activeFilter, setActiveFilter] = React.useState("");
+
+  const selectedCategory = useAppSelector((state) => state.market.selectedCategory);
+  const inStockOnly = useAppSelector((state) => state.market.inStockOnly);
+  const { data: categories = [] } = useGetCategoriesQuery();
 
   useEffect(() => {
     dispatch(setSearchTerm(debouncedValue));
@@ -56,19 +51,41 @@ const FilterSection = () => {
 
       {/* Filter chips */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
-        {filters.map((filter) => (
+        <button
+          onClick={() => dispatch(setSelectedCategory(null))}
+          className={`flex-shrink-0 text-xs font-medium px-4 py-2 rounded-full border transition-all duration-200 font-inter ${
+            selectedCategory === null
+              ? "bg-green-800 border-green-800 text-white"
+              : "bg-white border-gray-200 text-gray-600 hover:border-green-700 hover:text-green-700"
+          }`}
+        >
+          All Products
+        </button>
+
+        {categories.map((category) => (
           <button
-            key={filter.value}
-            onClick={() => setActiveFilter(filter.value)}
+            key={category.id}
+            onClick={() => dispatch(setSelectedCategory(category.id))}
             className={`flex-shrink-0 text-xs font-medium px-4 py-2 rounded-full border transition-all duration-200 font-inter ${
-              activeFilter === filter.value
+              selectedCategory === category.id
                 ? "bg-green-800 border-green-800 text-white"
                 : "bg-white border-gray-200 text-gray-600 hover:border-green-700 hover:text-green-700"
             }`}
           >
-            {filter.label}
+            {category.name}
           </button>
         ))}
+
+        <button
+          onClick={() => dispatch(setInStockOnly(!inStockOnly))}
+          className={`flex-shrink-0 text-xs font-medium px-4 py-2 rounded-full border transition-all duration-200 font-inter ${
+            inStockOnly
+              ? "bg-green-800 border-green-800 text-white"
+              : "bg-white border-gray-200 text-gray-600 hover:border-green-700 hover:text-green-700"
+          }`}
+        >
+          ✅ In Stock
+        </button>
       </div>
     </div>
   );
