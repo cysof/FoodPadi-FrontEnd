@@ -69,7 +69,7 @@ const LoginForm = () => {
         <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
           <Wheat size={16} className="text-green-700" />
         </div>
-        <span className="font-inter font-bold text-green-800 text-sm">Micro FoodBank</span>
+        <span className="font-inter font-bold text-green-800 text-sm">FarmRide</span>
       </Link>
 
       {/* Back to home / browse stock without logging in */}
@@ -77,15 +77,15 @@ const LoginForm = () => {
         href="/"
         className="hidden lg:inline-flex items-center gap-1.5 font-inter text-xs text-gray-500 hover:text-green-700 mb-6 w-max transition-colors"
       >
-        <ArrowLeft size={14} />
-        Back to home — browse available stock
+        <ArrowLeft size={30} />
+        Back to Home — Browse Available Stock
       </Link>
 
       <h2 className="font-inter font-bold text-2xl text-gray-900 mb-1">
         Welcome back 👋
       </h2>
       <p className="font-inter text-sm text-gray-500 mb-8">
-        Sign in to your Micro FoodBank account
+        Sign in to your FarmRide Account
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
@@ -144,7 +144,7 @@ const LoginForm = () => {
       </form>
 
       <p className="font-inter text-sm text-gray-500 text-center mt-6">
-        New to Micro FoodBank?{" "}
+        New to FarmRide?{" "}
         <Link
           href={query.get("url") ? `/auth/register?url=${query.get("url")}` : "/auth/register"}
           className="text-green-700 font-semibold hover:text-green-800"

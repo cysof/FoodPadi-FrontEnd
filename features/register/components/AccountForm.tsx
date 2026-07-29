@@ -133,8 +133,8 @@ const AccountForm = () => {
       href="/"
       className="inline-flex items-center gap-1.5 font-inter text-xs text-gray-500 hover:text-green-700 mb-6 w-max transition-colors"
     >
-      <ArrowLeft size={14} />
-      Back to home — browse available stock
+      <ArrowLeft size={30} />
+      Back to Home — Browse Available Stock
     </Link>
 
     <h2 className="font-inter font-bold text-2xl text-gray-900 mb-1">

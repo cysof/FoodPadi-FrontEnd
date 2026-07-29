@@ -139,7 +139,7 @@ const Footer = () => {
                   href="mailto:microfoodbankltd@gmail.com"
                   className="text-sm text-gray-400 hover:text-yellow-400 transition-colors font-inter"
                 >
-                  microfoodbankltd@gmail.com
+                  farmride@gmail.com
                 </Link>
               </div>
             </div>

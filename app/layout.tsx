@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     description:
-      "Discover a smart agriculture marketplace that connects Nigerian farmers, buyers, and transporters. List, buy, and deliver fresh farm produce easily across Nigeria. Empowering food supply with technology, trust, and speed.",
+      "Discover a smart agriculture marketplace that connects Nigerian farmers, Buyers, and Transporters. List, buy, and deliver fresh farm produce easily across Nigeria. Empowering food supply with technology, trust, and speed.",
   },
   icons: {
     icon: "/favicon.ico",
