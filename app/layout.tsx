@@ -30,7 +30,7 @@ const square = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://foodbank-theta.vercel.app/"),
+  metadataBase: new URL("https://farmride.com.ng/"),
   keywords: [
     "agriculture marketplace in Nigeria",
     "sell farm produce online Nigeria",
@@ -55,8 +55,8 @@ export const metadata: Metadata = {
     "online platform for agricultural trade in Nigeria",
   ],
   title: {
-    default: "Micro Food Bank",
-    template: `%s | Micro Food Bank`,
+    default: "FarmRide | Digital Marketplace for Farmers, Buyers, and Transporters",
+    template: `%s | FarmRide`,
   },
   openGraph: {
     description:

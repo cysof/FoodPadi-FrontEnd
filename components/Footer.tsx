@@ -20,7 +20,7 @@ const Footer = () => {
 
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <p className="text-base font-bold text-white mb-2">Micro FoodBank</p>
+            <p className="text-base font-bold text-white mb-2">FarmRide</p>
             <span className="inline-block bg-yellow-400/15 border border-yellow-400/30 text-yellow-400 text-xs font-medium px-3 py-1 rounded-full mb-4">
               🌱 ...Feeding African Homes
             </span>
@@ -119,7 +119,7 @@ const Footer = () => {
                   <PhoneCall width={14} className="text-yellow-400" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  {["09074366942", "09169029904", "07080109521"].map((num) => (
+                  {["08163110123", "08155547663", "07080109521"].map((num) => (
                     <Link
                       key={num}
                       href={`tel:+234${num.slice(1)}`}
@@ -150,7 +150,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-center">
           <p className="text-xs text-gray-500 font-inter">
-            © {new Date().getFullYear()} Micro FoodBank. All rights reserved.
+            © {new Date().getFullYear()} FarmRide. All rights reserved.
           </p>
           <p className="text-xs text-gray-500 font-inter">
             Built to support agriculture in Nigeria 🇳🇬

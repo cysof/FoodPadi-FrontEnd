@@ -33,7 +33,7 @@ className={`fixed top-0 left-0 h-full w-[75vw] max-w-[180px] bg-white z-[999] fl
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <Link href="/" onClick={onClose}>
             <Image
-              src="/mainLogo.svg"
+              src="/mainLogo.png"
               width={50}
               height={18}
               alt="Micro FoodBank Logo"

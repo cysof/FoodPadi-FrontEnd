@@ -1,10 +1,9 @@
 "use client";
-
 import Image from "next/image";
 import { Timeline } from "primereact/timeline";
 import React from "react";
 
-const AuthSideBar = () => {
+const AuthSideBar = ({ className = "" }: { className?: string }) => {
   const events: timelineData[] = [
     {
       status: "Sellers",
@@ -28,7 +27,6 @@ const AuthSideBar = () => {
         "Join as a registered transporter and earn by helping farmers and buyers move goods safely and quickly.",
     },
   ];
-
   const customizedMarker = (item: timelineData) => {
     return (
       <span
@@ -39,7 +37,6 @@ const AuthSideBar = () => {
       </span>
     );
   };
-
   const customizedContent = (item: timelineData) => {
     return (
       <div className={`bg-secondary text-black px-4 py-4 rounded-md`}>
@@ -50,17 +47,16 @@ const AuthSideBar = () => {
   };
   return (
     <div
-      className={`w-full max-w-lg gap-4 py-5 hidden lg:flex bg-primary flex-col items-center justify-center`}
+      className={`w-full max-w-lg gap-4 py-5 hidden lg:flex bg-primary flex-col items-center justify-center overflow-y-auto ${className}`}
     >
       <div className={`rounded-2xl bg-white flex items-center justify-center h-max w-max`}>
-
-      <Image
-        src={`/mainLogo.svg`}
-        width={400}
-        height={300}
-        alt="Food Bank Logo"
-        className={`w-50`}
-      />
+        <Image
+          src={`/mainLogo.png`}
+          width={400}
+          height={300}
+          alt="Food Bank Logo"
+          className={`w-50`}
+        />
       </div>
       <div>
         <Timeline
@@ -74,5 +70,4 @@ const AuthSideBar = () => {
     </div>
   );
 };
-
 export default AuthSideBar;

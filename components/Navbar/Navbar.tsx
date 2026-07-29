@@ -41,14 +41,14 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/">
             <Image
-              src="/mainLogo.svg"
-              width={60}
-              height={20}
-              alt="Micro FoodBank Logo"
-              className={`transition-all duration-300 ${
-                isSolid ? "brightness-100" : "brightness-0 invert"
-              }`}
-            />
+  src="/mainLogo.png"
+  width={1024}
+  height={1024}
+  alt="FarmRide Logo"
+  className={`h-8 w-auto transition-all duration-300 ${
+    isSolid ? "brightness-100" : "brightness-0 invert"
+  }`}
+/>
           </Link>
 
           {/* Desktop Nav Links */}

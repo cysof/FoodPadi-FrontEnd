@@ -15,7 +15,7 @@ const Navbar = () => {
       >
         <Link href={`/`}>
           <Image
-            src={`/mainLogo.svg`}
+            src={`/mainLogo.png`}
             width={60}
             height={20}
             alt="Ezer Health care Logo"

@@ -58,7 +58,7 @@ const ForgotPasswordForm = () => {
       className={`border bg-secondary border-gray-400 h-max my-auto w-full flex flex-col gap-5 max-w-lg drop-shadow-md rounded-2xl py-10 px-3 md:px-10`}
     >
       <Image
-        src={`/mainLogo.svg`}
+        src={`/mainLogo.png`}
         alt="food bank logo"
         width={400}
         height={300}

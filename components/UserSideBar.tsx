@@ -89,7 +89,7 @@ const UserSideBar = () => {
         <div className="flex items-center justify-between px-3 pt-4 pb-2 md:pt-3">
           <Link href="/" onClick={closeSidebar}>
             <Image
-              src="/mainLogo.svg"
+              src="/mainLogo.png"
               className={`shrink-0 transition-all duration-300 ${
                 expandSidebar || !hideSideBar ? "w-[120px]" : "md:w-[36px] w-[120px]"
               }`}

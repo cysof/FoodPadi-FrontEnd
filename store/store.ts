@@ -8,8 +8,8 @@ import {
   PURGE,
   REGISTER,
   REHYDRATE,
+  PersistConfig,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { LoginAPI } from "./LoginAPI";
@@ -30,32 +30,26 @@ import TransporterSlice from "@/features/transporter/data/TransporterSlice";
 // // import ForgotPasswordSlice from "@/features/forgotPassword/data/ForgotPasswordSlice";
 // // import ResetPasswordSlice from "@/features/resetPassword/data/ResetPasswordSlice";
 
-const persistConfig = {
-  key: "FoodBank",
-  storage,
-  autoMergeLevel2,
-  blacklist: [
-    LoginAPI.reducerPath,
-    FetchAPI.reducerPath,
-    "register",
-    "appSetting",
-    "market",
-    "crops",
-    "marketPlaceCrop",
-    "orders",
-    "orderById",
-    "dashboard",
-    "account",
-    "buyerOrders",
-    "transporter",
-    // "vacancies",
-    // "forgotPassword",
-    // "resetPassword",
-    // "homeNews",
-    // "pricing",
-    // "sideBarChat",
-  ],
-};
+// SSR-safe storage engine.
+// redux-persist/lib/storage touches window.localStorage at import time,
+// which breaks/no-ops during Next.js server rendering. Only use real
+// localStorage in the browser; fall back to a noop engine on the server.
+const createNoopStorage = () => ({
+  getItem(_key: string) {
+    return Promise.resolve(null);
+  },
+  setItem(_key: string, value: any) {
+    return Promise.resolve(value);
+  },
+  removeItem(_key: string) {
+    return Promise.resolve();
+  },
+});
+
+const storage =
+  typeof window !== "undefined"
+    ? require("redux-persist/lib/storage").default
+    : createNoopStorage();
 
 const rootReducer = combineReducers({
   register: RegisterSlice,
@@ -79,6 +73,35 @@ const rootReducer = combineReducers({
   [LoginAPI.reducerPath]: LoginAPI.reducer,
   [FetchAPI.reducerPath]: FetchAPI.reducer,
 });
+
+export type RootReducerState = ReturnType<typeof rootReducer>;
+
+const persistConfig: PersistConfig<RootReducerState> = {
+  key: "FoodBank",
+  storage,
+  stateReconciler: autoMergeLevel2,
+  blacklist: [
+    LoginAPI.reducerPath,
+    FetchAPI.reducerPath,
+    "register",
+    "appSetting",
+    "market",
+    "crops",
+    "marketPlaceCrop",
+    "orders",
+    "orderById",
+    "dashboard",
+    "account",
+    "buyerOrders",
+    "transporter",
+    // "vacancies",
+    // "forgotPassword",
+    // "resetPassword",
+    // "homeNews",
+    // "pricing",
+    // "sideBarChat",
+  ],
+};
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

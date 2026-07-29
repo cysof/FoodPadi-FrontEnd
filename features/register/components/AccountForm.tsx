@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearRegisterError } from "../data/RegisterSlice";
 import { useRouter, useSearchParams } from "next/navigation";
 import LocationPicker from "@/components/LocationPicker";
-import { Eye, EyeOff, Loader2, Wheat } from "lucide-react";
+import { Eye, EyeOff, Loader2, Wheat, ArrowLeft } from "lucide-react";
 
 type FormData = IRegisterForm;
 
@@ -118,21 +118,30 @@ const AccountForm = () => {
   const errorClass = "text-red-500 text-xs font-inter";
 
   return (
-  <div className="w-full max-w-lg">
+  <div className="w-full max-w-lg max-h-screen overflow-y-auto py-8">
 
     {/* Mobile brand */}
     <Link href="/" className="flex lg:hidden items-center gap-2 mb-8 w-max">
       <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
         <Wheat size={16} className="text-green-700" />
       </div>
-      <span className="font-inter font-bold text-green-800 text-sm">Micro FoodBank</span>
+      <span className="font-inter font-bold text-green-800 text-sm">FarmRide</span>
+    </Link>
+
+    {/* Back to home / browse stock without an account */}
+    <Link
+      href="/"
+      className="inline-flex items-center gap-1.5 font-inter text-xs text-gray-500 hover:text-green-700 mb-6 w-max transition-colors"
+    >
+      <ArrowLeft size={14} />
+      Back to home — browse available stock
     </Link>
 
     <h2 className="font-inter font-bold text-2xl text-gray-900 mb-1">
       Create your account
     </h2>
     <p className="font-inter text-sm text-gray-500 mb-8">
-      Join Micro FoodBank. Connect. Trade. Deliver.
+      Join FarmRide. Connect. Trade. Deliver.
     </p>
 
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
