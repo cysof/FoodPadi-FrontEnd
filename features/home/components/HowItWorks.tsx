@@ -64,7 +64,7 @@ const HowItWorks = () => {
           How It Works
         </h3>
         <p className="text-gray-500 text-center text-base max-w-md font-inter leading-relaxed">
-          From farm to your doorstep — here's how Micro FoodBank makes it happen.
+          From farm to your doorstep — here's how FarmRide makes it happen.
         </p>
       </div>
 

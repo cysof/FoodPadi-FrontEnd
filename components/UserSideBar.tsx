@@ -95,7 +95,7 @@ const UserSideBar = () => {
               }`}
               width={120}
               height={40}
-              alt="Micro FoodBank Logo"
+              alt="FarmRide Logo"
             />
           </Link>
           <X

@@ -27,6 +27,7 @@ const AuthSideBar = ({ className = "" }: { className?: string }) => {
         "Join as a registered transporter and earn by helping farmers and buyers move goods safely and quickly.",
     },
   ];
+
   const customizedMarker = (item: timelineData) => {
     return (
       <span
@@ -37,6 +38,7 @@ const AuthSideBar = ({ className = "" }: { className?: string }) => {
       </span>
     );
   };
+
   const customizedContent = (item: timelineData) => {
     return (
       <div className={`bg-secondary text-black px-4 py-4 rounded-md`}>
@@ -45,6 +47,7 @@ const AuthSideBar = ({ className = "" }: { className?: string }) => {
       </div>
     );
   };
+
   return (
     <div
       className={`w-full max-w-lg gap-4 py-5 hidden lg:flex bg-primary flex-col items-center justify-center overflow-y-auto ${className}`}
@@ -54,7 +57,7 @@ const AuthSideBar = ({ className = "" }: { className?: string }) => {
           src={`/mainLogo.png`}
           width={400}
           height={300}
-          alt="Food Bank Logo"
+          alt="FarmRide Logo"
           className={`w-50`}
         />
       </div>
@@ -70,4 +73,5 @@ const AuthSideBar = ({ className = "" }: { className?: string }) => {
     </div>
   );
 };
+
 export default AuthSideBar;

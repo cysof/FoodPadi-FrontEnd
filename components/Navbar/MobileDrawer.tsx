@@ -24,7 +24,6 @@ const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
 
       {/* Drawer */}
       <div
-        // Change w-[300px] to w-[75vw] max-w-[280px]
         className={`fixed top-0 left-0 h-full w-[75vw] max-w-[180px] bg-white z-[999] flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
@@ -36,7 +35,7 @@ const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
               src="/mainLogo.png"
               width={50}
               height={18}
-              alt="Micro FoodBank Logo"
+              alt="FarmRide Logo"
             />
           </Link>
           <button
@@ -57,17 +56,13 @@ const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
             Account
           </p>
-          {/* scrolled=true forces the "solid" style branch in NavActions
-              (dark text/border) since the drawer always has a white
-              background — without this, the Login button rendered with
-              white text on a white background and was effectively invisible */}
           <NavActions scrolled={true} onClose={onClose} />
         </div>
 
         {/* Footer */}
         <div className="mt-auto px-5 py-4 border-t border-gray-100">
           <p className="text-xs text-gray-400 font-inter">
-            © {new Date().getFullYear()} Micro FoodBank
+            © {new Date().getFullYear()} FarmRide
           </p>
         </div>
       </div>

@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["primereact"],
   },
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -18,7 +19,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "foodpadi-d0xo.onrender.com",
+        hostname: "farmride.com.ng",
         pathname: "/**",
       },
       {
@@ -26,7 +27,6 @@ const nextConfig: NextConfig = {
         hostname: "127.0.0.1",
         pathname: "/**",
       },
-      
       {
         protocol: "http",
         hostname: "localhost",
@@ -34,11 +34,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
-
-// next.config.js
-module.exports = {
-  output: 'standalone',
 };
 
 export default nextConfig;

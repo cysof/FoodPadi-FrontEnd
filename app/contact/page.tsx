@@ -92,7 +92,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">Email</h3>
-                      <p className="text-gray-600">microfoodbankltd@gmail.com</p>
+                      <p className="text-gray-600">farmride@gmail.com</p>
                     </div>
                   </div>
 
@@ -251,7 +251,7 @@ const ContactPage = () => {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Micro FoodBank Office Location - House 17 Road 251 FHA Guzape, Abuja"
+                  title="FarmRide Office Location - House 17 Road 251 FHA Guzape, Abuja"
                 />
               </div>
               <p className="text-sm text-gray-500 mt-3 text-center">
