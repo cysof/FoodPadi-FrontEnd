@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   experimental: {
     optimizePackageImports: ["primereact"],
   },
-  output: "standalone",
   images: {
     remotePatterns: [
       {
