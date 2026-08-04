@@ -37,3 +37,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+//  nothing to export from this file, just a config file for next.js
