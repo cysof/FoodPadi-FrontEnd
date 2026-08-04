@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER || 'microfoodbankltd@gmail.com',
+        user: process.env.SMTP_USER || 'farmride@farmride.com.ng',
         pass: process.env.SMTP_PASS, // Use app password for Gmail
       },
     });
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Email content
     const mailOptions = {
       from: `"${name}" <${email}>`,
-      to: 'microfoodbankltd@gmail.com',
+      to: 'farmride@farmride.com.ng',
       subject: `Contact Form: ${subject}`,
       html: `
         <!DOCTYPE html>
@@ -90,9 +90,9 @@ export async function POST(request: NextRequest) {
 
     // Optional: Send auto-reply to user
     const autoReplyOptions = {
-      from: `"Micro FoodBank" <microfoodbankltd@gmail.com>`,
+      from: `"FarmRide" <farmride@farmride.com.ng>`,
       to: email,
-      subject: 'Thank you for contacting Micro FoodBank',
+      subject: 'Thank you for contacting FarmRide',
       html: `
         <!DOCTYPE html>
         <html>
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
             </div>
             <div class="content">
               <p>Dear ${name},</p>
-              <p>Thank you for reaching out to Micro FoodBank. We have received your message and will get back to you within 24-48 hours.</p>
+              <p>Thank you for reaching out to FarmRide. We have received your message and will get back to you within 24-48 hours.</p>
               <p>Here's a copy of your message:</p>
               <hr/>
               <p><strong>Subject:</strong> ${subject}</p>
@@ -121,37 +121,37 @@ export async function POST(request: NextRequest) {
               <hr/>
               <p>In the meantime, feel free to:</p>
               <ul>
-                <li>Browse our <a href="https://foodbank-theta.vercel.app/marketplace">Marketplace</a></li>
+                <li>Browse our <a href="https://farmride.com.ng/marketplace">Marketplace</a></li>
                 <li>Call us at 09074366942, 09169029904, or 07080109521</li>
                 <li>Visit our office at House 17 Road 251 FHA Guzape, Abuja</li>
               </ul>
-              <p>Best regards,<br/>The Micro FoodBank Team</p>
+              <p>Best regards,<br/>The FarmRide Team</p>
             </div>
             <div class="footer">
-              <p>© ${new Date().getFullYear()} Micro FoodBank. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} FarmRide. All rights reserved.</p>
             </div>
           </div>
         </body>
         </html>
       `,
       text: `
-        Thank You for Contacting Micro FoodBank!
+        Thank You for Contacting FarmRide!
         
         Dear ${name},
         
-        Thank you for reaching out to Micro FoodBank. We have received your message and will get back to you within 24-48 hours.
+        Thank you for reaching out to FarmRide. We have received your message and will get back to you within 24-48 hours.
         
         Here's a copy of your message:
         Subject: ${subject}
         Message: ${message}
         
         In the meantime, feel free to:
-        - Browse our Marketplace: https://foodbank-theta.vercel.app/marketplace
+        - Browse our Marketplace: https://farmride.com.ng/marketplace
         - Call us at 09074366942, 09169029904, or 07080109521
         - Visit our office at House 17 Road 251 FHA Guzape, Abuja
         
         Best regards,
-        The Micro FoodBank Team
+        The FarmRide Team
       `,
     };
 
